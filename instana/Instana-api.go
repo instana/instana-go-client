@@ -1,5 +1,10 @@
 package instana
 
+import (
+	"crypto/tls"
+	"net/http"
+)
+
 const (
 	//InstanaAPIBasePath path to Instana RESTful API
 	InstanaAPIBasePath = "/api"
@@ -63,6 +68,34 @@ type InstanaAPI interface {
 // NewInstanaAPI creates a new instance of the instana API
 func NewInstanaAPI(apiToken string, endpoint string, skipTlsVerification bool) InstanaAPI {
 	client := NewClient(apiToken, endpoint, skipTlsVerification)
+	return &baseInstanaAPI{client: client}
+}
+
+// NewInstanaAPIWithUserAgent creates a new instance of the instana API with a custom user agent
+// The userAgent parameter should include the client name and version (e.g., "Terraform/1.2.3")
+func NewInstanaAPIWithUserAgent(apiToken string, endpoint string, skipTlsVerification bool, userAgent string) InstanaAPI {
+	config := DefaultClientConfig()
+	config.APIToken = apiToken
+	config.BaseURL = "https://" + endpoint
+	config.UserAgent = userAgent
+	config.Logger = NewDefaultLogger(ClientLogLevelInfo)
+
+	// Create HTTP client with TLS configuration
+	httpClient := createHTTPClient(config)
+	if skipTlsVerification {
+		httpClient.Transport = &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true}, //nolint:gosec
+		}
+	}
+	config.HTTPClient = httpClient
+
+	client, err := NewClientWithConfig(config)
+	if err != nil {
+		// Fall back to basic client if config fails
+		config.Logger.Error("Failed to create client with config, using basic client", "error", err)
+		client = NewClient(apiToken, endpoint, skipTlsVerification)
+	}
+
 	return &baseInstanaAPI{client: client}
 }
 

@@ -17,6 +17,11 @@ func lookupRootFolder(dir string, level int) (string, error) {
 	if level > 5 {
 		return "", errors.New("Failed to find root folder")
 	}
+	// Look for go.mod first (for library projects), then main.go (for application projects)
+	goModFile := fmt.Sprintf("%s/go.mod", dir)
+	if fileExists(goModFile) {
+		return dir, nil
+	}
 	mainFile := fmt.Sprintf("%s/main.go", dir)
 	if fileExists(mainFile) {
 		return dir, nil

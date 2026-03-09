@@ -74,7 +74,7 @@ git diff go.mod go.sum
 
 ```bash
 # Create annotated tag
-git tag -a go-client/v1.0.0 -m "Release Instana Go Client v1.0.0
+git tag -a v1.0.0 -m "Release Instana Go Client v1.0.0
 
 Major Features:
 - 37 configuration parameters with builder pattern
@@ -93,15 +93,15 @@ Breaking Changes:
 "
 
 # Verify tag
-git tag -l "go-client/*"
-git show go-client/v1.0.0
+git tag -l "v*"
+git show v1.0.0
 ```
 
 ### 3. Push Release (1 minute)
 
 ```bash
 # Push the tag to trigger release workflow
-git push origin go-client/v1.0.0
+git push origin v1.0.0
 
 # Monitor GitHub Actions
 # Go to: https://github.com/instana/instana-go-client/actions
@@ -131,7 +131,7 @@ After pushing the tag, GitHub Actions will automatically:
 
 **Verify**:
 - [ ] GitHub Actions workflow completed successfully
-- [ ] GitHub release created at: https://github.com/instana/instana-go-client/releases/tag/go-client/v1.0.0
+- [ ] GitHub release created at: https://github.com/instana/instana-go-client/releases/tag/v1.0.0
 - [ ] Documentation published
 - [ ] Package available: `go get github.com/instana/instana-go-client@v1.0.0`
 

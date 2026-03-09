@@ -10,7 +10,8 @@ import (
 )
 
 func main() {
-	fmt.Println("=== Instana REST Client Usage Examples ===\n")
+	fmt.Println("=== Instana REST Client Usage Examples ===")
+	fmt.Println()
 
 	// Example 1: Using the legacy NewClient (backward compatible)
 	fmt.Println("1. Legacy Client (Backward Compatible)")

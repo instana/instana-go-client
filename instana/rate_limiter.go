@@ -33,7 +33,9 @@ func NewRateLimiter(config RateLimitConfig, logger Logger) *RateLimiter {
 
 	// Start background refill goroutine
 	if config.Enabled {
+		rl.mu.Lock()
 		rl.startRefill()
+		rl.mu.Unlock()
 	}
 
 	return rl
@@ -123,14 +125,16 @@ func (rl *RateLimiter) calculateWaitTime() time.Duration {
 }
 
 // startRefill starts the background token refill goroutine
+// Note: This method should be called while holding rl.mu lock
 func (rl *RateLimiter) startRefill() {
 	// Refill every 100ms for smooth rate limiting
-	rl.refillTicker = time.NewTicker(100 * time.Millisecond)
+	ticker := time.NewTicker(100 * time.Millisecond)
+	rl.refillTicker = ticker
 
 	go func() {
 		for {
 			select {
-			case <-rl.refillTicker.C:
+			case <-ticker.C:
 				rl.mu.Lock()
 				rl.refillTokens()
 				rl.mu.Unlock()

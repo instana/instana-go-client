@@ -1,34 +1,7 @@
 package client
 
 import (
-	"github.com/instana/instana-go-client/api/alertingchannel"
-	"github.com/instana/instana-go-client/api/alertingconfig"
-	"github.com/instana/instana-go-client/api/apitoken"
-	"github.com/instana/instana-go-client/api/applicationalertconfig"
-	"github.com/instana/instana-go-client/api/applicationconfig"
-	"github.com/instana/instana-go-client/api/automationaction"
-	"github.com/instana/instana-go-client/api/automationpolicy"
-	"github.com/instana/instana-go-client/api/builtineventspec"
-	"github.com/instana/instana-go-client/api/customdashboard"
-	"github.com/instana/instana-go-client/api/customeventspec"
-	"github.com/instana/instana-go-client/api/group"
-	"github.com/instana/instana-go-client/api/hostagent"
-	"github.com/instana/instana-go-client/api/infraalertconfig"
-	"github.com/instana/instana-go-client/api/logalertconfig"
-	"github.com/instana/instana-go-client/api/maintenancewindow"
-	"github.com/instana/instana-go-client/api/mobilealertconfig"
-	"github.com/instana/instana-go-client/api/role"
-	"github.com/instana/instana-go-client/api/sliconfig"
-	"github.com/instana/instana-go-client/api/sloalertconfig"
-	"github.com/instana/instana-go-client/api/sloconfig"
-	"github.com/instana/instana-go-client/api/slocorrection"
-	"github.com/instana/instana-go-client/api/syntheticalertconfig"
-	"github.com/instana/instana-go-client/api/syntheticlocation"
-	"github.com/instana/instana-go-client/api/synthetictest"
-	"github.com/instana/instana-go-client/api/team"
-	"github.com/instana/instana-go-client/api/user"
-	"github.com/instana/instana-go-client/api/websitealertconfig"
-	"github.com/instana/instana-go-client/api/websitemonitoring"
+	api "github.com/instana/instana-go-client/api"
 	"github.com/instana/instana-go-client/shared/rest"
 )
 
@@ -38,35 +11,35 @@ type instanaAPI struct {
 	restClient rest.RestClient
 
 	// Lazy-initialized API clients
-	apiTokens                     rest.RestResource[*apitoken.APIToken]
-	alertingChannels              rest.RestResource[*alertingchannel.AlertingChannel]
-	alertingConfigurations        rest.RestResource[*alertingconfig.AlertingConfiguration]
-	applicationAlertConfigs       rest.RestResource[*applicationalertconfig.ApplicationAlertConfig]
-	globalApplicationAlertConfigs rest.RestResource[*applicationalertconfig.ApplicationAlertConfig]
-	applicationConfigs            rest.RestResource[*applicationconfig.ApplicationConfig]
-	automationActions             rest.RestResource[*automationaction.AutomationAction]
-	automationPolicies            rest.RestResource[*automationpolicy.AutomationPolicy]
-	builtinEventSpecifications    rest.ReadOnlyRestResource[*builtineventspec.BuiltinEventSpecification]
-	customDashboards              rest.RestResource[*customdashboard.CustomDashboard]
-	customEventSpecifications     rest.RestResource[*customeventspec.CustomEventSpecification]
-	groups                        rest.RestResource[*group.Group]
-	hostAgents                    rest.ReadOnlyRestResource[*hostagent.HostAgent]
-	infraAlertConfigs             rest.RestResource[*infraalertconfig.InfraAlertConfig]
-	logAlertConfigs               rest.RestResource[*logalertconfig.LogAlertConfig]
-	maintenanceWindows            rest.RestResource[*maintenancewindow.MaintenanceWindow]
-	mobileAlertConfigs            rest.RestResource[*mobilealertconfig.MobileAlertConfig]
-	roles                         rest.RestResource[*role.Role]
-	sliConfigs                    rest.RestResource[*sliconfig.SliConfig]
-	sloAlertConfigs               rest.RestResource[*sloalertconfig.SloAlertConfig]
-	sloConfigs                    rest.RestResource[*sloconfig.SloConfig]
-	sloCorrections                rest.RestResource[*slocorrection.SloCorrectionConfig]
-	syntheticAlertConfigs         rest.RestResource[*syntheticalertconfig.SyntheticAlertConfig]
-	syntheticLocations            rest.ReadOnlyRestResource[*syntheticlocation.SyntheticLocation]
-	syntheticTests                rest.RestResource[*synthetictest.SyntheticTest]
-	teams                         rest.RestResource[*team.Team]
-	users                         rest.ReadOnlyRestResource[*user.User]
-	websiteAlertConfigs           rest.RestResource[*websitealertconfig.WebsiteAlertConfig]
-	websiteMonitoringConfigs      rest.RestResource[*websitemonitoring.WebsiteMonitoringConfig]
+	apiTokens                     rest.RestResource[*api.APIToken]
+	alertingChannels              rest.RestResource[*api.AlertingChannel]
+	alertingConfigurations        rest.RestResource[*api.AlertingConfiguration]
+	applicationAlertConfigs       rest.RestResource[*api.ApplicationAlertConfig]
+	globalApplicationAlertConfigs rest.RestResource[*api.ApplicationAlertConfig]
+	applicationConfigs            rest.RestResource[*api.ApplicationConfig]
+	automationActions             rest.RestResource[*api.AutomationAction]
+	automationPolicies            rest.RestResource[*api.AutomationPolicy]
+	builtinEventSpecifications    rest.ReadOnlyRestResource[*api.BuiltinEventSpecification]
+	customDashboards              rest.RestResource[*api.CustomDashboard]
+	customEventSpecifications     rest.RestResource[*api.CustomEventSpecification]
+	groups                        rest.RestResource[*api.Group]
+	hostAgents                    rest.ReadOnlyRestResource[*api.HostAgent]
+	infraAlertConfigs             rest.RestResource[*api.InfraAlertConfig]
+	logAlertConfigs               rest.RestResource[*api.LogAlertConfig]
+	maintenanceWindows            rest.RestResource[*api.MaintenanceWindow]
+	mobileAlertConfigs            rest.RestResource[*api.MobileAlertConfig]
+	roles                         rest.RestResource[*api.Role]
+	sliConfigs                    rest.RestResource[*api.SliConfig]
+	sloAlertConfigs               rest.RestResource[*api.SloAlertConfig]
+	sloConfigs                    rest.RestResource[*api.SloConfig]
+	sloCorrections                rest.RestResource[*api.SloCorrectionConfig]
+	syntheticAlertConfigs         rest.RestResource[*api.SyntheticAlertConfig]
+	syntheticLocations            rest.ReadOnlyRestResource[*api.SyntheticLocation]
+	syntheticTests                rest.RestResource[*api.SyntheticTest]
+	teams                         rest.RestResource[*api.Team]
+	users                         rest.ReadOnlyRestResource[*api.User]
+	websiteAlertConfigs           rest.RestResource[*api.WebsiteAlertConfig]
+	websiteMonitoringConfigs      rest.RestResource[*api.WebsiteMonitoringConfig]
 }
 
 // NewInstanaAPI creates a new Instana API client with the provided REST client.
@@ -78,376 +51,376 @@ func NewInstanaAPI(restClient rest.RestClient) InstanaAPI {
 }
 
 // APITokens returns the API tokens client (lazy initialization)
-func (api *instanaAPI) APITokens() rest.RestResource[*apitoken.APIToken] {
-	if api.apiTokens == nil {
-		api.apiTokens = NewRestResource[*apitoken.APIToken](
-			api.restClient,
-			apitoken.APITokensResourcePath,
+func (c *instanaAPI) APITokens() rest.RestResource[*api.APIToken] {
+	if c.apiTokens == nil {
+		c.apiTokens = NewRestResource[*api.APIToken](
+			c.restClient,
+			api.APITokensResourcePath,
 			rest.DefaultRestResourceModeCreatePOSTUpdatePUT,
-			rest.NewGenericUnmarshaller[*apitoken.APIToken](),
+			rest.NewGenericUnmarshaller[*api.APIToken](),
 		)
 	}
-	return api.apiTokens
+	return c.apiTokens
 }
 
 // AlertingChannels returns the alerting channels client (lazy initialization)
-func (api *instanaAPI) AlertingChannels() rest.RestResource[*alertingchannel.AlertingChannel] {
-	if api.alertingChannels == nil {
-		api.alertingChannels = NewRestResource[*alertingchannel.AlertingChannel](
-			api.restClient,
-			alertingchannel.AlertingchannelResourcePath,
+func (c *instanaAPI) AlertingChannels() rest.RestResource[*api.AlertingChannel] {
+	if c.alertingChannels == nil {
+		c.alertingChannels = NewRestResource[*api.AlertingChannel](
+			c.restClient,
+			api.AlertingchannelResourcePath,
 			rest.DefaultRestResourceModeCreateAndUpdatePUT,
-			rest.NewGenericUnmarshaller[*alertingchannel.AlertingChannel](),
+			rest.NewGenericUnmarshaller[*api.AlertingChannel](),
 		)
 	}
-	return api.alertingChannels
+	return c.alertingChannels
 }
 
 // AlertingConfigurations returns the alerting configurations client (lazy initialization)
-func (api *instanaAPI) AlertingConfigurations() rest.RestResource[*alertingconfig.AlertingConfiguration] {
-	if api.alertingConfigurations == nil {
-		api.alertingConfigurations = NewRestResource[*alertingconfig.AlertingConfiguration](
-			api.restClient,
-			alertingconfig.AlertsResourcePath,
+func (c *instanaAPI) AlertingConfigurations() rest.RestResource[*api.AlertingConfiguration] {
+	if c.alertingConfigurations == nil {
+		c.alertingConfigurations = NewRestResource[*api.AlertingConfiguration](
+			c.restClient,
+			api.AlertsResourcePath,
 			rest.DefaultRestResourceModeCreateAndUpdatePUT,
-			rest.NewGenericUnmarshaller[*alertingconfig.AlertingConfiguration](),
+			rest.NewGenericUnmarshaller[*api.AlertingConfiguration](),
 		)
 	}
-	return api.alertingConfigurations
+	return c.alertingConfigurations
 }
 
 // ApplicationAlertConfigs returns the application alert configurations client (lazy initialization)
-func (api *instanaAPI) ApplicationAlertConfigs() rest.RestResource[*applicationalertconfig.ApplicationAlertConfig] {
-	if api.applicationAlertConfigs == nil {
-		api.applicationAlertConfigs = NewRestResource[*applicationalertconfig.ApplicationAlertConfig](
-			api.restClient,
-			applicationalertconfig.ApplicationAlertConfigsResourcePath,
+func (c *instanaAPI) ApplicationAlertConfigs() rest.RestResource[*api.ApplicationAlertConfig] {
+	if c.applicationAlertConfigs == nil {
+		c.applicationAlertConfigs = NewRestResource[*api.ApplicationAlertConfig](
+			c.restClient,
+			api.ApplicationAlertConfigsResourcePath,
 			rest.DefaultRestResourceModeCreateAndUpdatePOST,
-			rest.NewGenericUnmarshaller[*applicationalertconfig.ApplicationAlertConfig](),
+			rest.NewGenericUnmarshaller[*api.ApplicationAlertConfig](),
 		)
 	}
-	return api.applicationAlertConfigs
+	return c.applicationAlertConfigs
 }
 
 // GlobalApplicationAlertConfigs returns the global application alert configurations client (lazy initialization)
-func (api *instanaAPI) GlobalApplicationAlertConfigs() rest.RestResource[*applicationalertconfig.ApplicationAlertConfig] {
-	if api.globalApplicationAlertConfigs == nil {
-		api.globalApplicationAlertConfigs = NewRestResource[*applicationalertconfig.ApplicationAlertConfig](
-			api.restClient,
-			applicationalertconfig.GlobalApplicationAlertConfigsResourcePath,
+func (c *instanaAPI) GlobalApplicationAlertConfigs() rest.RestResource[*api.ApplicationAlertConfig] {
+	if c.globalApplicationAlertConfigs == nil {
+		c.globalApplicationAlertConfigs = NewRestResource[*api.ApplicationAlertConfig](
+			c.restClient,
+			api.GlobalApplicationAlertConfigsResourcePath,
 			rest.DefaultRestResourceModeCreateAndUpdatePOST,
-			rest.NewGenericUnmarshaller[*applicationalertconfig.ApplicationAlertConfig](),
+			rest.NewGenericUnmarshaller[*api.ApplicationAlertConfig](),
 		)
 	}
-	return api.globalApplicationAlertConfigs
+	return c.globalApplicationAlertConfigs
 }
 
 // ApplicationConfigs returns the application configurations client (lazy initialization)
-func (api *instanaAPI) ApplicationConfigs() rest.RestResource[*applicationconfig.ApplicationConfig] {
-	if api.applicationConfigs == nil {
-		api.applicationConfigs = NewRestResource[*applicationconfig.ApplicationConfig](
-			api.restClient,
-			applicationconfig.ApplicationConfigsResourcePath,
+func (c *instanaAPI) ApplicationConfigs() rest.RestResource[*api.ApplicationConfig] {
+	if c.applicationConfigs == nil {
+		c.applicationConfigs = NewRestResource[*api.ApplicationConfig](
+			c.restClient,
+			api.ApplicationConfigsResourcePath,
 			rest.DefaultRestResourceModeCreatePOSTUpdatePUT,
-			rest.NewGenericUnmarshaller[*applicationconfig.ApplicationConfig](),
+			rest.NewGenericUnmarshaller[*api.ApplicationConfig](),
 		)
 	}
-	return api.applicationConfigs
+	return c.applicationConfigs
 }
 
 // AutomationActions returns the automation actions client (lazy initialization)
-func (api *instanaAPI) AutomationActions() rest.RestResource[*automationaction.AutomationAction] {
-	if api.automationActions == nil {
-		api.automationActions = NewRestResource[*automationaction.AutomationAction](
-			api.restClient,
-			automationaction.AutomationActionResourcePath,
+func (c *instanaAPI) AutomationActions() rest.RestResource[*api.AutomationAction] {
+	if c.automationActions == nil {
+		c.automationActions = NewRestResource[*api.AutomationAction](
+			c.restClient,
+			api.AutomationActionResourcePath,
 			rest.DefaultRestResourceModeCreatePOSTUpdatePUT,
-			rest.NewGenericUnmarshaller[*automationaction.AutomationAction](),
+			rest.NewGenericUnmarshaller[*api.AutomationAction](),
 		)
 	}
-	return api.automationActions
+	return c.automationActions
 }
 
 // AutomationPolicies returns the automation policies client (lazy initialization)
-func (api *instanaAPI) AutomationPolicies() rest.RestResource[*automationpolicy.AutomationPolicy] {
-	if api.automationPolicies == nil {
-		api.automationPolicies = NewRestResource[*automationpolicy.AutomationPolicy](
-			api.restClient,
-			automationpolicy.AutomationPolicyResourcePath,
+func (c *instanaAPI) AutomationPolicies() rest.RestResource[*api.AutomationPolicy] {
+	if c.automationPolicies == nil {
+		c.automationPolicies = NewRestResource[*api.AutomationPolicy](
+			c.restClient,
+			api.AutomationPolicyResourcePath,
 			rest.DefaultRestResourceModeCreatePOSTUpdatePUT,
-			rest.NewGenericUnmarshaller[*automationpolicy.AutomationPolicy](),
+			rest.NewGenericUnmarshaller[*api.AutomationPolicy](),
 		)
 	}
-	return api.automationPolicies
+	return c.automationPolicies
 }
 
 // BuiltinEventSpecifications returns the builtin event specifications client (lazy initialization)
-func (api *instanaAPI) BuiltinEventSpecifications() rest.ReadOnlyRestResource[*builtineventspec.BuiltinEventSpecification] {
-	if api.builtinEventSpecifications == nil {
-		api.builtinEventSpecifications = NewReadOnlyRestResource[*builtineventspec.BuiltinEventSpecification](
-			api.restClient,
-			builtineventspec.BuiltinEventSpecificationResourcePath,
-			rest.NewGenericUnmarshaller[*builtineventspec.BuiltinEventSpecification](),
+func (c *instanaAPI) BuiltinEventSpecifications() rest.ReadOnlyRestResource[*api.BuiltinEventSpecification] {
+	if c.builtinEventSpecifications == nil {
+		c.builtinEventSpecifications = NewReadOnlyRestResource[*api.BuiltinEventSpecification](
+			c.restClient,
+			api.BuiltinEventSpecificationResourcePath,
+			rest.NewGenericUnmarshaller[*api.BuiltinEventSpecification](),
 		)
 	}
-	return api.builtinEventSpecifications
+	return c.builtinEventSpecifications
 }
 
 // CustomDashboards returns the custom dashboards client (lazy initialization)
-func (api *instanaAPI) CustomDashboards() rest.RestResource[*customdashboard.CustomDashboard] {
-	if api.customDashboards == nil {
-		api.customDashboards = NewRestResource[*customdashboard.CustomDashboard](
-			api.restClient,
-			customdashboard.CustomDashboardsResourcePath,
+func (c *instanaAPI) CustomDashboards() rest.RestResource[*api.CustomDashboard] {
+	if c.customDashboards == nil {
+		c.customDashboards = NewRestResource[*api.CustomDashboard](
+			c.restClient,
+			api.CustomDashboardsResourcePath,
 			rest.DefaultRestResourceModeCreatePOSTUpdatePUT,
-			rest.NewGenericUnmarshaller[*customdashboard.CustomDashboard](),
+			rest.NewGenericUnmarshaller[*api.CustomDashboard](),
 		)
 	}
-	return api.customDashboards
+	return c.customDashboards
 }
 
 // CustomEventSpecifications returns the custom event specifications client (lazy initialization)
-func (api *instanaAPI) CustomEventSpecifications() rest.RestResource[*customeventspec.CustomEventSpecification] {
-	if api.customEventSpecifications == nil {
-		api.customEventSpecifications = NewRestResource[*customeventspec.CustomEventSpecification](
-			api.restClient,
-			customeventspec.CustomeventspecResourcePath,
+func (c *instanaAPI) CustomEventSpecifications() rest.RestResource[*api.CustomEventSpecification] {
+	if c.customEventSpecifications == nil {
+		c.customEventSpecifications = NewRestResource[*api.CustomEventSpecification](
+			c.restClient,
+			api.CustomeventspecResourcePath,
 			rest.DefaultRestResourceModeCreateAndUpdatePUT,
-			rest.NewGenericUnmarshaller[*customeventspec.CustomEventSpecification](),
+			rest.NewGenericUnmarshaller[*api.CustomEventSpecification](),
 		)
 	}
-	return api.customEventSpecifications
+	return c.customEventSpecifications
 }
 
 // Groups returns the groups client (lazy initialization)
-func (api *instanaAPI) Groups() rest.RestResource[*group.Group] {
-	if api.groups == nil {
-		api.groups = NewRestResource[*group.Group](
-			api.restClient,
-			group.GroupResourcePath,
+func (c *instanaAPI) Groups() rest.RestResource[*api.Group] {
+	if c.groups == nil {
+		c.groups = NewRestResource[*api.Group](
+			c.restClient,
+			api.GroupResourcePath,
 			rest.DefaultRestResourceModeCreatePOSTUpdatePUT,
-			rest.NewGenericUnmarshaller[*group.Group](),
+			rest.NewGenericUnmarshaller[*api.Group](),
 		)
 	}
-	return api.groups
+	return c.groups
 }
 
 // HostAgents returns the host agents client (lazy initialization)
-func (api *instanaAPI) HostAgents() rest.ReadOnlyRestResource[*hostagent.HostAgent] {
-	if api.hostAgents == nil {
-		api.hostAgents = NewReadOnlyRestResource[*hostagent.HostAgent](
-			api.restClient,
-			hostagent.HostAgentResourcePath,
-			hostagent.NewHostAgentJSONUnmarshaller(&hostagent.HostAgent{}),
+func (c *instanaAPI) HostAgents() rest.ReadOnlyRestResource[*api.HostAgent] {
+	if c.hostAgents == nil {
+		c.hostAgents = NewReadOnlyRestResource[*api.HostAgent](
+			c.restClient,
+			api.HostAgentResourcePath,
+			api.NewHostAgentJSONUnmarshaller(&api.HostAgent{}),
 		)
 	}
-	return api.hostAgents
+	return c.hostAgents
 }
 
 // InfraAlertConfigs returns the infrastructure alert configurations client (lazy initialization)
-func (api *instanaAPI) InfraAlertConfigs() rest.RestResource[*infraalertconfig.InfraAlertConfig] {
-	if api.infraAlertConfigs == nil {
-		api.infraAlertConfigs = NewRestResource[*infraalertconfig.InfraAlertConfig](
-			api.restClient,
-			infraalertconfig.ResourcePath,
+func (c *instanaAPI) InfraAlertConfigs() rest.RestResource[*api.InfraAlertConfig] {
+	if c.infraAlertConfigs == nil {
+		c.infraAlertConfigs = NewRestResource[*api.InfraAlertConfig](
+			c.restClient,
+			api.ResourcePath,
 			rest.DefaultRestResourceModeCreateAndUpdatePOST,
-			rest.NewGenericUnmarshaller[*infraalertconfig.InfraAlertConfig](),
+			rest.NewGenericUnmarshaller[*api.InfraAlertConfig](),
 		)
 	}
-	return api.infraAlertConfigs
+	return c.infraAlertConfigs
 }
 
 // LogAlertConfigs returns the log alert configurations client (lazy initialization)
-func (api *instanaAPI) LogAlertConfigs() rest.RestResource[*logalertconfig.LogAlertConfig] {
-	if api.logAlertConfigs == nil {
-		api.logAlertConfigs = NewRestResource[*logalertconfig.LogAlertConfig](
-			api.restClient,
-			logalertconfig.LogAlertConfigResourcePath,
+func (c *instanaAPI) LogAlertConfigs() rest.RestResource[*api.LogAlertConfig] {
+	if c.logAlertConfigs == nil {
+		c.logAlertConfigs = NewRestResource[*api.LogAlertConfig](
+			c.restClient,
+			api.LogAlertConfigResourcePath,
 			rest.DefaultRestResourceModeCreateAndUpdatePOST,
-			rest.NewGenericUnmarshaller[*logalertconfig.LogAlertConfig](),
+			rest.NewGenericUnmarshaller[*api.LogAlertConfig](),
 		)
 	}
-	return api.logAlertConfigs
+	return c.logAlertConfigs
 }
 
 // MaintenanceWindowConfigs returns the maintenance window configurations client (lazy initialization)
-func (api *instanaAPI) MaintenanceWindowConfigs() rest.RestResource[*maintenancewindow.MaintenanceWindow] {
-	if api.maintenanceWindows == nil {
-		api.maintenanceWindows = NewRestResource[*maintenancewindow.MaintenanceWindow](
-			api.restClient,
-			maintenancewindow.MaintenanceWindowConfigResourcePath,
+func (c *instanaAPI) MaintenanceWindowConfigs() rest.RestResource[*api.MaintenanceWindow] {
+	if c.maintenanceWindows == nil {
+		c.maintenanceWindows = NewRestResource[*api.MaintenanceWindow](
+			c.restClient,
+			api.MaintenanceWindowConfigResourcePath,
 			rest.DefaultRestResourceModeCreateAndUpdatePUT,
-			rest.NewGenericUnmarshaller[*maintenancewindow.MaintenanceWindow](),
+			rest.NewGenericUnmarshaller[*api.MaintenanceWindow](),
 		)
 	}
-	return api.maintenanceWindows
+	return c.maintenanceWindows
 }
 
 // MobileAlertConfigs returns the mobile alert configurations client (lazy initialization)
-func (api *instanaAPI) MobileAlertConfigs() rest.RestResource[*mobilealertconfig.MobileAlertConfig] {
-	if api.mobileAlertConfigs == nil {
-		api.mobileAlertConfigs = NewRestResource[*mobilealertconfig.MobileAlertConfig](
-			api.restClient,
-			mobilealertconfig.MobileAlertConfigResourcePath,
+func (c *instanaAPI) MobileAlertConfigs() rest.RestResource[*api.MobileAlertConfig] {
+	if c.mobileAlertConfigs == nil {
+		c.mobileAlertConfigs = NewRestResource[*api.MobileAlertConfig](
+			c.restClient,
+			api.MobileAlertConfigResourcePath,
 			rest.DefaultRestResourceModeCreateAndUpdatePOST,
-			rest.NewGenericUnmarshaller[*mobilealertconfig.MobileAlertConfig](),
+			rest.NewGenericUnmarshaller[*api.MobileAlertConfig](),
 		)
 	}
-	return api.mobileAlertConfigs
+	return c.mobileAlertConfigs
 }
 
 // Roles returns the roles client (lazy initialization)
-func (api *instanaAPI) Roles() rest.RestResource[*role.Role] {
-	if api.roles == nil {
-		api.roles = NewRestResource[*role.Role](
-			api.restClient,
-			role.ResourcePath,
+func (c *instanaAPI) Roles() rest.RestResource[*api.Role] {
+	if c.roles == nil {
+		c.roles = NewRestResource[*api.Role](
+			c.restClient,
+			api.ResourcePath,
 			rest.DefaultRestResourceModeCreatePOSTUpdatePUT,
-			rest.NewGenericUnmarshaller[*role.Role](),
+			rest.NewGenericUnmarshaller[*api.Role](),
 		)
 	}
-	return api.roles
+	return c.roles
 }
 
 // SliConfigs returns the SLI configurations client (lazy initialization)
-func (api *instanaAPI) SliConfigs() rest.RestResource[*sliconfig.SliConfig] {
-	if api.sliConfigs == nil {
-		api.sliConfigs = NewRestResource[*sliconfig.SliConfig](
-			api.restClient,
-			sliconfig.SliConfigResourcePath,
+func (c *instanaAPI) SliConfigs() rest.RestResource[*api.SliConfig] {
+	if c.sliConfigs == nil {
+		c.sliConfigs = NewRestResource[*api.SliConfig](
+			c.restClient,
+			api.SliConfigResourcePath,
 			rest.DefaultRestResourceModeCreatePOSTAndUpdateNotSupported,
-			rest.NewGenericUnmarshaller[*sliconfig.SliConfig](),
+			rest.NewGenericUnmarshaller[*api.SliConfig](),
 		)
 	}
-	return api.sliConfigs
+	return c.sliConfigs
 }
 
 // SloAlertConfigs returns the SLO alert configurations client (lazy initialization)
-func (api *instanaAPI) SloAlertConfigs() rest.RestResource[*sloalertconfig.SloAlertConfig] {
-	if api.sloAlertConfigs == nil {
-		api.sloAlertConfigs = NewRestResource[*sloalertconfig.SloAlertConfig](
-			api.restClient,
-			sloalertconfig.SloAlertConfigResourcePath,
+func (c *instanaAPI) SloAlertConfigs() rest.RestResource[*api.SloAlertConfig] {
+	if c.sloAlertConfigs == nil {
+		c.sloAlertConfigs = NewRestResource[*api.SloAlertConfig](
+			c.restClient,
+			api.SloAlertConfigResourcePath,
 			rest.DefaultRestResourceModeCreateAndUpdatePOST,
-			rest.NewGenericUnmarshaller[*sloalertconfig.SloAlertConfig](),
+			rest.NewGenericUnmarshaller[*api.SloAlertConfig](),
 		)
 	}
-	return api.sloAlertConfigs
+	return c.sloAlertConfigs
 }
 
 // SloConfigs returns the SLO configurations client (lazy initialization)
-func (api *instanaAPI) SloConfigs() rest.RestResource[*sloconfig.SloConfig] {
-	if api.sloConfigs == nil {
-		api.sloConfigs = NewRestResource[*sloconfig.SloConfig](
-			api.restClient,
-			sloconfig.SloConfigResourcePath,
+func (c *instanaAPI) SloConfigs() rest.RestResource[*api.SloConfig] {
+	if c.sloConfigs == nil {
+		c.sloConfigs = NewRestResource[*api.SloConfig](
+			c.restClient,
+			api.SloConfigResourcePath,
 			rest.DefaultRestResourceModeCreatePOSTUpdatePUT,
-			rest.NewGenericUnmarshaller[*sloconfig.SloConfig](),
+			rest.NewGenericUnmarshaller[*api.SloConfig](),
 		)
 	}
-	return api.sloConfigs
+	return c.sloConfigs
 }
 
 // SloCorrectionConfigs returns the SLO correction configurations client (lazy initialization)
-func (api *instanaAPI) SloCorrectionConfigs() rest.RestResource[*slocorrection.SloCorrectionConfig] {
-	if api.sloCorrections == nil {
-		api.sloCorrections = NewRestResource[*slocorrection.SloCorrectionConfig](
-			api.restClient,
-			slocorrection.SloCorrectionConfigResourcePath,
+func (c *instanaAPI) SloCorrectionConfigs() rest.RestResource[*api.SloCorrectionConfig] {
+	if c.sloCorrections == nil {
+		c.sloCorrections = NewRestResource[*api.SloCorrectionConfig](
+			c.restClient,
+			api.SloCorrectionConfigResourcePath,
 			rest.DefaultRestResourceModeCreatePOSTUpdatePUT,
-			rest.NewGenericUnmarshaller[*slocorrection.SloCorrectionConfig](),
+			rest.NewGenericUnmarshaller[*api.SloCorrectionConfig](),
 		)
 	}
-	return api.sloCorrections
+	return c.sloCorrections
 }
 
 // SyntheticAlertConfigs returns the synthetic alert configurations client (lazy initialization)
-func (api *instanaAPI) SyntheticAlertConfigs() rest.RestResource[*syntheticalertconfig.SyntheticAlertConfig] {
-	if api.syntheticAlertConfigs == nil {
-		api.syntheticAlertConfigs = NewRestResource[*syntheticalertconfig.SyntheticAlertConfig](
-			api.restClient,
-			syntheticalertconfig.SyntheticAlertConfigsResourcePath,
+func (c *instanaAPI) SyntheticAlertConfigs() rest.RestResource[*api.SyntheticAlertConfig] {
+	if c.syntheticAlertConfigs == nil {
+		c.syntheticAlertConfigs = NewRestResource[*api.SyntheticAlertConfig](
+			c.restClient,
+			api.SyntheticAlertConfigsResourcePath,
 			rest.DefaultRestResourceModeCreateAndUpdatePOST,
-			rest.NewGenericUnmarshaller[*syntheticalertconfig.SyntheticAlertConfig](),
+			rest.NewGenericUnmarshaller[*api.SyntheticAlertConfig](),
 		)
 	}
-	return api.syntheticAlertConfigs
+	return c.syntheticAlertConfigs
 }
 
 // SyntheticLocations returns the synthetic locations client (lazy initialization)
-func (api *instanaAPI) SyntheticLocations() rest.ReadOnlyRestResource[*syntheticlocation.SyntheticLocation] {
-	if api.syntheticLocations == nil {
-		api.syntheticLocations = NewReadOnlyRestResource[*syntheticlocation.SyntheticLocation](
-			api.restClient,
-			syntheticlocation.ResourcePath,
-			rest.NewGenericUnmarshaller[*syntheticlocation.SyntheticLocation](),
+func (c *instanaAPI) SyntheticLocations() rest.ReadOnlyRestResource[*api.SyntheticLocation] {
+	if c.syntheticLocations == nil {
+		c.syntheticLocations = NewReadOnlyRestResource[*api.SyntheticLocation](
+			c.restClient,
+			api.ResourcePath,
+			rest.NewGenericUnmarshaller[*api.SyntheticLocation](),
 		)
 	}
-	return api.syntheticLocations
+	return c.syntheticLocations
 }
 
 // SyntheticTests returns the synthetic tests client (lazy initialization)
-func (api *instanaAPI) SyntheticTests() rest.RestResource[*synthetictest.SyntheticTest] {
-	if api.syntheticTests == nil {
-		api.syntheticTests = NewRestResource[*synthetictest.SyntheticTest](
-			api.restClient,
-			synthetictest.ResourcePath,
+func (c *instanaAPI) SyntheticTests() rest.RestResource[*api.SyntheticTest] {
+	if c.syntheticTests == nil {
+		c.syntheticTests = NewRestResource[*api.SyntheticTest](
+			c.restClient,
+			api.ResourcePath,
 			rest.DefaultRestResourceModeCreatePOSTUpdatePUT,
-			rest.NewGenericUnmarshaller[*synthetictest.SyntheticTest](),
+			rest.NewGenericUnmarshaller[*api.SyntheticTest](),
 		)
 	}
-	return api.syntheticTests
+	return c.syntheticTests
 }
 
 // Teams returns the teams client (lazy initialization)
-func (api *instanaAPI) Teams() rest.RestResource[*team.Team] {
-	if api.teams == nil {
-		api.teams = NewRestResource[*team.Team](
-			api.restClient,
-			team.ResourcePath,
+func (c *instanaAPI) Teams() rest.RestResource[*api.Team] {
+	if c.teams == nil {
+		c.teams = NewRestResource[*api.Team](
+			c.restClient,
+			api.ResourcePath,
 			rest.DefaultRestResourceModeCreatePOSTUpdatePUT,
-			rest.NewGenericUnmarshaller[*team.Team](),
+			rest.NewGenericUnmarshaller[*api.Team](),
 		)
 	}
-	return api.teams
+	return c.teams
 }
 
 // Users returns the users client (lazy initialization)
-func (api *instanaAPI) Users() rest.ReadOnlyRestResource[*user.User] {
-	if api.users == nil {
-		api.users = NewReadOnlyRestResource[*user.User](
-			api.restClient,
-			user.ResourcePath,
-			rest.NewGenericUnmarshaller[*user.User](),
+func (c *instanaAPI) Users() rest.ReadOnlyRestResource[*api.User] {
+	if c.users == nil {
+		c.users = NewReadOnlyRestResource[*api.User](
+			c.restClient,
+			api.ResourcePath,
+			rest.NewGenericUnmarshaller[*api.User](),
 		)
 	}
-	return api.users
+	return c.users
 }
 
 // WebsiteAlertConfigs returns the website alert configurations client (lazy initialization)
-func (api *instanaAPI) WebsiteAlertConfigs() rest.RestResource[*websitealertconfig.WebsiteAlertConfig] {
-	if api.websiteAlertConfigs == nil {
-		api.websiteAlertConfigs = NewRestResource[*websitealertconfig.WebsiteAlertConfig](
-			api.restClient,
-			websitealertconfig.ResourcePath,
+func (c *instanaAPI) WebsiteAlertConfigs() rest.RestResource[*api.WebsiteAlertConfig] {
+	if c.websiteAlertConfigs == nil {
+		c.websiteAlertConfigs = NewRestResource[*api.WebsiteAlertConfig](
+			c.restClient,
+			api.ResourcePath,
 			rest.DefaultRestResourceModeCreateAndUpdatePOST,
-			rest.NewGenericUnmarshaller[*websitealertconfig.WebsiteAlertConfig](),
+			rest.NewGenericUnmarshaller[*api.WebsiteAlertConfig](),
 		)
 	}
-	return api.websiteAlertConfigs
+	return c.websiteAlertConfigs
 }
 
 // WebsiteMonitoringConfigs returns the website monitoring configurations client (lazy initialization)
-func (api *instanaAPI) WebsiteMonitoringConfigs() rest.RestResource[*websitemonitoring.WebsiteMonitoringConfig] {
-	if api.websiteMonitoringConfigs == nil {
-		api.websiteMonitoringConfigs = NewRestResource[*websitemonitoring.WebsiteMonitoringConfig](
-			api.restClient,
-			websitemonitoring.WebsiteMonitoringConfigResourcePath,
+func (c *instanaAPI) WebsiteMonitoringConfigs() rest.RestResource[*api.WebsiteMonitoringConfig] {
+	if c.websiteMonitoringConfigs == nil {
+		c.websiteMonitoringConfigs = NewRestResource[*api.WebsiteMonitoringConfig](
+			c.restClient,
+			api.WebsiteMonitoringConfigResourcePath,
 			rest.DefaultRestResourceModeCreatePOSTUpdatePUT,
-			rest.NewGenericUnmarshaller[*websitemonitoring.WebsiteMonitoringConfig](),
+			rest.NewGenericUnmarshaller[*api.WebsiteMonitoringConfig](),
 		)
 	}
-	return api.websiteMonitoringConfigs
+	return c.websiteMonitoringConfigs
 }
 
 // Made with Bob

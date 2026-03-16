@@ -6,13 +6,13 @@ import (
 	"log"
 	"time"
 
-	"github.com/instana/instana-go-client/instana"
+	"github.com/instana/instana-go-client/config"
 )
 
 func main() {
 	// Example 1: Using builder pattern with custom configuration
 	fmt.Println("=== Example 1: Builder Pattern ===")
-	config, err := instana.NewConfigBuilder().
+	conf, err := config.NewConfigBuilder().
 		WithBaseURL("https://tenant-unit.instana.io").
 		WithAPIToken("your-api-token-here").
 		WithConnectionTimeout(45*time.Second).
@@ -29,10 +29,10 @@ func main() {
 	}
 
 	fmt.Printf("Configuration created successfully!\n")
-	fmt.Printf("  Base URL: %s\n", config.BaseURL)
-	fmt.Printf("  Connection Timeout: %s\n", config.Timeout.Connection)
-	fmt.Printf("  Max Retry Attempts: %d\n", config.Retry.MaxAttempts)
-	fmt.Printf("  Rate Limit: %d req/s\n", config.RateLimit.RequestsPerSecond)
+	fmt.Printf("  Base URL: %s\n", conf.BaseURL)
+	fmt.Printf("  Connection Timeout: %s\n", conf.Timeout.Connection)
+	fmt.Printf("  Max Retry Attempts: %d\n", conf.Retry.MaxAttempts)
+	fmt.Printf("  Rate Limit: %d req/s\n", conf.RateLimit.RequestsPerSecond)
 
 	// Example 2: Using environment variables
 	fmt.Println("\n=== Example 2: Environment Variables ===")
@@ -42,7 +42,7 @@ func main() {
 	fmt.Println("  export INSTANA_MAX_RETRY_ATTEMPTS=3")
 	fmt.Println("  export INSTANA_CONNECTION_TIMEOUT=30s")
 
-	envConfig, err := instana.LoadFromEnv()
+	envConfig, err := config.LoadFromEnv()
 	if err != nil {
 		log.Printf("Note: Environment variables not set, using defaults: %v", err)
 	} else {
@@ -52,7 +52,7 @@ func main() {
 
 	// Example 3: Using default configuration
 	fmt.Println("\n=== Example 3: Default Configuration ===")
-	defaultConfig := instana.DefaultClientConfig()
+	defaultConfig := config.DefaultClientConfig()
 	defaultConfig.BaseURL = "https://tenant-unit.instana.io"
 	defaultConfig.APIToken = "your-api-token-here"
 
@@ -71,15 +71,15 @@ func main() {
 
 	// Example 4: Demonstrating retry mechanism
 	fmt.Println("\n=== Example 4: Retry Mechanism ===")
-	retryConfig := instana.DefaultRetryConfig()
-	retryer := instana.NewRetryer(retryConfig, instana.NewDefaultLogger(instana.ClientLogLevelInfo))
+	retryConfig := config.DefaultRetryConfig()
+	retryer := config.NewRetryer(retryConfig, config.NewDefaultLogger(config.ClientLogLevelInfo))
 
 	attemptCount := 0
 	err = retryer.Do(context.Background(), func() error {
 		attemptCount++
 		fmt.Printf("  Attempt %d...\n", attemptCount)
 		if attemptCount < 3 {
-			return instana.NetworkError("simulated network error", nil)
+			return config.NetworkError("simulated network error", nil)
 		}
 		return nil
 	})
@@ -92,13 +92,13 @@ func main() {
 
 	// Example 5: Demonstrating rate limiter
 	fmt.Println("\n=== Example 5: Rate Limiter ===")
-	rateLimitConfig := instana.RateLimitConfig{
+	rateLimitConfig := config.RateLimitConfig{
 		Enabled:           true,
 		RequestsPerSecond: 5,
 		BurstCapacity:     10,
 		WaitForToken:      true,
 	}
-	rateLimiter := instana.NewRateLimiter(rateLimitConfig, instana.NewDefaultLogger(instana.ClientLogLevelInfo))
+	rateLimiter := config.NewRateLimiter(rateLimitConfig, config.NewDefaultLogger(config.ClientLogLevelInfo))
 	defer rateLimiter.Stop()
 
 	fmt.Printf("Making 10 requests with rate limit of 5 req/s...\n")
@@ -115,21 +115,21 @@ func main() {
 	fmt.Println("\n=== Example 6: Error Handling ===")
 
 	// Network error (retryable)
-	netErr := instana.NetworkError("connection refused", nil)
+	netErr := config.NetworkError("connection refused", nil)
 	fmt.Printf("Network Error:\n")
 	fmt.Printf("  Message: %s\n", netErr.Error())
 	fmt.Printf("  Retryable: %v\n", netErr.IsRetryable())
 	fmt.Printf("  Temporary: %v\n", netErr.IsTemporary())
 
 	// API error (may be retryable based on status code)
-	apiErr := instana.APIError(503, "service unavailable", nil)
+	apiErr := config.APIError(503, "service unavailable", nil)
 	fmt.Printf("\nAPI Error (503):\n")
 	fmt.Printf("  Message: %s\n", apiErr.Error())
 	fmt.Printf("  Retryable: %v\n", apiErr.IsRetryable())
-	fmt.Printf("  Status Code: %d\n", instana.ExtractStatusCode(apiErr))
+	fmt.Printf("  Status Code: %d\n", config.ExtractStatusCode(apiErr))
 
 	// Validation error (not retryable)
-	valErr := instana.NewValidationError("invalid input", nil)
+	valErr := config.NewValidationError("invalid input", nil)
 	fmt.Printf("\nValidation Error:\n")
 	fmt.Printf("  Message: %s\n", valErr.Error())
 	fmt.Printf("  Retryable: %v\n", valErr.IsRetryable())

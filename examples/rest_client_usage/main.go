@@ -6,6 +6,8 @@ import (
 	"log"
 	"time"
 
+	"github.com/instana/instana-go-client/config"
+
 	"github.com/instana/instana-go-client/instana"
 )
 
@@ -26,7 +28,7 @@ func main() {
 	// Example 2: Using NewClientWithConfig with builder pattern
 	fmt.Println("2. New Client with Builder Pattern")
 	fmt.Println("-----------------------------------")
-	config, err := instana.NewConfigBuilder().
+	conf, err := config.NewConfigBuilder().
 		WithBaseURL("https://tenant-unit.instana.io").
 		WithAPIToken("your-api-token").
 		WithConnectionTimeout(10*time.Second).
@@ -47,7 +49,7 @@ func main() {
 		log.Fatalf("Failed to build config: %v", err)
 	}
 
-	client, err := instana.NewClientWithConfig(config)
+	client, err := instana.NewClientWithConfig(conf)
 	if err != nil {
 		log.Fatalf("Failed to create client: %v", err)
 	}
@@ -63,10 +65,10 @@ func main() {
 	fmt.Println("  export INSTANA_RATE_LIMIT_ENABLED=true")
 	fmt.Println("  export INSTANA_RATE_LIMIT_RPS=10")
 
-	envConfig, err := instana.LoadFromEnv()
+	envConfig, err := config.LoadFromEnv()
 	if err != nil {
 		fmt.Printf("Note: Environment variables not set, using defaults: %v\n", err)
-		envConfig = instana.DefaultClientConfig()
+		envConfig = config.DefaultClientConfig()
 		envConfig.BaseURL = "https://tenant-unit.instana.io"
 		envConfig.APIToken = "your-api-token"
 	}
@@ -91,13 +93,13 @@ func main() {
 		fmt.Printf("Error (expected without valid token): %v\n", err)
 
 		// Check error type
-		if instana.IsRetryableError(err) {
+		if config.IsRetryableError(err) {
 			fmt.Println("  → This error is retryable")
 		}
-		if instana.IsTemporaryError(err) {
+		if config.IsTemporaryError(err) {
 			fmt.Println("  → This error is temporary")
 		}
-		if statusCode := instana.ExtractStatusCode(err); statusCode > 0 {
+		if statusCode := config.ExtractStatusCode(err); statusCode > 0 {
 			fmt.Printf("  → HTTP Status Code: %d\n", statusCode)
 		}
 	} else {
@@ -108,7 +110,7 @@ func main() {
 	// Example 5: Demonstrating retry mechanism
 	fmt.Println("5. Retry Mechanism")
 	fmt.Println("------------------")
-	retryConfig := instana.DefaultClientConfig()
+	retryConfig := config.DefaultClientConfig()
 	retryConfig.BaseURL = "https://tenant-unit.instana.io"
 	retryConfig.APIToken = "your-api-token"
 	retryConfig.Retry.MaxAttempts = 3
@@ -128,7 +130,7 @@ func main() {
 	// Example 6: Rate limiting demonstration
 	fmt.Println("6. Rate Limiting")
 	fmt.Println("----------------")
-	rateLimitConfig := instana.DefaultClientConfig()
+	rateLimitConfig := config.DefaultClientConfig()
 	rateLimitConfig.BaseURL = "https://tenant-unit.instana.io"
 	rateLimitConfig.APIToken = "your-api-token"
 	rateLimitConfig.RateLimit.Enabled = true
@@ -148,7 +150,7 @@ func main() {
 	// Example 7: Custom headers
 	fmt.Println("7. Custom Headers")
 	fmt.Println("-----------------")
-	headerConfig := instana.DefaultClientConfig()
+	headerConfig := config.DefaultClientConfig()
 	headerConfig.BaseURL = "https://tenant-unit.instana.io"
 	headerConfig.APIToken = "your-api-token"
 	headerConfig.Headers.Custom = map[string]string{
@@ -167,7 +169,7 @@ func main() {
 	// Example 8: Connection pooling
 	fmt.Println("8. Connection Pooling")
 	fmt.Println("---------------------")
-	poolConfig := instana.DefaultClientConfig()
+	poolConfig := config.DefaultClientConfig()
 	poolConfig.BaseURL = "https://tenant-unit.instana.io"
 	poolConfig.APIToken = "your-api-token"
 	poolConfig.ConnectionPool.MaxIdleConnections = 200
@@ -184,7 +186,7 @@ func main() {
 	// Example 9: Complete production-ready configuration
 	fmt.Println("9. Production-Ready Configuration")
 	fmt.Println("----------------------------------")
-	prodConfig, err := instana.NewConfigBuilder().
+	prodConfig, err := config.NewConfigBuilder().
 		WithBaseURL("https://tenant-unit.instana.io").
 		WithAPIToken("your-api-token").
 		// Timeouts

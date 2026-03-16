@@ -9,6 +9,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/instana/instana-go-client/config"
+	"github.com/instana/instana-go-client/shared/rest"
 	resty "gopkg.in/resty.v1"
 )
 
@@ -19,17 +21,12 @@ const contentTypeHeader = "Content-Type"
 const encodingApplicationJSON = "application/json; charset=utf-8"
 
 // RestClient interface to access REST resources of the Instana API
-type RestClient interface {
-	Get(resourcePath string) ([]byte, error)
-	GetOne(id string, resourcePath string) ([]byte, error)
-	Post(data InstanaDataObject, resourcePath string) ([]byte, error)
-	PostWithID(data InstanaDataObject, resourcePath string) ([]byte, error)
-	Put(data InstanaDataObject, resourcePath string) ([]byte, error)
-	Delete(resourceID string, resourceBasePath string) error
-	GetByQuery(resourcePath string, queryParams map[string]string) ([]byte, error)
-	PostByQuery(resourcePath string, queryParams map[string]string) ([]byte, error)
-	PutByQuery(resourcePath string, is string, queryParams map[string]string) ([]byte, error)
-}
+// Deprecated: Use rest.RestClient from shared/rest package instead
+type RestClient = rest.RestClient
+
+// InstanaDataObject is a marker interface for any data object provided by any resource of the Instana REST API
+// Deprecated: Use rest.InstanaDataObject from shared/rest package instead
+type InstanaDataObject = rest.InstanaDataObject
 
 type apiRequest struct {
 	method          string
@@ -47,13 +44,13 @@ type apiResponse struct {
 // NewClient creates a new instance of the Instana REST API client with default configuration
 // Deprecated: Use NewClientWithConfig for more control over client behavior
 func NewClient(apiToken string, host string, skipTlsVerification bool) RestClient {
-	config := DefaultClientConfig()
-	config.APIToken = apiToken
-	config.BaseURL = fmt.Sprintf("https://%s", host)
+	cfg := config.DefaultClientConfig()
+	cfg.APIToken = apiToken
+	cfg.BaseURL = fmt.Sprintf("https://%s", host)
 
 	// Create HTTP client with TLS configuration
 	httpClient := &http.Client{
-		Timeout: config.Timeout.Request,
+		Timeout: cfg.Timeout.Request,
 	}
 
 	if skipTlsVerification {
@@ -62,15 +59,15 @@ func NewClient(apiToken string, host string, skipTlsVerification bool) RestClien
 		}
 	}
 
-	config.HTTPClient = httpClient
+	cfg.HTTPClient = httpClient
 
 	// Use default logger (standard log package)
-	config.Logger = NewDefaultLogger(ClientLogLevelInfo)
+	cfg.Logger = config.NewDefaultLogger(config.ClientLogLevelInfo)
 
-	client, err := NewClientWithConfig(config)
+	client, err := NewClientWithConfig(cfg)
 	if err != nil {
 		// This should never happen with default config, but handle it gracefully
-		config.Logger.Error("Failed to create client with config", "error", err)
+		cfg.Logger.Error("Failed to create client with config", "error", err)
 		// Fall back to basic client without advanced features
 		return newBasicClient(apiToken, host, skipTlsVerification)
 	}
@@ -79,78 +76,60 @@ func NewClient(apiToken string, host string, skipTlsVerification bool) RestClien
 }
 
 // NewClientWithConfig creates a new instance of the Instana REST API client with custom configuration
-func NewClientWithConfig(config *ClientConfig) (RestClient, error) {
+func NewClientWithConfig(cfg *config.ClientConfig) (RestClient, error) {
 	// Validate configuration
-	if err := config.Validate(); err != nil {
-		return nil, NewValidationError("invalid client configuration", err)
+	if err := cfg.Validate(); err != nil {
+		return nil, config.NewValidationError("invalid client configuration", err)
 	}
 
 	// Use default logger if not provided
-	logger := config.Logger
+	logger := cfg.Logger
 	if logger == nil {
-		logger = NewDefaultLogger(ClientLogLevelInfo)
+		logger = config.NewDefaultLogger(config.ClientLogLevelInfo)
 	}
 
 	// Create HTTP client if not provided
-	httpClient := config.HTTPClient
+	httpClient := cfg.HTTPClient
 	if httpClient == nil {
-		httpClient = createHTTPClient(config)
+		httpClient = createHTTPClient(cfg)
 	}
 
 	// Create resty client
 	restyClient := resty.NewWithClient(httpClient)
-	restyClient.SetTimeout(config.Timeout.Request)
+	restyClient.SetTimeout(cfg.Timeout.Request)
 
 	// Create rate limiter if enabled
-	var rateLimiter *RateLimiter
-	if config.RateLimit.Enabled {
-		rateLimiter = NewRateLimiter(config.RateLimit, logger)
+	var rateLimiter *config.RateLimiter
+	if cfg.RateLimit.Enabled {
+		rateLimiter = config.NewRateLimiter(cfg.RateLimit, logger)
 	}
 
 	// Create retryer
-	retryer := NewRetryer(config.Retry, logger)
+	retryer := config.NewRetryer(cfg.Retry, logger)
 
 	// Create throttle channel for backward compatibility
 	throttledRequests := make(chan *apiRequest, 1000)
 
 	client := &restClientImpl{
-		config:            config,
+		config:            cfg,
 		restyClient:       restyClient,
 		logger:            logger,
 		rateLimiter:       rateLimiter,
 		retryer:           retryer,
 		throttledRequests: throttledRequests,
-		throttleRate:      time.Second / time.Duration(config.RateLimit.RequestsPerSecond),
+		throttleRate:      time.Second / time.Duration(cfg.RateLimit.RequestsPerSecond),
 	}
 
 	// Start throttle processor for backward compatibility
 	go client.processThrottledRequests()
 
 	logger.Info("Instana REST client initialized",
-		"base_url", config.BaseURL,
-		"rate_limit_enabled", config.RateLimit.Enabled,
-		"max_retry_attempts", config.Retry.MaxAttempts,
+		"base_url", cfg.BaseURL,
+		"rate_limit_enabled", cfg.RateLimit.Enabled,
+		"max_retry_attempts", cfg.Retry.MaxAttempts,
 	)
 
 	return client, nil
-}
-
-// createHTTPClient creates an HTTP client with connection pooling configuration
-func createHTTPClient(config *ClientConfig) *http.Client {
-	transport := &http.Transport{
-		MaxIdleConns:        config.ConnectionPool.MaxIdleConnections,
-		MaxIdleConnsPerHost: config.ConnectionPool.MaxConnectionsPerHost,
-		IdleConnTimeout:     config.Timeout.IdleConnection,
-		DisableKeepAlives:   false,
-	}
-
-	// TLS configuration is handled separately in NewClient if needed
-	// Connection pool config doesn't include InsecureSkipVerify
-
-	return &http.Client{
-		Transport: transport,
-		Timeout:   config.Timeout.Request,
-	}
 }
 
 // newBasicClient creates a basic client without advanced features (fallback)
@@ -163,16 +142,16 @@ func newBasicClient(apiToken string, host string, skipTlsVerification bool) Rest
 	throttleRate := time.Second / 5 // 5 write requests per second
 	throttledRequests := make(chan *apiRequest, 1000)
 
-	config := &ClientConfig{
+	cfg := &config.ClientConfig{
 		BaseURL:   fmt.Sprintf("https://%s", host),
 		APIToken:  apiToken,
 		UserAgent: "Instana-Go-Client/1.0.0",
 	}
 
 	client := &restClientImpl{
-		config:            config,
+		config:            cfg,
 		restyClient:       restyClient,
-		logger:            NewNoOpLogger(),
+		logger:            config.NewNoOpLogger(),
 		throttledRequests: throttledRequests,
 		throttleRate:      throttleRate,
 	}
@@ -182,11 +161,11 @@ func newBasicClient(apiToken string, host string, skipTlsVerification bool) Rest
 }
 
 type restClientImpl struct {
-	config            *ClientConfig
+	config            *config.ClientConfig
 	restyClient       *resty.Client
-	logger            Logger
-	rateLimiter       *RateLimiter
-	retryer           *Retryer
+	logger            config.Logger
+	rateLimiter       *config.RateLimiter
+	retryer           *config.Retryer
 	throttledRequests chan *apiRequest
 	throttleRate      time.Duration
 }
@@ -286,7 +265,7 @@ func (client *restClientImpl) executeRequestWithRetry(ctx context.Context, metho
 	// Apply rate limiting if enabled
 	if client.rateLimiter != nil {
 		if err := client.rateLimiter.Wait(ctx); err != nil {
-			return emptyResponse, WrapError(err, "rate limit wait failed")
+			return emptyResponse, config.WrapError(err, "rate limit wait failed")
 		}
 	}
 
@@ -329,7 +308,7 @@ func (client *restClientImpl) executeRequestWithThrottling(method string, url st
 	case r := <-responseChannel:
 		return r.data, r.err
 	case <-ctx.Done():
-		return nil, TimeoutError("API request timed out", ctx.Err())
+		return nil, config.TimeoutError("API request timed out", ctx.Err())
 	}
 }
 
@@ -367,12 +346,12 @@ func (client *restClientImpl) executeRequest(method string, url string, req *res
 	resp, err := req.Execute(method, url)
 	if err != nil {
 		if resp == nil {
-			return emptyResponse, NetworkError(
+			return emptyResponse, config.NetworkError(
 				fmt.Sprintf("failed to send HTTP %s request to Instana API", method),
 				err,
 			)
 		}
-		return emptyResponse, APIError(
+		return emptyResponse, config.APIError(
 			resp.StatusCode(),
 			fmt.Sprintf("failed to send HTTP %s request to Instana API: %s", method, string(resp.Body())),
 			err,
@@ -392,21 +371,21 @@ func (client *restClientImpl) executeRequest(method string, url string, req *res
 	}
 
 	if statusCode == 401 || statusCode == 403 {
-		return emptyResponse, AuthenticationError(
+		return emptyResponse, config.AuthenticationError(
 			fmt.Sprintf("authentication failed: %s", resp.Status()),
 			nil,
 		)
 	}
 
 	if statusCode == 429 {
-		return emptyResponse, RateLimitError(
+		return emptyResponse, config.RateLimitError(
 			"rate limit exceeded",
 			0, // No retry after header in current implementation
 		)
 	}
 
 	if statusCode < 200 || statusCode >= 300 {
-		return emptyResponse, APIError(
+		return emptyResponse, config.APIError(
 			statusCode,
 			fmt.Sprintf("HTTP %s request failed: %s", method, string(resp.Body())),
 			nil,

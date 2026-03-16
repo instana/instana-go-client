@@ -3,6 +3,9 @@ package instana
 import (
 	"crypto/tls"
 	"net/http"
+
+	"github.com/instana/instana-go-client/client"
+	"github.com/instana/instana-go-client/config"
 )
 
 const (
@@ -28,204 +31,128 @@ const (
 	SyntheticLocationResourcePath = SyntheticSettingsBasePath + "/locations"
 	// AutomationBasePath path to Automation resources of Instana RESTful API
 	AutomationBasePath = InstanaAPIBasePath + "/automation"
-	// AutomationBasePath path to Automation resources of Instana RESTful API
+	// HostAgentResourcePath path to host agent resources of Instana RESTful API
 	HostAgentResourcePath = InstanaAPIBasePath + "/host-agent"
 )
 
-// InstanaAPI is the interface to all resources of the Instana Rest API
-type InstanaAPI interface {
-	CustomEventSpecifications() RestResource[*CustomEventSpecification]
-	BuiltinEventSpecifications() ReadOnlyRestResource[*BuiltinEventSpecification]
-	APITokens() RestResource[*APIToken]
-	ApplicationConfigs() RestResource[*ApplicationConfig]
-	ApplicationAlertConfigs() RestResource[*ApplicationAlertConfig]
-	GlobalApplicationAlertConfigs() RestResource[*ApplicationAlertConfig]
-	AlertingChannels() RestResource[*AlertingChannel]
-	AlertingConfigurations() RestResource[*AlertingConfiguration]
-	SliConfigs() RestResource[*SliConfig]
-	SloConfigs() RestResource[*SloConfig]
-	SloAlertConfig() RestResource[*SloAlertConfig]
-	SloCorrectionConfig() RestResource[*SloCorrectionConfig]
-	WebsiteMonitoringConfig() RestResource[*WebsiteMonitoringConfig]
-	WebsiteAlertConfig() RestResource[*WebsiteAlertConfig]
-	MobileAlertConfig() RestResource[*MobileAlertConfig]
-	InfraAlertConfig() RestResource[*InfraAlertConfig]
-	Groups() RestResource[*Group]
-	Roles() RestResource[*Role]
-	Teams() RestResource[*Team]
-	CustomDashboards() RestResource[*CustomDashboard]
-	SyntheticTest() RestResource[*SyntheticTest]
-	SyntheticLocation() ReadOnlyRestResource[*SyntheticLocation]
-	SyntheticAlertConfigs() RestResource[*SyntheticAlertConfig]
-	AutomationActions() RestResource[*AutomationAction]
-	AutomationPolicies() RestResource[*AutomationPolicy]
-	HostAgents() ReadOnlyRestResource[*HostAgent]
-	MaintenanceWindowConfigs() RestResource[*MaintenanceWindowConfig]
-	Users() ReadOnlyRestResource[*User]
-	LogAlertConfig() RestResource[*LogAlertConfig]
+// NewInstanaAPI creates a new instance of the Instana API client with basic configuration.
+// This is the primary entry point for creating an Instana API client.
+//
+// Parameters:
+//   - apiToken: The API token for authentication
+//   - endpoint: The Instana endpoint (e.g., "tenant-unit.instana.io")
+//   - skipTlsVerification: Whether to skip TLS certificate verification (use with caution)
+//
+// Returns:
+//   - client.InstanaAPI: The API client interface for accessing all Instana resources
+//
+// Example:
+//
+//	api := instana.NewInstanaAPI("your-api-token", "tenant-unit.instana.io", false)
+//	tokens, err := api.APITokens().GetAll()
+//
+// Deprecated: This function is maintained for backward compatibility.
+// New code should use the client package directly via client.NewInstanaAPI().
+func NewInstanaAPI(apiToken string, endpoint string, skipTlsVerification bool) client.InstanaAPI {
+	restClient := NewClient(apiToken, endpoint, skipTlsVerification)
+	return client.NewInstanaAPI(restClient)
 }
 
-// NewInstanaAPI creates a new instance of the instana API
-func NewInstanaAPI(apiToken string, endpoint string, skipTlsVerification bool) InstanaAPI {
-	client := NewClient(apiToken, endpoint, skipTlsVerification)
-	return &baseInstanaAPI{client: client}
-}
-
-// NewInstanaAPIWithUserAgent creates a new instance of the instana API with a custom user agent
-// The userAgent parameter should include the client name and version (e.g., "Terraform/1.2.3")
-func NewInstanaAPIWithUserAgent(apiToken string, endpoint string, skipTlsVerification bool, userAgent string) InstanaAPI {
-	config := DefaultClientConfig()
-	config.APIToken = apiToken
-	config.BaseURL = "https://" + endpoint
-	config.UserAgent = userAgent
-	config.Logger = NewDefaultLogger(ClientLogLevelInfo)
+// NewInstanaAPIWithUserAgent creates a new instance of the Instana API client with a custom user agent.
+// This is useful for identifying the client application in API logs and metrics.
+//
+// Parameters:
+//   - apiToken: The API token for authentication
+//   - endpoint: The Instana endpoint (e.g., "tenant-unit.instana.io")
+//   - skipTlsVerification: Whether to skip TLS certificate verification (use with caution)
+//   - userAgent: Custom user agent string (e.g., "Terraform/1.2.3")
+//
+// Returns:
+//   - client.InstanaAPI: The API client interface for accessing all Instana resources
+//
+// Example:
+//
+//	api := instana.NewInstanaAPIWithUserAgent(
+//	    "your-api-token",
+//	    "tenant-unit.instana.io",
+//	    false,
+//	    "MyApp/1.0.0",
+//	)
+//
+// Deprecated: This function is maintained for backward compatibility.
+// New code should use the client package directly via client.NewInstanaAPI().
+func NewInstanaAPIWithUserAgent(apiToken string, endpoint string, skipTlsVerification bool, userAgent string) client.InstanaAPI {
+	cfg := config.DefaultClientConfig()
+	cfg.APIToken = apiToken
+	cfg.BaseURL = "https://" + endpoint
+	cfg.UserAgent = userAgent
+	cfg.Logger = config.NewDefaultLogger(config.ClientLogLevelInfo)
 
 	// Create HTTP client with TLS configuration
-	httpClient := createHTTPClient(config)
+	httpClient := createHTTPClient(cfg)
 	if skipTlsVerification {
 		httpClient.Transport = &http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true}, //nolint:gosec
 		}
 	}
-	config.HTTPClient = httpClient
+	cfg.HTTPClient = httpClient
 
-	client, err := NewClientWithConfig(config)
+	restClient, err := NewClientWithConfig(cfg)
 	if err != nil {
 		// Fall back to basic client if config fails
-		config.Logger.Error("Failed to create client with config, using basic client", "error", err)
-		client = NewClient(apiToken, endpoint, skipTlsVerification)
+		cfg.Logger.Error("Failed to create client with config, using basic client", "error", err)
+		restClient = NewClient(apiToken, endpoint, skipTlsVerification)
 	}
 
-	return &baseInstanaAPI{client: client}
+	return client.NewInstanaAPI(restClient)
 }
 
-type baseInstanaAPI struct {
-	client RestClient
+// NewInstanaAPIWithConfig creates a new instance of the Instana API client with full configuration control.
+// This provides the most flexibility for advanced use cases.
+//
+// Parameters:
+//   - config: Complete client configuration
+//
+// Returns:
+//   - client.InstanaAPI: The API client interface for accessing all Instana resources
+//   - error: Any error that occurred during client creation
+//
+// Example:
+//
+//	config := instana.DefaultClientConfig()
+//	config.APIToken = "your-api-token"
+//	config.BaseURL = "https://tenant-unit.instana.io"
+//	config.Retry.MaxAttempts = 5
+//	config.RateLimit.Enabled = true
+//
+//	api, err := instana.NewInstanaAPIWithConfig(config)
+//	if err != nil {
+//	    log.Fatal(err)
+//	}
+//
+// Deprecated: This function is maintained for backward compatibility.
+// New code should use the client package directly via client.NewInstanaAPI().
+func NewInstanaAPIWithConfig(cfg *config.ClientConfig) (client.InstanaAPI, error) {
+	restClient, err := NewClientWithConfig(cfg)
+	if err != nil {
+		return nil, err
+	}
+
+	return client.NewInstanaAPI(restClient), nil
 }
 
-// CustomEventSpecifications implementation of InstanaAPI interface
-func (api *baseInstanaAPI) CustomEventSpecifications() RestResource[*CustomEventSpecification] {
-	return NewCreatePUTUpdatePUTRestResource(CustomEventSpecificationResourcePath, NewDefaultJSONUnmarshaller(&CustomEventSpecification{}), api.client)
-}
+// createHTTPClient creates an HTTP client with connection pooling configuration.
+// This is an internal helper function used by the initialization methods.
+func createHTTPClient(cfg *config.ClientConfig) *http.Client {
+	transport := &http.Transport{
+		MaxIdleConns:        cfg.ConnectionPool.MaxIdleConnections,
+		MaxIdleConnsPerHost: cfg.ConnectionPool.MaxConnectionsPerHost,
+		IdleConnTimeout:     cfg.Timeout.IdleConnection,
+		DisableKeepAlives:   false,
+	}
 
-// BuiltinEventSpecifications implementation of InstanaAPI interface
-func (api *baseInstanaAPI) BuiltinEventSpecifications() ReadOnlyRestResource[*BuiltinEventSpecification] {
-	return NewReadOnlyRestResource(BuiltinEventSpecificationResourcePath, NewDefaultJSONUnmarshaller(&BuiltinEventSpecification{}), api.client)
-}
-
-// APITokens implementation of InstanaAPI interface
-func (api *baseInstanaAPI) APITokens() RestResource[*APIToken] {
-	return NewCreatePOSTUpdatePUTRestResource(APITokensResourcePath, NewDefaultJSONUnmarshaller(&APIToken{}), api.client)
-}
-
-// ApplicationConfigs implementation of InstanaAPI interface
-func (api *baseInstanaAPI) ApplicationConfigs() RestResource[*ApplicationConfig] {
-	return NewCreatePOSTUpdatePUTRestResource(ApplicationConfigsResourcePath, NewDefaultJSONUnmarshaller(&ApplicationConfig{}), api.client)
-}
-
-// ApplicationAlertConfigs implementation of InstanaAPI interface
-func (api *baseInstanaAPI) ApplicationAlertConfigs() RestResource[*ApplicationAlertConfig] {
-	return NewCreatePOSTUpdatePOSTRestResource(ApplicationAlertConfigsResourcePath, NewCustomPayloadFieldsUnmarshallerAdapter(NewDefaultJSONUnmarshaller(&ApplicationAlertConfig{})), api.client)
-}
-
-// GlobalApplicationAlertConfigs implementation of InstanaAPI interface
-func (api *baseInstanaAPI) GlobalApplicationAlertConfigs() RestResource[*ApplicationAlertConfig] {
-	return NewCreatePOSTUpdatePOSTRestResource(GlobalApplicationAlertConfigsResourcePath, NewCustomPayloadFieldsUnmarshallerAdapter(NewDefaultJSONUnmarshaller(&ApplicationAlertConfig{})), api.client)
-}
-
-// AlertingChannels implementation of InstanaAPI interface
-func (api *baseInstanaAPI) AlertingChannels() RestResource[*AlertingChannel] {
-	return NewCreatePUTUpdatePUTRestResource(AlertingChannelsResourcePath, NewDefaultJSONUnmarshaller(&AlertingChannel{}), api.client)
-}
-
-// AlertingConfigurations implementation of InstanaAPI interface
-func (api *baseInstanaAPI) AlertingConfigurations() RestResource[*AlertingConfiguration] {
-	return NewCreatePUTUpdatePUTRestResource(AlertsResourcePath, NewCustomPayloadFieldsUnmarshallerAdapter(NewDefaultJSONUnmarshaller(&AlertingConfiguration{})), api.client)
-}
-
-func (api *baseInstanaAPI) SliConfigs() RestResource[*SliConfig] {
-	return NewCreatePOSTUpdateNotSupportedRestResource(SliConfigResourcePath, NewDefaultJSONUnmarshaller(&SliConfig{}), api.client)
-}
-
-func (api *baseInstanaAPI) SloConfigs() RestResource[*SloConfig] {
-	return NewCreatePOSTUpdatePUTRestResource(SloConfigResourcePath, NewDefaultJSONUnmarshaller(&SloConfig{}), api.client)
-}
-
-func (api *baseInstanaAPI) SloAlertConfig() RestResource[*SloAlertConfig] {
-	return NewCreatePOSTUpdatePOSTRestResource(SloAlertConfigResourcePath, NewDefaultJSONUnmarshaller(&SloAlertConfig{}), api.client)
-}
-
-func (api *baseInstanaAPI) SloCorrectionConfig() RestResource[*SloCorrectionConfig] {
-	return NewCreatePOSTUpdatePUTRestResource(SloCorrectionConfigResourcePath, NewDefaultJSONUnmarshaller(&SloCorrectionConfig{}), api.client)
-}
-
-func (api *baseInstanaAPI) WebsiteMonitoringConfig() RestResource[*WebsiteMonitoringConfig] {
-	return NewWebsiteMonitoringConfigRestResource(NewDefaultJSONUnmarshaller(&WebsiteMonitoringConfig{}), api.client)
-}
-
-func (api *baseInstanaAPI) WebsiteAlertConfig() RestResource[*WebsiteAlertConfig] {
-	return NewCreatePOSTUpdatePOSTRestResource(WebsiteAlertConfigResourcePath, NewCustomPayloadFieldsUnmarshallerAdapter(NewDefaultJSONUnmarshaller(&WebsiteAlertConfig{})), api.client)
-}
-
-func (api *baseInstanaAPI) InfraAlertConfig() RestResource[*InfraAlertConfig] {
-	return NewCreatePOSTUpdatePOSTRestResource(InfraAlertConfigResourcePath, NewCustomPayloadFieldsUnmarshallerAdapter(NewDefaultJSONUnmarshaller(&InfraAlertConfig{})), api.client)
-}
-
-func (api *baseInstanaAPI) Groups() RestResource[*Group] {
-	return NewCreatePOSTUpdatePUTRestResource(GroupsResourcePath, NewDefaultJSONUnmarshaller(&Group{}), api.client)
-}
-
-func (api *baseInstanaAPI) Roles() RestResource[*Role] {
-	return NewCreatePOSTUpdatePUTRestResource(RolesResourcePath, NewDefaultJSONUnmarshaller(&Role{}), api.client)
-}
-
-func (api *baseInstanaAPI) Teams() RestResource[*Team] {
-	return NewCreatePOSTUpdatePUTRestResource(TeamsResourcePath, NewDefaultJSONUnmarshaller(&Team{}), api.client)
-}
-
-func (api *baseInstanaAPI) CustomDashboards() RestResource[*CustomDashboard] {
-	return NewCreatePOSTUpdatePUTRestResource(CustomDashboardsResourcePath, NewDefaultJSONUnmarshaller(&CustomDashboard{}), api.client)
-}
-
-func (api *baseInstanaAPI) SyntheticTest() RestResource[*SyntheticTest] {
-	return NewSyntheticTestRestResource(NewDefaultJSONUnmarshaller(&SyntheticTest{}), api.client)
-}
-
-// SyntheticLocation implementation of InstanaAPI interface
-func (api *baseInstanaAPI) SyntheticLocation() ReadOnlyRestResource[*SyntheticLocation] {
-	return NewReadOnlyRestResource(SyntheticLocationResourcePath, NewDefaultJSONUnmarshaller(&SyntheticLocation{}), api.client)
-}
-
-// SyntheticAlertConfigs implementation of InstanaAPI interface
-func (api *baseInstanaAPI) SyntheticAlertConfigs() RestResource[*SyntheticAlertConfig] {
-	return NewCreatePOSTUpdatePOSTRestResource(SyntheticAlertConfigsResourcePath, NewCustomPayloadFieldsUnmarshallerAdapter(NewDefaultJSONUnmarshaller(&SyntheticAlertConfig{})), api.client)
-}
-
-func (api *baseInstanaAPI) AutomationActions() RestResource[*AutomationAction] {
-	return NewCreatePOSTUpdatePUTRestResource(AutomationActionResourcePath, NewDefaultJSONUnmarshaller(&AutomationAction{}), api.client)
-}
-
-func (api *baseInstanaAPI) AutomationPolicies() RestResource[*AutomationPolicy] {
-	return NewCreatePOSTUpdatePUTRestResource(AutomationPolicyResourcePath, NewDefaultJSONUnmarshaller(&AutomationPolicy{}), api.client)
-}
-
-func (api *baseInstanaAPI) HostAgents() ReadOnlyRestResource[*HostAgent] {
-	return NewReadOnlyRestResource(HostAgentResourcePath, NewHostAgentJSONUnmarshaller(&HostAgent{}), api.client)
-}
-func (api *baseInstanaAPI) Users() ReadOnlyRestResource[*User] {
-	return NewReadOnlyRestResource(UsersResourcePath, NewDefaultJSONUnmarshaller(&User{}), api.client)
-}
-
-// LogAlertConfig implementation of InstanaAPI interface
-func (api *baseInstanaAPI) LogAlertConfig() RestResource[*LogAlertConfig] {
-	return NewCreatePOSTUpdatePOSTRestResource(LogAlertConfigResourcePath, NewCustomPayloadFieldsUnmarshallerAdapter(NewDefaultJSONUnmarshaller(&LogAlertConfig{})), api.client)
-}
-
-func (api *baseInstanaAPI) MobileAlertConfig() RestResource[*MobileAlertConfig] {
-	return NewCreatePOSTUpdatePOSTRestResource(MobileAlertConfigResourcePath, NewCustomPayloadFieldsUnmarshallerAdapter(NewDefaultJSONUnmarshaller(&MobileAlertConfig{})), api.client)
-}
-
-// MaintenanceWindowConfigs implementation of InstanaAPI interface
-func (api *baseInstanaAPI) MaintenanceWindowConfigs() RestResource[*MaintenanceWindowConfig] {
-	return NewCreatePUTUpdatePUTRestResource(MaintenanceWindowConfigResourcePath, NewDefaultJSONUnmarshaller(&MaintenanceWindowConfig{}), api.client)
+	return &http.Client{
+		Transport: transport,
+		Timeout:   cfg.Timeout.Request,
+	}
 }

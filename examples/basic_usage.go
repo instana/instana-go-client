@@ -7,6 +7,8 @@ import (
 	"log"
 	"time"
 
+	"github.com/instana/instana-go-client/config"
+
 	"github.com/instana/instana-go-client/instana"
 )
 
@@ -66,7 +68,7 @@ func basicExample() {
 // builderExample demonstrates using the builder pattern
 func builderExample() {
 	// Create configuration using builder
-	config, err := instana.NewConfigBuilder().
+	config, err := config.NewConfigBuilder().
 		WithBaseURL("https://your-tenant.instana.io").
 		WithAPIToken("your-api-token").
 		WithConnectionTimeout(30 * time.Second).
@@ -105,7 +107,7 @@ func envExample() {
 	// export INSTANA_DEBUG="true"
 
 	// Load configuration from environment
-	config, err := instana.LoadFromEnv()
+	config, err := config.LoadFromEnv()
 	if err != nil {
 		log.Printf("Failed to load config from environment: %v\n", err)
 		return
@@ -130,29 +132,29 @@ func envExample() {
 
 // errorHandlingExample demonstrates enhanced error handling
 func errorHandlingExample() {
-	config, _ := instana.NewConfigBuilder().
+	conf, _ := config.NewConfigBuilder().
 		WithBaseURL("https://your-tenant.instana.io").
 		WithAPIToken("invalid-token"). // Intentionally invalid
 		Build()
 
-	client, _ := instana.NewClientWithConfig(config)
+	client, _ := instana.NewClientWithConfig(conf)
 
 	// Make request that will fail
 	_, err := client.Get("/api/application-monitoring/applications")
 	if err != nil {
 		// Check for specific error types
-		var instanaErr *instana.InstanaError
+		var instanaErr *config.InstanaError
 		if errors.As(err, &instanaErr) {
 			switch instanaErr.Type {
-			case instana.ErrorTypeAuthentication:
+			case config.ErrorTypeAuthentication:
 				fmt.Printf("Authentication failed: %s\n", instanaErr.Message)
-			case instana.ErrorTypeRateLimit:
+			case config.ErrorTypeRateLimit:
 				fmt.Printf("Rate limit exceeded: %s\n", instanaErr.Message)
-			case instana.ErrorTypeAPI:
+			case config.ErrorTypeAPI:
 				fmt.Printf("API error: %s (status: %d)\n", instanaErr.Message, instanaErr.StatusCode)
-			case instana.ErrorTypeTimeout:
+			case config.ErrorTypeTimeout:
 				fmt.Printf("Request timed out: %s\n", instanaErr.Message)
-			case instana.ErrorTypeNetwork:
+			case config.ErrorTypeNetwork:
 				fmt.Printf("Network error: %s\n", instanaErr.Message)
 			default:
 				fmt.Printf("Error: %s (status: %d)\n", instanaErr.Message, instanaErr.StatusCode)

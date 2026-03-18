@@ -83,7 +83,7 @@ func (c *instanaAPI) AlertingConfigurations() rest.RestResource[*api.AlertingCon
 			c.restClient,
 			api.AlertsResourcePath,
 			rest.DefaultRestResourceModeCreateAndUpdatePUT,
-			rest.NewGenericUnmarshaller[*api.AlertingConfiguration](),
+			rest.NewCustomPayloadFieldsUnmarshallerAdapter(rest.NewGenericUnmarshaller[*api.AlertingConfiguration]()),
 		)
 	}
 	return c.alertingConfigurations
@@ -96,7 +96,7 @@ func (c *instanaAPI) ApplicationAlertConfigs() rest.RestResource[*api.Applicatio
 			c.restClient,
 			api.ApplicationAlertConfigsResourcePath,
 			rest.DefaultRestResourceModeCreateAndUpdatePOST,
-			rest.NewGenericUnmarshaller[*api.ApplicationAlertConfig](),
+			rest.NewCustomPayloadFieldsUnmarshallerAdapter(rest.NewGenericUnmarshaller[*api.ApplicationAlertConfig]()),
 		)
 	}
 	return c.applicationAlertConfigs
@@ -109,7 +109,7 @@ func (c *instanaAPI) GlobalApplicationAlertConfigs() rest.RestResource[*api.Appl
 			c.restClient,
 			api.GlobalApplicationAlertConfigsResourcePath,
 			rest.DefaultRestResourceModeCreateAndUpdatePOST,
-			rest.NewGenericUnmarshaller[*api.ApplicationAlertConfig](),
+			rest.NewCustomPayloadFieldsUnmarshallerAdapter(rest.NewGenericUnmarshaller[*api.ApplicationAlertConfig]()),
 		)
 	}
 	return c.globalApplicationAlertConfigs
@@ -224,7 +224,7 @@ func (c *instanaAPI) InfraAlertConfigs() rest.RestResource[*api.InfraAlertConfig
 			c.restClient,
 			api.ResourcePath,
 			rest.DefaultRestResourceModeCreateAndUpdatePOST,
-			rest.NewGenericUnmarshaller[*api.InfraAlertConfig](),
+			rest.NewCustomPayloadFieldsUnmarshallerAdapter(rest.NewGenericUnmarshaller[*api.InfraAlertConfig]()),
 		)
 	}
 	return c.infraAlertConfigs
@@ -237,7 +237,7 @@ func (c *instanaAPI) LogAlertConfigs() rest.RestResource[*api.LogAlertConfig] {
 			c.restClient,
 			api.LogAlertConfigResourcePath,
 			rest.DefaultRestResourceModeCreateAndUpdatePOST,
-			rest.NewGenericUnmarshaller[*api.LogAlertConfig](),
+			rest.NewCustomPayloadFieldsUnmarshallerAdapter(rest.NewGenericUnmarshaller[*api.LogAlertConfig]()),
 		)
 	}
 	return c.logAlertConfigs
@@ -263,7 +263,7 @@ func (c *instanaAPI) MobileAlertConfigs() rest.RestResource[*api.MobileAlertConf
 			c.restClient,
 			api.MobileAlertConfigResourcePath,
 			rest.DefaultRestResourceModeCreateAndUpdatePOST,
-			rest.NewGenericUnmarshaller[*api.MobileAlertConfig](),
+			rest.NewCustomPayloadFieldsUnmarshallerAdapter(rest.NewGenericUnmarshaller[*api.MobileAlertConfig]()),
 		)
 	}
 	return c.mobileAlertConfigs
@@ -302,7 +302,7 @@ func (c *instanaAPI) SloAlertConfigs() rest.RestResource[*api.SloAlertConfig] {
 			c.restClient,
 			api.SloAlertConfigResourcePath,
 			rest.DefaultRestResourceModeCreateAndUpdatePOST,
-			rest.NewGenericUnmarshaller[*api.SloAlertConfig](),
+			rest.NewCustomPayloadFieldsUnmarshallerAdapter(rest.NewGenericUnmarshaller[*api.SloAlertConfig]()),
 		)
 	}
 	return c.sloAlertConfigs
@@ -315,7 +315,7 @@ func (c *instanaAPI) SloConfigs() rest.RestResource[*api.SloConfig] {
 			c.restClient,
 			api.SloConfigResourcePath,
 			rest.DefaultRestResourceModeCreatePOSTUpdatePUT,
-			rest.NewGenericUnmarshaller[*api.SloConfig](),
+			api.NewSloConfigJSONUnmarshaller[*api.SloConfig](&api.SloConfig{}),
 		)
 	}
 	return c.sloConfigs
@@ -328,7 +328,7 @@ func (c *instanaAPI) SloCorrectionConfigs() rest.RestResource[*api.SloCorrection
 			c.restClient,
 			api.SloCorrectionConfigResourcePath,
 			rest.DefaultRestResourceModeCreatePOSTUpdatePUT,
-			rest.NewGenericUnmarshaller[*api.SloCorrectionConfig](),
+			api.NewSloCorrectionConfigJSONUnmarshaller[*api.SloCorrectionConfig](&api.SloCorrectionConfig{}),
 		)
 	}
 	return c.sloCorrections
@@ -341,7 +341,7 @@ func (c *instanaAPI) SyntheticAlertConfigs() rest.RestResource[*api.SyntheticAle
 			c.restClient,
 			api.SyntheticAlertConfigsResourcePath,
 			rest.DefaultRestResourceModeCreateAndUpdatePOST,
-			rest.NewGenericUnmarshaller[*api.SyntheticAlertConfig](),
+			rest.NewCustomPayloadFieldsUnmarshallerAdapter(rest.NewGenericUnmarshaller[*api.SyntheticAlertConfig]()),
 		)
 	}
 	return c.syntheticAlertConfigs
@@ -404,7 +404,7 @@ func (c *instanaAPI) WebsiteAlertConfigs() rest.RestResource[*api.WebsiteAlertCo
 			c.restClient,
 			api.ResourcePath,
 			rest.DefaultRestResourceModeCreateAndUpdatePOST,
-			rest.NewGenericUnmarshaller[*api.WebsiteAlertConfig](),
+			rest.NewCustomPayloadFieldsUnmarshallerAdapter(rest.NewGenericUnmarshaller[*api.WebsiteAlertConfig]()),
 		)
 	}
 	return c.websiteAlertConfigs

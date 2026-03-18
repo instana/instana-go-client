@@ -248,7 +248,7 @@ func (client *restClientImpl) createRequest() *resty.Request {
 	// Add user agent
 	userAgent := client.config.UserAgent
 	if userAgent == "" {
-		userAgent = "Instana-Go-Client/1.0.0"
+		userAgent = "Instana-Go-Client"
 	}
 	req.SetHeader("User-Agent", userAgent)
 

@@ -2,7 +2,7 @@ package api
 
 import (
 	"github.com/instana/instana-go-client/shared/tagfilter"
-	"github.com/instana/instana-go-client/shared/types"
+	model "github.com/instana/instana-go-client/shared/types"
 )
 
 const (
@@ -24,8 +24,8 @@ type ApplicationConfig struct {
 	Label               string                 `json:"label"`
 	TagFilterExpression *tagfilter.TagFilter   `json:"tagFilterExpression"`
 	Scope               ApplicationConfigScope `json:"scope"`
-	BoundaryScope       types.BoundaryScope    `json:"boundaryScope"`
-	AccessRules         []types.AccessRule     `json:"accessRules"`
+	BoundaryScope       model.BoundaryScope    `json:"boundaryScope"`
+	AccessRules         []model.AccessRule     `json:"accessRules"`
 }
 
 // GetIDForResourcePath implementation of the interface InstanaDataObject

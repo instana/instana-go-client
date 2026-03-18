@@ -2,7 +2,7 @@ package api
 
 import (
 	"github.com/instana/instana-go-client/shared/rest"
-	"github.com/instana/instana-go-client/shared/types"
+	model "github.com/instana/instana-go-client/shared/types"
 )
 
 // WebsiteMonitoringConfigResourcePath path to website monitoring config resource of Instana RESTful API
@@ -83,7 +83,7 @@ type WebsiteTimeThreshold struct {
 	Type                    string                                `json:"type"`
 	TimeWindow              *int64                                `json:"timeWindow"`
 	Violations              *int32                                `json:"violations"`
-	ImpactMeasurementMethod *types.WebsiteImpactMeasurementMethod `json:"impactMeasurementMethod"`
+	ImpactMeasurementMethod *model.WebsiteImpactMeasurementMethod `json:"impactMeasurementMethod"`
 	UserPercentage          *float64                              `json:"userPercentage"`
 	Users                   *int32                                `json:"users"`
 }

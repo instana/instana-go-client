@@ -8,33 +8,6 @@ import (
 	"github.com/instana/instana-go-client/config"
 )
 
-const (
-	//InstanaAPIBasePath path to Instana RESTful API
-	InstanaAPIBasePath = "/api"
-	//EventsBasePath path to Events resource of Instana RESTful API
-	EventsBasePath = InstanaAPIBasePath + "/events"
-	//settingsPathElement path element to settings
-	settingsPathElement = "/settings"
-	//EventSettingsBasePath path to Event Settings resource of Instana RESTful API
-	EventSettingsBasePath = EventsBasePath + settingsPathElement
-	//SettingsBasePath path to Event Settings resource of Instana RESTful API
-	SettingsBasePath = InstanaAPIBasePath + settingsPathElement
-	//RBACSettingsBasePath path to Role Based Access Control Settings resources of Instana RESTful API
-	RBACSettingsBasePath = SettingsBasePath + "/rbac"
-	//WebsiteMonitoringResourcePath path to website monitoring
-	WebsiteMonitoringResourcePath = InstanaAPIBasePath + "/website-monitoring"
-	//SyntheticSettingsBasePath path to synthetic monitoring
-	SyntheticSettingsBasePath = InstanaAPIBasePath + "/synthetics" + settingsPathElement
-	//SyntheticTestResourcePath path to synthetic monitoring tests
-	SyntheticTestResourcePath = SyntheticSettingsBasePath + "/tests"
-	//SyntheticLocationResourcePath path to synthetic monitoring tests
-	SyntheticLocationResourcePath = SyntheticSettingsBasePath + "/locations"
-	// AutomationBasePath path to Automation resources of Instana RESTful API
-	AutomationBasePath = InstanaAPIBasePath + "/automation"
-	// HostAgentResourcePath path to host agent resources of Instana RESTful API
-	HostAgentResourcePath = InstanaAPIBasePath + "/host-agent"
-)
-
 // NewInstanaAPI creates a new instance of the Instana API client with basic configuration.
 // This is the primary entry point for creating an Instana API client.
 //

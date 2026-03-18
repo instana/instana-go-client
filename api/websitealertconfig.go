@@ -2,7 +2,7 @@ package api
 
 import (
 	"github.com/instana/instana-go-client/shared/tagfilter"
-	"github.com/instana/instana-go-client/shared/types"
+	model "github.com/instana/instana-go-client/shared/types"
 )
 
 // WebsiteAlertConfigResourcePath path to website alert config resource of Instana RESTful API
@@ -19,18 +19,18 @@ type WebsiteAlertConfig struct {
 	WebsiteID             string                           `json:"websiteId"`
 	TagFilterExpression   *tagfilter.TagFilter             `json:"tagFilterExpression"`
 	AlertChannelIDs       []string                         `json:"alertChannelIds"`
-	Granularity           types.Granularity                `json:"granularity"`
-	CustomerPayloadFields []types.CustomPayloadField[any]  `json:"customPayloadFields"`
+	Granularity           model.Granularity                `json:"granularity"`
+	CustomerPayloadFields []model.CustomPayloadField[any]  `json:"customPayloadFields"`
 	Rule                  *WebsiteAlertRule                `json:"rule"`
-	Threshold             *types.Threshold                 `json:"threshold"`
-	TimeThreshold         types.WebsiteTimeThreshold       `json:"timeThreshold"`
+	Threshold             *model.Threshold                 `json:"threshold"`
+	TimeThreshold         WebsiteTimeThreshold             `json:"timeThreshold"`
 	Rules                 []WebsiteAlertRuleWithThresholds `json:"rules"`
 }
 
 type WebsiteAlertRuleWithThresholds struct {
 	Rule              *WebsiteAlertRule                           `json:"rule"`
 	ThresholdOperator string                                      `json:"thresholdOperator"`
-	Thresholds        map[types.AlertSeverity]types.ThresholdRule `json:"thresholds"`
+	Thresholds        map[model.AlertSeverity]model.ThresholdRule `json:"thresholds"`
 }
 
 // GetIDForResourcePath implementation of the interface InstanaDataObject
@@ -39,12 +39,12 @@ func (r *WebsiteAlertConfig) GetIDForResourcePath() string {
 }
 
 // GetCustomerPayloadFields implementation of the interface customPayloadFieldsAwareInstanaDataObject
-func (a *WebsiteAlertConfig) GetCustomerPayloadFields() []types.CustomPayloadField[any] {
+func (a *WebsiteAlertConfig) GetCustomerPayloadFields() []model.CustomPayloadField[any] {
 	return a.CustomerPayloadFields
 }
 
 // SetCustomerPayloadFields implementation of the interface customPayloadFieldsAwareInstanaDataObject
-func (a *WebsiteAlertConfig) SetCustomerPayloadFields(fields []types.CustomPayloadField[any]) {
+func (a *WebsiteAlertConfig) SetCustomerPayloadFields(fields []model.CustomPayloadField[any]) {
 	a.CustomerPayloadFields = fields
 }
 
@@ -52,16 +52,16 @@ func (a *WebsiteAlertConfig) SetCustomerPayloadFields(fields []types.CustomPaylo
 type WebsiteAlertRule struct {
 	AlertType   string                    `json:"alertType"`
 	MetricName  string                    `json:"metricName"`
-	Aggregation *types.Aggregation        `json:"aggregation"`
-	Operator    *types.ExpressionOperator `json:"operator"`
+	Aggregation *model.Aggregation        `json:"aggregation"`
+	Operator    *model.ExpressionOperator `json:"operator"`
 	Value       *string                   `json:"value"`
 }
 
 // WebsiteImpactMeasurementMethod custom type for impact measurement method of website alert rules
-type WebsiteImpactMeasurementMethod = types.WebsiteImpactMeasurementMethod
+type WebsiteImpactMeasurementMethod = model.WebsiteImpactMeasurementMethod
 
 // WebsiteImpactMeasurementMethods custom type for a slice of WebsiteImpactMeasurementMethod
-type WebsiteImpactMeasurementMethods []types.WebsiteImpactMeasurementMethod
+type WebsiteImpactMeasurementMethods []model.WebsiteImpactMeasurementMethod
 
 // ToStringSlice Returns the corresponding string representations
 func (methods WebsiteImpactMeasurementMethods) ToStringSlice() []string {
@@ -73,11 +73,11 @@ func (methods WebsiteImpactMeasurementMethods) ToStringSlice() []string {
 }
 
 const (
-	//types.WebsiteImpactMeasurementMethodAggregated constant value for the website impact measurement method aggregated
-	WebsiteImpactMeasurementMethodAggregated = types.WebsiteImpactMeasurementMethod("AGGREGATED")
-	//types.WebsiteImpactMeasurementMethodPerWindow constant value for the website impact measurement method per_window
+	//model.WebsiteImpactMeasurementMethodAggregated constant value for the website impact measurement method aggregated
+	WebsiteImpactMeasurementMethodAggregated = model.WebsiteImpactMeasurementMethod("AGGREGATED")
+	//model.WebsiteImpactMeasurementMethodPerWindow constant value for the website impact measurement method per_window
 	WebsiteImpactMeasurementMethodPerWindow = WebsiteImpactMeasurementMethod("PER_WINDOW")
 )
 
 // SupportedWebsiteImpactMeasurementMethods list of all supported WebsiteImpactMeasurementMethod
-var SupportedWebsiteImpactMeasurementMethods = WebsiteImpactMeasurementMethods{types.WebsiteImpactMeasurementMethodAggregated, types.WebsiteImpactMeasurementMethodPerWindow}
+var SupportedWebsiteImpactMeasurementMethods = WebsiteImpactMeasurementMethods{model.WebsiteImpactMeasurementMethodAggregated, model.WebsiteImpactMeasurementMethodPerWindow}

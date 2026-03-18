@@ -18,7 +18,7 @@ type ApplicationAlertConfig struct {
 	Description           string                               `json:"description"`
 	Triggering            bool                                 `json:"triggering"`
 	Enabled               *bool                                `json:"enabled,omitempty"`
-	Applications          map[string]types.IncludedApplication `json:"applications"`
+	Applications          map[string]IncludedApplication       `json:"applications"`
 	BoundaryScope         types.BoundaryScope                  `json:"boundaryScope"`
 	TagFilterExpression   *tagfilter.TagFilter                 `json:"tagFilterExpression"`
 	IncludeInternal       bool                                 `json:"includeInternal"`

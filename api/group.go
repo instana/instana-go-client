@@ -1,9 +1,5 @@
 package api
 
-import (
-	"github.com/instana/instana-go-client/shared/types"
-)
-
 // ResourcePath is the path to the Groups resource in the Instana API
 const GroupResourcePath = "/api/settings/rbac/groups"
 
@@ -335,7 +331,7 @@ type APIMember struct {
 type Group struct {
 	ID            string                    `json:"id"`
 	Name          string                    `json:"name"`
-	Members       []types.APIMember         `json:"members"`
+	Members       []APIMember               `json:"members"`
 	PermissionSet APIPermissionSetWithRoles `json:"permissionSet"`
 }
 

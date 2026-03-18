@@ -679,5 +679,3 @@ func BenchmarkRateLimiter_GetAvailableTokens(b *testing.B) {
 		_ = rl.GetAvailableTokens()
 	}
 }
-
-// Made with Bob

@@ -234,5 +234,3 @@ func WrapError(err error, message string) error {
 
 	return fmt.Errorf("%s: %w", message, err)
 }
-
-// Made with Bob

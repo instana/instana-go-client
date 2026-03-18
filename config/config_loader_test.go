@@ -676,5 +676,3 @@ func BenchmarkParseDuration(b *testing.B) {
 		_, _ = parseDuration("30s")
 	}
 }
-
-// Made with Bob

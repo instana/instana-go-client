@@ -457,5 +457,3 @@ func BenchmarkExtractStatusCode(b *testing.B) {
 		_ = ExtractStatusCode(err)
 	}
 }
-
-// Made with Bob

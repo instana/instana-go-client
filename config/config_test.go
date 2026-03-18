@@ -336,5 +336,3 @@ func BenchmarkConfigClone(b *testing.B) {
 		_ = config.Clone()
 	}
 }
-
-// Made with Bob

@@ -422,5 +422,3 @@ func (c *instanaAPI) WebsiteMonitoringConfigs() rest.RestResource[*api.WebsiteMo
 	}
 	return c.websiteMonitoringConfigs
 }
-
-// Made with Bob

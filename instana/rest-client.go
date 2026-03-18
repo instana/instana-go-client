@@ -435,5 +435,3 @@ func (client *restClientImpl) redactURL(url string) string {
 	}
 	return url
 }
-
-// Made with Bob

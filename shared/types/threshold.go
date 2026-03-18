@@ -83,5 +83,3 @@ type ThresholdRule struct {
 	Adaptability    *float32              `json:"adaptability"`
 	Operator        *string               `json:"operator"`
 }
-
-// Made with Bob

@@ -74,5 +74,3 @@ func NewReadOnlyRestResource[T rest.InstanaDataObject](
 	//unmarshaller := rest.NewGenericUnmarshaller[T]()
 	return rest.NewReadOnlyRestResource(resourcePath, unmarshaller, restClient)
 }
-
-// Made with Bob

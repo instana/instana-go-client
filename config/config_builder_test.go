@@ -492,5 +492,3 @@ func BenchmarkConfigBuilderComplex(b *testing.B) {
 			Build()
 	}
 }
-
-// Made with Bob

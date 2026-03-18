@@ -50,5 +50,3 @@ func (u *GenericUnmarshaller[T]) UnmarshalArray(data []byte) (*[]T, error) {
 	}
 	return &target, nil
 }
-
-// Made with Bob

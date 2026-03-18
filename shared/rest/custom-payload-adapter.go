@@ -73,5 +73,3 @@ func (a *customPayloadFieldsUnmarshallerAdapter[T]) mapCustomPayloadField(field 
 	}
 	return field
 }
-
-// Made with Bob

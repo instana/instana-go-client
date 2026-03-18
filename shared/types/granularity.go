@@ -32,5 +32,3 @@ const (
 
 // SupportedSmartAlertGranularities list of all supported Granularities
 var SupportedSmartAlertGranularities = Granularities{Granularity60000, Granularity300000, Granularity600000, Granularity900000, Granularity1200000, Granularity1800000}
-
-// Made with Bob

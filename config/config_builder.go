@@ -317,5 +317,3 @@ func (b *ConfigBuilder) MustBuild() *ClientConfig {
 func (b *ConfigBuilder) GetConfig() *ClientConfig {
 	return b.config
 }
-
-// Made with Bob

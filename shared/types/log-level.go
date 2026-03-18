@@ -26,5 +26,3 @@ const (
 
 // SupportedLogLevels list of all supported LogLevel
 var SupportedLogLevels = LogLevels{LogLevelWarning, LogLevelError, LogLevelAny}
-
-// Made with Bob

@@ -96,5 +96,3 @@ type InstanaAPI interface {
 	// WebsiteMonitoringConfigs returns the website monitoring configurations client
 	WebsiteMonitoringConfigs() rest.RestResource[*api.WebsiteMonitoringConfig]
 }
-
-// Made with Bob

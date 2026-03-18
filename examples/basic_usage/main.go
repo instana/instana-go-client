@@ -136,5 +136,3 @@ func main() {
 
 	fmt.Println("\n=== Examples Complete ===")
 }
-
-// Made with Bob

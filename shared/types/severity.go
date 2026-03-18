@@ -51,5 +51,3 @@ func SeverityFromTerraformRepresentation(representation string) int {
 	}
 	return -1
 }
-
-// Made with Bob

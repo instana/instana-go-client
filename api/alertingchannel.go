@@ -95,5 +95,3 @@ type AlertingChannel struct {
 func (a *AlertingChannel) GetIDForResourcePath() string {
 	return a.ID
 }
-
-// Made with Bob

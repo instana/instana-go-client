@@ -179,5 +179,3 @@ func (l *NoOpLogger) Warn(msg string, keysAndValues ...interface{}) {}
 
 // Error does nothing
 func (l *NoOpLogger) Error(msg string, keysAndValues ...interface{}) {}
-
-// Made with Bob

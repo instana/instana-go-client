@@ -442,5 +442,3 @@ func BenchmarkValidateWithErrors(b *testing.B) {
 		_ = config.Validate()
 	}
 }
-
-// Made with Bob

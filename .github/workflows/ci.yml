@@ -174,4 +174,3 @@ jobs:
           echo "CI pipeline passed"
         fi
 
-# Made with Bob

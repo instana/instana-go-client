@@ -15,5 +15,3 @@ const (
 
 // SupportedAlertSeverities list of all supported alert severities
 var SupportedAlertSeverities = AlertSeverities{WarningSeverity, CriticalSeverity}
-
-// Made with Bob

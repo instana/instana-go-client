@@ -47,5 +47,3 @@
 // All API methods return either rest.RestResource or rest.ReadOnlyRestResource interfaces,
 // providing a consistent interface for CRUD operations across all endpoints.
 package client
-
-// Made with Bob

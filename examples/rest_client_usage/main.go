@@ -246,5 +246,3 @@ func main() {
 	fmt.Println("8. ✓ Typed error handling")
 	fmt.Println("9. ✓ Production-ready configuration")
 }
-
-// Made with Bob

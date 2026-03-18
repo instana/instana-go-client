@@ -140,5 +140,3 @@ func TestGenericUnmarshaller_WithDifferentTypes(t *testing.T) {
 		require.Equal(t, "value2", result["key2"])
 	})
 }
-
-// Made with Bob

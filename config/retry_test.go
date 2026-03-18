@@ -582,5 +582,3 @@ func BenchmarkCalculateDelay(b *testing.B) {
 		_ = retryer.calculateDelay(i % 5)
 	}
 }
-
-// Made with Bob

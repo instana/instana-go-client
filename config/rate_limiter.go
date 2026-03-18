@@ -194,5 +194,3 @@ func (rl *RateLimiter) UpdateConfig(config RateLimitConfig) {
 		rl.tokens = float64(config.BurstCapacity)
 	}
 }
-
-// Made with Bob

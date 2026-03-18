@@ -65,5 +65,3 @@ var InfraExploreAggregations = Aggregations{MeanAggregation, MaxAggregation, Min
 var TimeAggregations = Aggregations{MeanAggregation, MaxAggregation, MinAggregation, Percentile25Aggregation,
 	Percentile50Aggregation, Percentile75Aggregation, Percentile90Aggregation, Percentile95Aggregation, Percentile98Aggregation,
 	Percentile99Aggregation, SumAggregation}
-
-// Made with Bob

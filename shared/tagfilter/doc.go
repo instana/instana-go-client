@@ -36,5 +36,3 @@
 //	    ),
 //	})
 package tagfilter
-
-// Made with Bob

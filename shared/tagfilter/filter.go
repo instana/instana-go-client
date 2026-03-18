@@ -158,5 +158,3 @@ func (f *TagFilter) GetType() TagFilterExpressionElementType {
 func (e *TagFilter) PrependElement(element *TagFilter) {
 	e.Elements = append(e.Elements, element)
 }
-
-// Made with Bob

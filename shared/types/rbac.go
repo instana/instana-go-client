@@ -222,5 +222,3 @@ const (
 	// PermissionAccessWebsites const for Instana permission ACCESS_WEBSITES
 	PermissionAccessWebsites = InstanaPermission("ACCESS_WEBSITES")
 )
-
-// Made with Bob

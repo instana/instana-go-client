@@ -237,5 +237,3 @@ func DefaultRetryConfig() RetryConfig {
 		Jitter:                 true,
 	}
 }
-
-// Made with Bob

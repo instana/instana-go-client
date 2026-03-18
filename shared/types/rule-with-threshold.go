@@ -7,5 +7,3 @@ type RuleWithThreshold[R any] struct {
 	Rule              R                               `json:"rule"`
 	Thresholds        map[AlertSeverity]ThresholdRule `json:"thresholds"`
 }
-
-// Made with Bob

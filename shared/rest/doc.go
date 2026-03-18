@@ -24,5 +24,3 @@
 //	    // handle error
 //	}
 package rest
-
-// Made with Bob

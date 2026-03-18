@@ -19,5 +19,3 @@
 //	operator := types.GreaterThanOperator
 //	aggregation := types.MeanAggregation
 package types
-
-// Made with Bob

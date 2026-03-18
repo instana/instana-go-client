@@ -267,5 +267,3 @@ func (c *ClientConfig) Clone() *ClientConfig {
 
 	return clone
 }
-
-// Made with Bob

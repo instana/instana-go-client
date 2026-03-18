@@ -46,5 +46,3 @@ type RestClient interface {
 	PostByQuery(resourcePath string, queryParams map[string]string) ([]byte, error)
 	PutByQuery(resourcePath string, is string, queryParams map[string]string) ([]byte, error)
 }
-
-// Made with Bob

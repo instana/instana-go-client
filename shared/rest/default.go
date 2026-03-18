@@ -157,5 +157,3 @@ func (r *defaultRestResource[T]) Delete(data T) error {
 func (r *defaultRestResource[T]) DeleteByID(id string) error {
 	return r.client.Delete(id, r.resourcePath)
 }
-
-// Made with Bob

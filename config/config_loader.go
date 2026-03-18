@@ -411,5 +411,3 @@ func PrintEnvVarHelp() string {
 	sb.WriteString(fmt.Sprintf("  %-40s  %s\n", EnvKeepAliveDuration, "Keep-alive duration (e.g., 30s)"))
 	return sb.String()
 }
-
-// Made with Bob

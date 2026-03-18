@@ -107,5 +107,3 @@ var SupportedUnaryExpressionOperators = ExpressionOperators{
 
 // SupportedExpressionOperators list of all supported operators of Instana API
 var SupportedExpressionOperators = append(SupportedComparisonOperators, SupportedUnaryExpressionOperators...)
-
-// Made with Bob

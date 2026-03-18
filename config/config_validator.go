@@ -368,5 +368,3 @@ func (c *ClientConfig) validateConnectionPool() ValidationErrors {
 
 	return errors
 }
-
-// Made with Bob

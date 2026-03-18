@@ -48,5 +48,3 @@ func (r *readOnlyRestResource[T]) GetOne(id string) (T, error) {
 	}
 	return r.unmarshaller.Unmarshal(data)
 }
-
-// Made with Bob

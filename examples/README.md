@@ -4,7 +4,9 @@ This directory contains practical examples demonstrating how to use the Instana 
 
 ## 📁 Examples
 
-### 1. basic_usage.go
+### 1. Basic Usage
+**Location:** [`basic_usage/`](basic_usage/)
+
 Demonstrates the fundamental usage patterns of the Instana Go Client:
 - Basic client creation (legacy compatible)
 - Using the builder pattern for configuration
@@ -18,8 +20,33 @@ export INSTANA_BASE_URL="https://your-tenant.instana.io"
 export INSTANA_API_TOKEN="your-api-token"
 
 # Run the example
-go run basic_usage.go
+cd basic_usage
+go run main.go
 ```
+
+### 2. Advanced Usage
+**Location:** [`advanced_usage/`](advanced_usage/)
+
+Demonstrates advanced features and patterns:
+- Comprehensive configuration with all options
+- Advanced error handling and classification
+- Retry mechanism with exponential backoff
+- Rate limiting with token bucket algorithm
+- Custom logger implementation
+
+**Run:**
+```bash
+cd advanced_usage
+go run main.go
+```
+
+### 3. REST Client Usage
+**Location:** [`rest_client_usage/`](rest_client_usage/)
+
+Demonstrates low-level REST client operations:
+- Direct REST API calls
+- Custom HTTP operations
+- Request/response handling
 
 ## 🚀 Quick Start
 

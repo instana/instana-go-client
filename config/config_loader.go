@@ -9,6 +9,11 @@ import (
 	"time"
 )
 
+// Error message templates
+const (
+	errInvalidValue = "invalid value for %s: %w"
+)
+
 // Environment variable names for configuration
 const (
 	EnvBaseURL                    = "INSTANA_BASE_URL"
@@ -48,7 +53,7 @@ func LoadFromEnv() (*ClientConfig, error) {
 	if v := os.Getenv(EnvDebug); v != "" {
 		debug, err := strconv.ParseBool(v)
 		if err != nil {
-			return nil, fmt.Errorf("invalid value for %s: %w", EnvDebug, err)
+			return nil, fmt.Errorf(errInvalidValue, EnvDebug, err)
 		}
 		config.Debug = debug
 	}
@@ -57,7 +62,7 @@ func LoadFromEnv() (*ClientConfig, error) {
 	if v := os.Getenv(EnvConnectionTimeout); v != "" {
 		timeout, err := parseDuration(v)
 		if err != nil {
-			return nil, fmt.Errorf("invalid value for %s: %w", EnvConnectionTimeout, err)
+			return nil, fmt.Errorf(errInvalidValue, EnvConnectionTimeout, err)
 		}
 		config.Timeout.Connection = timeout
 	}
@@ -65,7 +70,7 @@ func LoadFromEnv() (*ClientConfig, error) {
 	if v := os.Getenv(EnvRequestTimeout); v != "" {
 		timeout, err := parseDuration(v)
 		if err != nil {
-			return nil, fmt.Errorf("invalid value for %s: %w", EnvRequestTimeout, err)
+			return nil, fmt.Errorf(errInvalidValue, EnvRequestTimeout, err)
 		}
 		config.Timeout.Request = timeout
 	}
@@ -73,7 +78,7 @@ func LoadFromEnv() (*ClientConfig, error) {
 	if v := os.Getenv(EnvIdleConnectionTimeout); v != "" {
 		timeout, err := parseDuration(v)
 		if err != nil {
-			return nil, fmt.Errorf("invalid value for %s: %w", EnvIdleConnectionTimeout, err)
+			return nil, fmt.Errorf(errInvalidValue, EnvIdleConnectionTimeout, err)
 		}
 		config.Timeout.IdleConnection = timeout
 	}
@@ -82,7 +87,7 @@ func LoadFromEnv() (*ClientConfig, error) {
 	if v := os.Getenv(EnvMaxRetryAttempts); v != "" {
 		attempts, err := strconv.Atoi(v)
 		if err != nil {
-			return nil, fmt.Errorf("invalid value for %s: %w", EnvMaxRetryAttempts, err)
+			return nil, fmt.Errorf(errInvalidValue, EnvMaxRetryAttempts, err)
 		}
 		config.Retry.MaxAttempts = attempts
 	}
@@ -90,7 +95,7 @@ func LoadFromEnv() (*ClientConfig, error) {
 	if v := os.Getenv(EnvRetryInitialDelay); v != "" {
 		delay, err := parseDuration(v)
 		if err != nil {
-			return nil, fmt.Errorf("invalid value for %s: %w", EnvRetryInitialDelay, err)
+			return nil, fmt.Errorf(errInvalidValue, EnvRetryInitialDelay, err)
 		}
 		config.Retry.InitialDelay = delay
 	}
@@ -98,7 +103,7 @@ func LoadFromEnv() (*ClientConfig, error) {
 	if v := os.Getenv(EnvRetryMaxDelay); v != "" {
 		delay, err := parseDuration(v)
 		if err != nil {
-			return nil, fmt.Errorf("invalid value for %s: %w", EnvRetryMaxDelay, err)
+			return nil, fmt.Errorf(errInvalidValue, EnvRetryMaxDelay, err)
 		}
 		config.Retry.MaxDelay = delay
 	}
@@ -106,7 +111,7 @@ func LoadFromEnv() (*ClientConfig, error) {
 	if v := os.Getenv(EnvRetryBackoffMultiplier); v != "" {
 		multiplier, err := strconv.ParseFloat(v, 64)
 		if err != nil {
-			return nil, fmt.Errorf("invalid value for %s: %w", EnvRetryBackoffMultiplier, err)
+			return nil, fmt.Errorf(errInvalidValue, EnvRetryBackoffMultiplier, err)
 		}
 		config.Retry.BackoffMultiplier = multiplier
 	}
@@ -115,7 +120,7 @@ func LoadFromEnv() (*ClientConfig, error) {
 	if v := os.Getenv(EnvBatchSize); v != "" {
 		size, err := strconv.Atoi(v)
 		if err != nil {
-			return nil, fmt.Errorf("invalid value for %s: %w", EnvBatchSize, err)
+			return nil, fmt.Errorf(errInvalidValue, EnvBatchSize, err)
 		}
 		config.Batch.Size = size
 	}
@@ -123,7 +128,7 @@ func LoadFromEnv() (*ClientConfig, error) {
 	if v := os.Getenv(EnvBatchConcurrentRequests); v != "" {
 		concurrent, err := strconv.Atoi(v)
 		if err != nil {
-			return nil, fmt.Errorf("invalid value for %s: %w", EnvBatchConcurrentRequests, err)
+			return nil, fmt.Errorf(errInvalidValue, EnvBatchConcurrentRequests, err)
 		}
 		config.Batch.ConcurrentRequests = concurrent
 	}
@@ -132,7 +137,7 @@ func LoadFromEnv() (*ClientConfig, error) {
 	if v := os.Getenv(EnvRateLimitEnabled); v != "" {
 		enabled, err := strconv.ParseBool(v)
 		if err != nil {
-			return nil, fmt.Errorf("invalid value for %s: %w", EnvRateLimitEnabled, err)
+			return nil, fmt.Errorf(errInvalidValue, EnvRateLimitEnabled, err)
 		}
 		config.RateLimit.Enabled = enabled
 	}
@@ -140,7 +145,7 @@ func LoadFromEnv() (*ClientConfig, error) {
 	if v := os.Getenv(EnvRateLimitRequestsPerSecond); v != "" {
 		rps, err := strconv.Atoi(v)
 		if err != nil {
-			return nil, fmt.Errorf("invalid value for %s: %w", EnvRateLimitRequestsPerSecond, err)
+			return nil, fmt.Errorf(errInvalidValue, EnvRateLimitRequestsPerSecond, err)
 		}
 		config.RateLimit.RequestsPerSecond = rps
 	}
@@ -148,7 +153,7 @@ func LoadFromEnv() (*ClientConfig, error) {
 	if v := os.Getenv(EnvRateLimitBurstCapacity); v != "" {
 		burst, err := strconv.Atoi(v)
 		if err != nil {
-			return nil, fmt.Errorf("invalid value for %s: %w", EnvRateLimitBurstCapacity, err)
+			return nil, fmt.Errorf(errInvalidValue, EnvRateLimitBurstCapacity, err)
 		}
 		config.RateLimit.BurstCapacity = burst
 	}
@@ -157,7 +162,7 @@ func LoadFromEnv() (*ClientConfig, error) {
 	if v := os.Getenv(EnvMaxIdleConnections); v != "" {
 		max, err := strconv.Atoi(v)
 		if err != nil {
-			return nil, fmt.Errorf("invalid value for %s: %w", EnvMaxIdleConnections, err)
+			return nil, fmt.Errorf(errInvalidValue, EnvMaxIdleConnections, err)
 		}
 		config.ConnectionPool.MaxIdleConnections = max
 	}
@@ -165,7 +170,7 @@ func LoadFromEnv() (*ClientConfig, error) {
 	if v := os.Getenv(EnvMaxConnectionsPerHost); v != "" {
 		max, err := strconv.Atoi(v)
 		if err != nil {
-			return nil, fmt.Errorf("invalid value for %s: %w", EnvMaxConnectionsPerHost, err)
+			return nil, fmt.Errorf(errInvalidValue, EnvMaxConnectionsPerHost, err)
 		}
 		config.ConnectionPool.MaxConnectionsPerHost = max
 	}
@@ -173,7 +178,7 @@ func LoadFromEnv() (*ClientConfig, error) {
 	if v := os.Getenv(EnvKeepAliveDuration); v != "" {
 		duration, err := parseDuration(v)
 		if err != nil {
-			return nil, fmt.Errorf("invalid value for %s: %w", EnvKeepAliveDuration, err)
+			return nil, fmt.Errorf(errInvalidValue, EnvKeepAliveDuration, err)
 		}
 		config.ConnectionPool.KeepAliveDuration = duration
 	}

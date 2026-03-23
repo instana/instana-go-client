@@ -413,11 +413,9 @@ func (c *instanaAPI) WebsiteAlertConfigs() rest.RestResource[*api.WebsiteAlertCo
 // WebsiteMonitoringConfigs returns the website monitoring configurations client (lazy initialization)
 func (c *instanaAPI) WebsiteMonitoringConfigs() rest.RestResource[*api.WebsiteMonitoringConfig] {
 	if c.websiteMonitoringConfigs == nil {
-		c.websiteMonitoringConfigs = NewRestResource[*api.WebsiteMonitoringConfig](
-			c.restClient,
-			api.WebsiteMonitoringConfigResourcePath,
-			rest.DefaultRestResourceModeCreatePOSTUpdatePUT,
+		c.websiteMonitoringConfigs = api.NewWebsiteMonitoringConfigRestResource(
 			rest.NewGenericUnmarshaller[*api.WebsiteMonitoringConfig](),
+			c.restClient,
 		)
 	}
 	return c.websiteMonitoringConfigs

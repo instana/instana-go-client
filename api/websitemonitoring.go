@@ -20,6 +20,15 @@ func (r *WebsiteMonitoringConfig) GetIDForResourcePath() string {
 	return r.ID
 }
 
+// NewWebsiteMonitoringConfigRestResource creates a new REST for the website monitoring config
+func NewWebsiteMonitoringConfigRestResource(unmarshaller rest.JSONUnmarshaller[*WebsiteMonitoringConfig], client rest.RestClient) rest.RestResource[*WebsiteMonitoringConfig] {
+	return &websiteMonitoringConfigRestResource{
+		resourcePath: WebsiteMonitoringConfigResourcePath,
+		unmarshaller: unmarshaller,
+		client:       client,
+	}
+}
+
 //nolint:unused
 type websiteMonitoringConfigRestResource struct {
 	resourcePath string

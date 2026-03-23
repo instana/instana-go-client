@@ -33,6 +33,8 @@ echo "4️⃣ Running security scan..."
 if ! command -v govulncheck &> /dev/null; then
   echo "⚠️  govulncheck not found. Installing..."
   go install golang.org/x/vuln/cmd/govulncheck@latest
+  # Add GOPATH/bin to PATH if not already there
+  export PATH="$PATH:$(go env GOPATH)/bin"
 fi
 govulncheck ./...
 echo "✅ Security scan OK"

@@ -275,5 +275,3 @@ func (l *CustomLogger) Warn(msg string, keysAndValues ...interface{}) {
 func (l *CustomLogger) Error(msg string, keysAndValues ...interface{}) {
 	fmt.Printf("%s [ERROR] %s %v\n", l.prefix, msg, keysAndValues)
 }
-
-// Made with Bob

@@ -2,7 +2,7 @@ package api
 
 // APITokensResourcePath path to API Tokens resource of Instana RESTful API
 
-const APITokensResourcePath = "/api/settings/api-tokens"
+const APITokensResourcePath = "/api/settings/api-tokens" //nolint:gosec // This is a URL path, not a credential
 
 // APIToken is the representation of a API Token in Instana
 type APIToken struct {

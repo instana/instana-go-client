@@ -23,9 +23,6 @@ import (
 //
 //	api := instana.NewInstanaAPI("your-api-token", "tenant-unit.instana.io", false)
 //	tokens, err := api.APITokens().GetAll()
-//
-// Deprecated: This function is maintained for backward compatibility.
-// New code should use the client package directly via client.NewInstanaAPI().
 func NewInstanaAPI(apiToken string, endpoint string, skipTlsVerification bool) client.InstanaAPI {
 	restClient := NewClient(apiToken, endpoint, skipTlsVerification)
 	return client.NewInstanaAPI(restClient)
@@ -51,9 +48,6 @@ func NewInstanaAPI(apiToken string, endpoint string, skipTlsVerification bool) c
 //	    false,
 //	    "MyApp/1.0.0",
 //	)
-//
-// Deprecated: This function is maintained for backward compatibility.
-// New code should use the client package directly via client.NewInstanaAPI().
 func NewInstanaAPIWithUserAgent(apiToken string, endpoint string, skipTlsVerification bool, userAgent string) client.InstanaAPI {
 	cfg := config.DefaultClientConfig()
 	cfg.APIToken = apiToken
@@ -102,9 +96,6 @@ func NewInstanaAPIWithUserAgent(apiToken string, endpoint string, skipTlsVerific
 //	if err != nil {
 //	    log.Fatal(err)
 //	}
-//
-// Deprecated: This function is maintained for backward compatibility.
-// New code should use the client package directly via client.NewInstanaAPI().
 func NewInstanaAPIWithConfig(cfg *config.ClientConfig) (client.InstanaAPI, error) {
 	restClient, err := NewClientWithConfig(cfg)
 	if err != nil {

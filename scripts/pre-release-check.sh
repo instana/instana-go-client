@@ -72,4 +72,4 @@ echo "  1. Create tag:  git tag $VERSION"
 echo "  2. Push tag:    git push origin $VERSION"
 echo "  3. Monitor:     https://github.com/instana/instana-go-client/actions"
 
-# Made with Bob
+

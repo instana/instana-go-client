@@ -151,5 +151,3 @@
 //   - GitHub: https://github.com/instana/instana-go-client
 //   - Documentation: https://pkg.go.dev/github.com/instana/instana-go-client
 package instana
-
-// Made with Bob

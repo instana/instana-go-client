@@ -20,12 +20,14 @@ func (r *WebsiteMonitoringConfig) GetIDForResourcePath() string {
 	return r.ID
 }
 
+//nolint:unused
 type websiteMonitoringConfigRestResource struct {
 	resourcePath string
 	unmarshaller rest.JSONUnmarshaller[*WebsiteMonitoringConfig]
 	client       rest.RestClient
 }
 
+//nolint:unused // Method is part of the REST resource interface and will be used by external consumers
 func (r *websiteMonitoringConfigRestResource) GetAll() (*[]*WebsiteMonitoringConfig, error) {
 	data, err := r.client.Get(r.resourcePath)
 	if err != nil {
@@ -38,6 +40,7 @@ func (r *websiteMonitoringConfigRestResource) GetAll() (*[]*WebsiteMonitoringCon
 	return objects, nil
 }
 
+//nolint:unused // Method is part of the REST resource interface and will be used by external consumers
 func (r *websiteMonitoringConfigRestResource) GetOne(id string) (*WebsiteMonitoringConfig, error) {
 	data, err := r.client.GetOne(id, r.resourcePath)
 	if err != nil {
@@ -46,6 +49,7 @@ func (r *websiteMonitoringConfigRestResource) GetOne(id string) (*WebsiteMonitor
 	return r.validateResponseAndConvertToStruct(data)
 }
 
+//nolint:unused // Method is part of the REST resource interface and will be used by external consumers
 func (r *websiteMonitoringConfigRestResource) Create(data *WebsiteMonitoringConfig) (*WebsiteMonitoringConfig, error) {
 	response, err := r.client.PostByQuery(r.resourcePath, map[string]string{"name": data.Name})
 	if err != nil {
@@ -54,6 +58,7 @@ func (r *websiteMonitoringConfigRestResource) Create(data *WebsiteMonitoringConf
 	return r.validateResponseAndConvertToStruct(response)
 }
 
+//nolint:unused // Method is part of the REST resource interface and will be used by external consumers
 func (r *websiteMonitoringConfigRestResource) Update(data *WebsiteMonitoringConfig) (*WebsiteMonitoringConfig, error) {
 	response, err := r.client.PutByQuery(r.resourcePath, data.GetIDForResourcePath(), map[string]string{"name": data.Name})
 	if err != nil {
@@ -62,6 +67,7 @@ func (r *websiteMonitoringConfigRestResource) Update(data *WebsiteMonitoringConf
 	return r.validateResponseAndConvertToStruct(response)
 }
 
+//nolint:unused // Method is part of the REST resource interface and will be used by external consumers
 func (r *websiteMonitoringConfigRestResource) validateResponseAndConvertToStruct(data []byte) (*WebsiteMonitoringConfig, error) {
 	dataObject, err := r.unmarshaller.Unmarshal(data)
 	if err != nil {
@@ -70,10 +76,12 @@ func (r *websiteMonitoringConfigRestResource) validateResponseAndConvertToStruct
 	return dataObject, nil
 }
 
+//nolint:unused // Method is part of the REST resource interface and will be used by external consumers
 func (r *websiteMonitoringConfigRestResource) Delete(data *WebsiteMonitoringConfig) error {
 	return r.DeleteByID(data.GetIDForResourcePath())
 }
 
+//nolint:unused // Method is part of the REST resource interface and will be used by external consumers
 func (r *websiteMonitoringConfigRestResource) DeleteByID(id string) error {
 	return r.client.Delete(id, r.resourcePath)
 }

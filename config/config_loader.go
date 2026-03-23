@@ -17,7 +17,7 @@ const (
 // Environment variable names for configuration
 const (
 	EnvBaseURL                    = "INSTANA_BASE_URL"
-	EnvAPIToken                   = "INSTANA_API_TOKEN"
+	EnvAPIToken                   = "INSTANA_API_TOKEN" //nolint:gosec // This is an environment variable name, not a credential
 	EnvDebug                      = "INSTANA_DEBUG"
 	EnvConnectionTimeout          = "INSTANA_CONNECTION_TIMEOUT"
 	EnvRequestTimeout             = "INSTANA_REQUEST_TIMEOUT"
@@ -188,7 +188,7 @@ func LoadFromEnv() (*ClientConfig, error) {
 
 // LoadFromJSON loads configuration from a JSON file
 func LoadFromJSON(filename string) (*ClientConfig, error) {
-	data, err := os.ReadFile(filename)
+	data, err := os.ReadFile(filename) //nolint:gosec // filename is provided by user, not from external input
 	if err != nil {
 		return nil, fmt.Errorf("failed to read config file: %w", err)
 	}
@@ -396,23 +396,23 @@ func mergeConfigs(target, source *ClientConfig) {
 func PrintEnvVarHelp() string {
 	var sb strings.Builder
 	sb.WriteString("Instana Go Client - Environment Variables:\n\n")
-	sb.WriteString(fmt.Sprintf("  %-40s  %s\n", EnvBaseURL, "Base URL of the Instana API"))
-	sb.WriteString(fmt.Sprintf("  %-40s  %s\n", EnvAPIToken, "API token for authentication"))
-	sb.WriteString(fmt.Sprintf("  %-40s  %s\n", EnvDebug, "Enable debug logging (true/false)"))
-	sb.WriteString(fmt.Sprintf("  %-40s  %s\n", EnvConnectionTimeout, "Connection timeout (e.g., 30s, 1m)"))
-	sb.WriteString(fmt.Sprintf("  %-40s  %s\n", EnvRequestTimeout, "Request timeout (e.g., 60s, 2m)"))
-	sb.WriteString(fmt.Sprintf("  %-40s  %s\n", EnvIdleConnectionTimeout, "Idle connection timeout (e.g., 90s)"))
-	sb.WriteString(fmt.Sprintf("  %-40s  %s\n", EnvMaxRetryAttempts, "Maximum retry attempts (integer)"))
-	sb.WriteString(fmt.Sprintf("  %-40s  %s\n", EnvRetryInitialDelay, "Initial retry delay (e.g., 1s)"))
-	sb.WriteString(fmt.Sprintf("  %-40s  %s\n", EnvRetryMaxDelay, "Maximum retry delay (e.g., 30s)"))
-	sb.WriteString(fmt.Sprintf("  %-40s  %s\n", EnvRetryBackoffMultiplier, "Retry backoff multiplier (float)"))
-	sb.WriteString(fmt.Sprintf("  %-40s  %s\n", EnvBatchSize, "Batch operation size (integer)"))
-	sb.WriteString(fmt.Sprintf("  %-40s  %s\n", EnvBatchConcurrentRequests, "Concurrent batch requests (integer)"))
-	sb.WriteString(fmt.Sprintf("  %-40s  %s\n", EnvRateLimitEnabled, "Enable rate limiting (true/false)"))
-	sb.WriteString(fmt.Sprintf("  %-40s  %s\n", EnvRateLimitRequestsPerSecond, "Requests per second limit (integer)"))
-	sb.WriteString(fmt.Sprintf("  %-40s  %s\n", EnvRateLimitBurstCapacity, "Rate limit burst capacity (integer)"))
-	sb.WriteString(fmt.Sprintf("  %-40s  %s\n", EnvMaxIdleConnections, "Maximum idle connections (integer)"))
-	sb.WriteString(fmt.Sprintf("  %-40s  %s\n", EnvMaxConnectionsPerHost, "Maximum connections per host (integer)"))
-	sb.WriteString(fmt.Sprintf("  %-40s  %s\n", EnvKeepAliveDuration, "Keep-alive duration (e.g., 30s)"))
+	fmt.Fprintf(&sb, "  %-40s  %s\n", EnvBaseURL, "Base URL of the Instana API")
+	fmt.Fprintf(&sb, "  %-40s  %s\n", EnvAPIToken, "API token for authentication")
+	fmt.Fprintf(&sb, "  %-40s  %s\n", EnvDebug, "Enable debug logging (true/false)")
+	fmt.Fprintf(&sb, "  %-40s  %s\n", EnvConnectionTimeout, "Connection timeout (e.g., 30s, 1m)")
+	fmt.Fprintf(&sb, "  %-40s  %s\n", EnvRequestTimeout, "Request timeout (e.g., 60s, 2m)")
+	fmt.Fprintf(&sb, "  %-40s  %s\n", EnvIdleConnectionTimeout, "Idle connection timeout (e.g., 90s)")
+	fmt.Fprintf(&sb, "  %-40s  %s\n", EnvMaxRetryAttempts, "Maximum retry attempts (integer)")
+	fmt.Fprintf(&sb, "  %-40s  %s\n", EnvRetryInitialDelay, "Initial retry delay (e.g., 1s)")
+	fmt.Fprintf(&sb, "  %-40s  %s\n", EnvRetryMaxDelay, "Maximum retry delay (e.g., 30s)")
+	fmt.Fprintf(&sb, "  %-40s  %s\n", EnvRetryBackoffMultiplier, "Retry backoff multiplier (float)")
+	fmt.Fprintf(&sb, "  %-40s  %s\n", EnvBatchSize, "Batch operation size (integer)")
+	fmt.Fprintf(&sb, "  %-40s  %s\n", EnvBatchConcurrentRequests, "Concurrent batch requests (integer)")
+	fmt.Fprintf(&sb, "  %-40s  %s\n", EnvRateLimitEnabled, "Enable rate limiting (true/false)")
+	fmt.Fprintf(&sb, "  %-40s  %s\n", EnvRateLimitRequestsPerSecond, "Requests per second limit (integer)")
+	fmt.Fprintf(&sb, "  %-40s  %s\n", EnvRateLimitBurstCapacity, "Rate limit burst capacity (integer)")
+	fmt.Fprintf(&sb, "  %-40s  %s\n", EnvMaxIdleConnections, "Maximum idle connections (integer)")
+	fmt.Fprintf(&sb, "  %-40s  %s\n", EnvMaxConnectionsPerHost, "Maximum connections per host (integer)")
+	fmt.Fprintf(&sb, "  %-40s  %s\n", EnvKeepAliveDuration, "Keep-alive duration (e.g., 30s)")
 	return sb.String()
 }

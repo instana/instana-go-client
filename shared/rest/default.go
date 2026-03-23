@@ -109,16 +109,18 @@ func (r *defaultRestResource[T]) Create(data T) (T, error) {
 }
 
 func (r *defaultRestResource[T]) Update(data T) (T, error) {
-	if r.mode == DefaultRestResourceModeCreateAndUpdatePOST {
+	switch r.mode {
+	case DefaultRestResourceModeCreateAndUpdatePOST:
 		return r.upsertWithNoContentHandling(data, r.client.PostWithID)
-	} else if r.mode == DefaultRestResourceModeCreatePOSTAndUpdateNotSupported || r.mode == DefaultRestResourceModeCreatePUTAndUpdateNotSupported {
+	case DefaultRestResourceModeCreatePOSTAndUpdateNotSupported, DefaultRestResourceModeCreatePUTAndUpdateNotSupported:
 		emptyObject, err := r.unmarshaller.Unmarshal([]byte("{}"))
 		if err != nil {
 			return emptyObject, fmt.Errorf("update is not supported for %s; %s", r.resourcePath, err)
 		}
 		return emptyObject, fmt.Errorf("update is not supported for %s", r.resourcePath)
+	default:
+		return r.upsertWithNoContentHandling(data, r.client.Put)
 	}
-	return r.upsertWithNoContentHandling(data, r.client.Put)
 }
 
 func (r *defaultRestResource[T]) upsert(data T, operation restClientOperation) (T, error) {

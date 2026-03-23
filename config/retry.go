@@ -200,7 +200,7 @@ func (r *Retryer) calculateDelay(attempt int) time.Duration {
 
 	// Apply jitter if enabled
 	if r.config.Jitter {
-		jitter := rand.Float64() * 0.3 * delay // Up to 30% jitter
+		jitter := rand.Float64() * 0.3 * delay //nolint:gosec // Weak random is acceptable for jitter
 		delay = delay + jitter
 	}
 

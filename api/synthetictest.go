@@ -87,8 +87,8 @@ type SyntheticTestConfig struct {
 	// SSLCertificate fields
 	Hostname             *string                    `json:"hostname,omitempty"`
 	DaysRemainingCheck   *int32                     `json:"daysRemainingCheck,omitempty"`
+	SSLPort              *int32                     `json:"sslPort,omitempty"`
 	AcceptSelfSignedCert *bool                      `json:"acceptSelfSignedCertificate,omitempty"`
-	SSLPort              *int32                     `json:"port,omitempty"`
 	ValidationRules      []SSLCertificateValidation `json:"validationRules,omitempty"`
 
 	// WebpageAction fields (shares URL from HttpAction, Browser and RecordVideo from BrowserScript)

@@ -8,13 +8,41 @@ on:
   workflow_dispatch:
 
 jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.23'
+    
+    - name: Run golangci-lint
+      uses: golangci/golangci-lint-action@v4
+      with:
+        version: latest
+        args: --timeout=5m
+    
+    - name: Check code formatting
+      run: |
+        if [ -n "$(gofmt -l .)" ]; then
+          echo "❌ Code is not formatted"
+          gofmt -l .
+          exit 1
+        fi
+        echo "✅ Code is properly formatted"
+
   test:
     name: Test
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        go-version: ['1.23']
+        go-version: ['1.23']  # Only test minimum required version from go.mod
     
     steps:
     - name: Checkout code
@@ -69,6 +97,86 @@ jobs:
     
     - name: Build
       run: go build -v ./...
+    
+    - name: Verify go.mod and go.sum
+      run: |
+        go mod tidy
+        if [ -n "$(git diff go.mod go.sum)" ]; then
+          echo "❌ go.mod or go.sum is not tidy"
+          git diff go.mod go.sum
+          exit 1
+        fi
+        echo "✅ go.mod and go.sum are tidy"
+
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.23'
+    
+    - name: Run Gosec Security Scanner
+      uses: securego/gosec@master
+      with:
+        args: '-no-fail -fmt sarif -out results.sarif ./...'
+    
+    - name: Upload SARIF file
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: results.sarif
+    
+    - name: Install govulncheck
+      run: go install golang.org/x/vuln/cmd/govulncheck@latest
+    
+    - name: Run govulncheck
+      run: |
+        echo "Running govulncheck for vulnerability scanning..."
+        govulncheck ./...
+        echo "✅ No vulnerabilities found"
+
+  coverage-report:
+    name: Coverage Report
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.23'
+    
+    - name: Generate coverage report
+      shell: bash
+      run: |
+        go test -coverprofile=coverage.out -covermode=atomic ./...
+        go tool cover -html=coverage.out -o coverage.html
+    
+    - name: Check coverage threshold
+      shell: bash
+      run: |
+        COVERAGE=$(go tool cover -func=coverage.out | grep total | awk '{print $3}' | sed 's/%//')
+        THRESHOLD=80
+        echo "Coverage: ${COVERAGE}%"
+        if (( $(echo "$COVERAGE < $THRESHOLD" | bc -l) )); then
+          echo "❌ Coverage ${COVERAGE}% is below threshold ${THRESHOLD}%"
+          exit 1
+        fi
+        echo "✅ Coverage ${COVERAGE}% meets threshold ${THRESHOLD}%"
+    
+    - name: Upload coverage report
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report
+        path: ./coverage.html
 
   benchmark:
     name: Benchmark
@@ -94,24 +202,6 @@ jobs:
         name: benchmark-results
         path: ./benchmark.txt
 
-  security:
-    name: Security Scan
-    runs-on: ubuntu-latest
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Run Gosec Security Scanner
-      uses: securego/gosec@master
-      with:
-        args: '-no-fail -fmt sarif -out results.sarif ./...'
-    
-    - name: Upload SARIF file
-      uses: github/codeql-action/upload-sarif@v3
-      with:
-        sarif_file: results.sarif
-
   integration-test:
     name: Integration Tests
     runs-on: ubuntu-latest
@@ -132,45 +222,41 @@ jobs:
         INSTANA_BASE_URL: ${{ secrets.INSTANA_BASE_URL }}
         INSTANA_API_TOKEN: ${{ secrets.INSTANA_API_TOKEN }}
 
-  coverage-report:
-    name: Coverage Report
+  dependency-review:
+    name: Dependency Review
     runs-on: ubuntu-latest
-    needs: test
+    if: github.event_name == 'pull_request'
     
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
     
-    - name: Set up Go
-      uses: actions/setup-go@v5
-      with:
-        go-version: '1.23'
-    
-    - name: Generate coverage report
-      shell: bash
-      run: |
-        go test -coverprofile=coverage.out -covermode=atomic ./...
-        go tool cover -html=coverage.out -o coverage.html
-    
-    - name: Upload coverage report
-      uses: actions/upload-artifact@v4
-      with:
-        name: coverage-report
-        path: ./coverage.html
+    - name: Dependency Review
+      uses: actions/dependency-review-action@v4
 
   notify:
     name: Notify
     runs-on: ubuntu-latest
-    needs: [test, build]
+    needs: [lint, test, build, security, coverage-report]
     if: always()
     
     steps:
     - name: Check job status
       run: |
-        if [ "${{ needs.test.result }}" == "failure" ] || [ "${{ needs.build.result }}" == "failure" ]; then
-          echo "CI pipeline failed"
+        if [ "${{ needs.lint.result }}" == "failure" ] || \
+           [ "${{ needs.test.result }}" == "failure" ] || \
+           [ "${{ needs.build.result }}" == "failure" ] || \
+           [ "${{ needs.security.result }}" == "failure" ] || \
+           [ "${{ needs.coverage-report.result }}" == "failure" ]; then
+          echo "❌ CI pipeline failed"
+          echo "Lint: ${{ needs.lint.result }}"
+          echo "Test: ${{ needs.test.result }}"
+          echo "Build: ${{ needs.build.result }}"
+          echo "Security: ${{ needs.security.result }}"
+          echo "Coverage: ${{ needs.coverage-report.result }}"
           exit 1
         else
-          echo "CI pipeline passed"
+          echo "✅ CI pipeline passed"
         fi
 
+# Made with Bob

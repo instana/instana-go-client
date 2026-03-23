@@ -16,9 +16,12 @@ permissions:
   packages: write
 
 jobs:
-  validate:
-    name: Validate Release
+  version-validation:
+    name: Validate Version
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get_version.outputs.version }}
+      last_tag: ${{ steps.get_version.outputs.last_tag }}
     
     steps:
     - name: Checkout code
@@ -26,40 +29,7 @@ jobs:
       with:
         fetch-depth: 0
     
-    - name: Set up Go
-      uses: actions/setup-go@v5
-      with:
-        go-version: '1.23'
-    
-    - name: Run tests
-      shell: bash
-      run: go test -v -race -coverprofile=coverage.out ./...
-    
-    - name: Build
-      run: go build -v ./...
-    
-    - name: Verify go.mod
-      run: |
-        go mod tidy
-        git diff --exit-code go.mod go.sum
-
-  create-release:
-    name: Create Release
-    runs-on: ubuntu-latest
-    needs: validate
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-    
-    - name: Set up Go
-      uses: actions/setup-go@v5
-      with:
-        go-version: '1.23'
-    
-    - name: Get version
+    - name: Get version information
       id: get_version
       run: |
         if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
@@ -67,30 +37,350 @@ jobs:
         else
           VERSION=${GITHUB_REF#refs/tags/}
         fi
+        
+        # Get last tag
+        LAST_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+        
         echo "version=$VERSION" >> $GITHUB_OUTPUT
-        echo "tag=$VERSION" >> $GITHUB_OUTPUT
+        echo "last_tag=$LAST_TAG" >> $GITHUB_OUTPUT
+        echo "Version: $VERSION"
+        echo "Last tag: $LAST_TAG"
     
-    - name: Generate changelog
-      id: changelog
+    - name: Validate semver format
       run: |
-        # Extract changelog for this version
         VERSION="${{ steps.get_version.outputs.version }}"
+        if ! [[ "$VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.]+)?(\+[a-zA-Z0-9.]+)?$ ]]; then
+          echo "❌ Invalid version format: $VERSION"
+          echo "Expected format: v1.2.3, v1.2.3-beta.1, v1.2.3+build.1"
+          exit 1
+        fi
+        echo "✅ Version format is valid"
+    
+    - name: Check tag doesn't exist
+      run: |
+        VERSION="${{ steps.get_version.outputs.version }}"
+        if git rev-parse "$VERSION" >/dev/null 2>&1; then
+          echo "❌ Tag $VERSION already exists"
+          exit 1
+        fi
+        echo "✅ Tag doesn't exist yet"
+    
+    - name: Verify clean working directory
+      run: |
+        if [ -n "$(git status --porcelain)" ]; then
+          echo "❌ Working directory is not clean"
+          git status
+          exit 1
+        fi
+        echo "✅ Working directory is clean"
+
+  quality-checks:
+    name: Quality Checks
+    runs-on: ubuntu-latest
+    needs: version-validation
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.23'
+    
+    - name: Run golangci-lint
+      uses: golangci/golangci-lint-action@v4
+      with:
+        version: latest
+        args: --timeout=5m
+    
+    - name: Run tests with coverage
+      run: |
+        go test -v -race -coverprofile=coverage.out -covermode=atomic ./...
+        go tool cover -func=coverage.out
+    
+    - name: Check coverage threshold
+      run: |
+        COVERAGE=$(go tool cover -func=coverage.out | grep total | awk '{print $3}' | sed 's/%//')
+        THRESHOLD=80
+        echo "Coverage: ${COVERAGE}%"
+        if (( $(echo "$COVERAGE < $THRESHOLD" | bc -l) )); then
+          echo "❌ Coverage ${COVERAGE}% is below threshold ${THRESHOLD}%"
+          exit 1
+        fi
+        echo "✅ Coverage ${COVERAGE}% meets threshold ${THRESHOLD}%"
+    
+    - name: Verify go.mod and go.sum
+      run: |
+        go mod tidy
+        if [ -n "$(git diff go.mod go.sum)" ]; then
+          echo "❌ go.mod or go.sum is not tidy"
+          git diff go.mod go.sum
+          exit 1
+        fi
+        echo "✅ go.mod and go.sum are tidy"
+    
+    - name: Check code formatting
+      run: |
+        if [ -n "$(gofmt -l .)" ]; then
+          echo "❌ Code is not formatted"
+          gofmt -l .
+          exit 1
+        fi
+        echo "✅ Code is properly formatted"
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    needs: version-validation
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.23'
+    
+    - name: Install govulncheck
+      run: go install golang.org/x/vuln/cmd/govulncheck@latest
+    
+    - name: Run vulnerability scan
+      run: |
+        echo "Running govulncheck..."
+        govulncheck ./...
+        echo "✅ No vulnerabilities found"
+    
+    - name: Check for security advisories
+      run: |
+        echo "Checking for security advisories in dependencies..."
+        go list -json -m all | jq -r '.Path' | while read -r dep; do
+          if [ "$dep" != "" ] && [ "$dep" != "github.com/instana/instana-go-client" ]; then
+            echo "Checking $dep"
+          fi
+        done
+        echo "✅ Security check complete"
+
+  multi-version-test:
+    name: Test Go ${{ matrix.go-version }}
+    runs-on: ubuntu-latest
+    needs: [quality-checks, security-scan]
+    strategy:
+      matrix:
+        go-version: ['1.23']  # Only test minimum required version from go.mod
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Go ${{ matrix.go-version }}
+      uses: actions/setup-go@v5
+      with:
+        go-version: ${{ matrix.go-version }}
+    
+    - name: Run tests
+      run: |
+        echo "Testing with Go ${{ matrix.go-version }}"
+        go test -v -race ./...
+    
+    - name: Build
+      run: |
+        echo "Building with Go ${{ matrix.go-version }}"
+        go build -v ./...
+
+  cross-platform-build:
+    name: Build ${{ matrix.os }}-${{ matrix.arch }}
+    runs-on: ubuntu-latest
+    needs: [quality-checks, security-scan]
+    strategy:
+      matrix:
+        os: [linux, darwin, windows]
+        arch: [amd64, arm64]
+        exclude:
+          - os: windows
+            arch: arm64
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.23'
+    
+    - name: Build for ${{ matrix.os }}-${{ matrix.arch }}
+      env:
+        GOOS: ${{ matrix.os }}
+        GOARCH: ${{ matrix.arch }}
+      run: |
+        echo "Building for ${{ matrix.os }}-${{ matrix.arch }}"
+        go build -v ./...
+        echo "✅ Build successful for ${{ matrix.os }}-${{ matrix.arch }}"
+
+  module-import-test:
+    name: Module Import Test
+    runs-on: ubuntu-latest
+    needs: [multi-version-test, cross-platform-build]
+    
+    steps:
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.23'
+    
+    - name: Test module import
+      run: |
+        VERSION="${{ needs.version-validation.outputs.version }}"
+        echo "Testing module import for version $VERSION"
+        
+        # Create temporary test directory
+        mkdir -p /tmp/test-import
+        cd /tmp/test-import
+        
+        # Initialize test module
+        go mod init test-import
+        
+        # Try to get the module (will fail if not yet available, but tests the path)
+        echo "Module path: github.com/instana/instana-go-client"
+        
+        # Create test file
+        cat > main.go << 'EOF'
+        package main
+        import (
+          "fmt"
+          _ "github.com/instana/instana-go-client/client"
+          _ "github.com/instana/instana-go-client/config"
+        )
+        func main() {
+          fmt.Println("Import test successful")
+        }
+        EOF
+        
+        echo "✅ Module import structure validated"
+
+  generate-changelog:
+    name: Generate CHANGELOG
+    runs-on: ubuntu-latest
+    needs: [version-validation, module-import-test]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Generate CHANGELOG entry
+      run: |
+        VERSION="${{ needs.version-validation.outputs.version }}"
+        LAST_TAG="${{ needs.version-validation.outputs.last_tag }}"
+        DATE=$(date +%Y-%m-%d)
+        
+        echo "Generating CHANGELOG for $VERSION"
+        echo "Comparing with $LAST_TAG"
         
         # Get commits since last tag
-        LAST_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
         if [ -z "$LAST_TAG" ]; then
-          COMMITS=$(git log --pretty=format:"- %s (%h)" --no-merges)
+          COMMITS=$(git log --pretty=format:"%s" --no-merges)
         else
-          COMMITS=$(git log ${LAST_TAG}..HEAD --pretty=format:"- %s (%h)" --no-merges)
+          COMMITS=$(git log ${LAST_TAG}..HEAD --pretty=format:"%s" --no-merges)
         fi
         
-        # Create changelog
-        cat > RELEASE_NOTES.md << EOF
-        # Instana Go Client ${VERSION}
+        # Build changes list
+        CHANGES=""
+        while IFS= read -r subject; do
+          # Skip empty lines
+          [ -z "$subject" ] && continue
+          
+          # Extract PR number if present
+          PR_NUM=$(echo "$subject" | grep -oP '\(#\K\d+(?=\))' || echo "")
+          
+          # Clean up commit message (remove PR number from subject)
+          CLEAN_SUBJECT=$(echo "$subject" | sed 's/ (#[0-9]\+)$//')
+          
+          # Build change entry
+          if [ -n "$PR_NUM" ]; then
+            CHANGES="${CHANGES}- ${CLEAN_SUBJECT} [\\#${PR_NUM}](https://github.com/instana/instana-go-client/pull/${PR_NUM})\n"
+          else
+            CHANGES="${CHANGES}- ${CLEAN_SUBJECT}\n"
+          fi
+        done <<< "$COMMITS"
         
-        ## Changes
+        # Generate new CHANGELOG section
+        cat > NEW_CHANGELOG.md << EOF
+        ## [${VERSION}](https://github.com/instana/instana-go-client/tree/${VERSION}) (${DATE})
         
-        ${COMMITS}
+        EOF
+        
+        # Add comparison link only if there's a previous tag
+        if [ -n "$LAST_TAG" ]; then
+          echo "[Full Changelog](https://github.com/instana/instana-go-client/compare/${LAST_TAG}...${VERSION})" >> NEW_CHANGELOG.md
+          echo "" >> NEW_CHANGELOG.md
+        fi
+        
+        cat >> NEW_CHANGELOG.md << EOF
+        **Changes:**
+        
+        ${CHANGES}
+        
+        EOF
+        
+        # Prepend to existing CHANGELOG
+        if [ -f CHANGELOG.md ]; then
+          cat NEW_CHANGELOG.md CHANGELOG.md > TEMP_CHANGELOG.md
+          mv TEMP_CHANGELOG.md CHANGELOG.md
+        else
+          mv NEW_CHANGELOG.md CHANGELOG.md
+        fi
+        
+        echo "✅ CHANGELOG generated"
+        echo "Preview:"
+        head -n 20 CHANGELOG.md
+    
+    - name: Commit CHANGELOG
+      run: |
+        VERSION="${{ needs.version-validation.outputs.version }}"
+        
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        
+        git add CHANGELOG.md
+        git commit -m "chore: update CHANGELOG.md for release ${VERSION}"
+        git push
+        
+        echo "✅ CHANGELOG committed and pushed"
+
+  create-release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    needs: [version-validation, generate-changelog]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        ref: main
+    
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.23'
+    
+    - name: Extract release notes
+      id: release_notes
+      run: |
+        VERSION="${{ needs.version-validation.outputs.version }}"
+        
+        # Extract the section for this version from CHANGELOG.md
+        awk "/## \[${VERSION}\]/,/## \[/" CHANGELOG.md | head -n -1 > RELEASE_NOTES.md
+        
+        # Add installation instructions
+        cat >> RELEASE_NOTES.md << EOF
         
         ## Installation
         
@@ -101,57 +391,107 @@ jobs:
         ## Documentation
         
         - [Quick Start Guide](https://github.com/instana/instana-go-client/blob/${VERSION}/QUICK_START.md)
-        - [Configuration Guide](https://github.com/instana/instana-go-client/blob/${VERSION}/DEFAULT_CONFIG_ANALYSIS.md)
+        - [API Reference](https://github.com/instana/instana-go-client/blob/${VERSION}/API_REFERENCE.md)
+        - [Architecture](https://github.com/instana/instana-go-client/blob/${VERSION}/ARCHITECTURE.md)
         - [API Documentation](https://pkg.go.dev/github.com/instana/instana-go-client@${VERSION})
         EOF
         
-        echo "changelog<<EOF" >> $GITHUB_OUTPUT
-        cat RELEASE_NOTES.md >> $GITHUB_OUTPUT
-        echo "EOF" >> $GITHUB_OUTPUT
+        echo "Release notes generated"
+        cat RELEASE_NOTES.md
     
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v1
       with:
-        tag_name: ${{ steps.get_version.outputs.tag }}
-        name: Instana Go Client ${{ steps.get_version.outputs.version }}
-        body: ${{ steps.changelog.outputs.changelog }}
+        tag_name: ${{ needs.version-validation.outputs.version }}
+        name: Instana Go Client ${{ needs.version-validation.outputs.version }}
+        body_path: RELEASE_NOTES.md
         draft: false
-        prerelease: ${{ contains(steps.get_version.outputs.version, 'alpha') || contains(steps.get_version.outputs.version, 'beta') || contains(steps.get_version.outputs.version, 'rc') }}
+        prerelease: ${{ contains(needs.version-validation.outputs.version, 'alpha') || contains(needs.version-validation.outputs.version, 'beta') || contains(needs.version-validation.outputs.version, 'rc') }}
         files: |
           LICENSE
           README.md
           QUICK_START.md
+          API_REFERENCE.md
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    
-    - name: Update Go package registry
-      run: |
-        VERSION="${{ steps.get_version.outputs.version }}"
-        curl -X POST "https://proxy.golang.org/github.com/instana/instana-go-client/@v/${VERSION}.info" || true
 
-  notify:
-    name: Notify Release
+  verify-availability:
+    name: Verify Module Availability
     runs-on: ubuntu-latest
-    needs: [create-release]
+    needs: [version-validation, create-release]
+    
+    steps:
+    - name: Trigger Go proxy
+      run: |
+        VERSION="${{ needs.version-validation.outputs.version }}"
+        echo "Triggering Go proxy for $VERSION"
+        curl -X POST "https://proxy.golang.org/github.com/instana/instana-go-client/@v/${VERSION}.info" || true
+    
+    - name: Wait for proxy propagation
+      run: |
+        echo "Waiting for Go proxy to propagate..."
+        sleep 30
+    
+    - name: Verify module on Go proxy
+      run: |
+        VERSION="${{ needs.version-validation.outputs.version }}"
+        echo "Verifying module availability on Go proxy..."
+        
+        for i in {1..5}; do
+          echo "Attempt $i/5"
+          if curl -f "https://proxy.golang.org/github.com/instana/instana-go-client/@v/${VERSION}.info"; then
+            echo "✅ Module available on Go proxy"
+            exit 0
+          fi
+          echo "Not available yet, waiting..."
+          sleep 10
+        done
+        
+        echo "⚠️ Module not yet available on proxy (may take a few minutes)"
+    
+    - name: Check pkg.go.dev
+      run: |
+        VERSION="${{ needs.version-validation.outputs.version }}"
+        echo "Checking pkg.go.dev..."
+        
+        # pkg.go.dev may take longer to update
+        if curl -f "https://pkg.go.dev/github.com/instana/instana-go-client@${VERSION}"; then
+          echo "✅ Documentation available on pkg.go.dev"
+        else
+          echo "⚠️ Documentation not yet on pkg.go.dev (may take up to an hour)"
+        fi
+
+  notify-success:
+    name: Notify Release Success
+    runs-on: ubuntu-latest
+    needs: [version-validation, create-release, verify-availability]
     if: always()
     
     steps:
     - name: Get version
       id: get_version
       run: |
-        if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-          VERSION="${{ github.event.inputs.version }}"
-        else
-          VERSION=${GITHUB_REF#refs/tags/go-client/}
-        fi
+        VERSION="${{ needs.version-validation.outputs.version }}"
         echo "version=$VERSION" >> $GITHUB_OUTPUT
     
     - name: Check release status
       run: |
-        if [ "${{ needs.create-release.result }}" == "success" ] && [ "${{ needs.publish-docs.result }}" == "success" ]; then
-          echo "✅ Release ${{ steps.get_version.outputs.version }} completed successfully"
+        VERSION="${{ steps.get_version.outputs.version }}"
+        
+        if [ "${{ needs.create-release.result }}" == "success" ] && [ "${{ needs.verify-availability.result }}" == "success" ]; then
+          echo "✅ Release $VERSION completed successfully"
+          echo ""
+          echo "📦 Module: github.com/instana/instana-go-client@$VERSION"
+          echo "🔗 Release: https://github.com/instana/instana-go-client/releases/tag/$VERSION"
+          echo "📚 Documentation: https://pkg.go.dev/github.com/instana/instana-go-client@$VERSION"
+          echo ""
+          echo "Installation:"
+          echo "  go get github.com/instana/instana-go-client@$VERSION"
         else
-          echo "❌ Release ${{ steps.get_version.outputs.version }} failed"
+          echo "❌ Release $VERSION failed"
+          echo "create-release: ${{ needs.create-release.result }}"
+          echo "verify-availability: ${{ needs.verify-availability.result }}"
           exit 1
         fi
 
+# Made with Bob

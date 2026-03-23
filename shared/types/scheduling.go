@@ -2,10 +2,10 @@ package types
 
 // Scheduling represents scheduling configuration for automation policies and SLO corrections
 type Scheduling struct {
-	Start      int64        `json:"start"`
-	End        int64        `json:"end"`
-	Recurrence Recurrence   `json:"recurrence"`
-	Duration   Duration     `json:"duration"`
+	Start      int64      `json:"start"`
+	End        int64      `json:"end"`
+	Recurrence Recurrence `json:"recurrence"`
+	Duration   Duration   `json:"duration"`
 }
 
 // Recurrence represents recurrence configuration

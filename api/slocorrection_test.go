@@ -1,7 +1,11 @@
-package api
+package api_test
 
 import (
+	"encoding/json"
 	"testing"
+
+	. "github.com/instana/instana-go-client/api"
+	"github.com/stretchr/testify/require"
 )
 
 func TestSloCorrectionConfigResourcePath(t *testing.T) {
@@ -49,4 +53,42 @@ func TestSloCorrectionConfigStructure(t *testing.T) {
 	}
 }
 
-// Made with Bob
+func TestNewSloCorrectionAgentJSONUnmarshaller(t *testing.T) {
+	testData := &testObject{
+		ID:   defaultObjectId,
+		Name: defaultObjectName,
+	}
+	testObjects := []*testObject{testData, testData}
+
+	serializedJSON, _ := json.Marshal(testObjects)
+
+	sut := NewSloCorrectionConfigJSONUnmarshaller(&testObject{})
+
+	_, err := sut.Unmarshal(serializedJSON)
+
+	require.Error(t, err)
+}
+
+func TestShouldSuccessfullyUnmarshalSloCorrectionArrayOfObjects(t *testing.T) {
+	testData := &testObject{
+		ID:   defaultObjectId,
+		Name: defaultObjectName,
+	}
+	testObjects := []*testObject{testData, testData}
+
+	// The UnmarshalArray expects JSON with "items" key
+	wrappedData := map[string][]*testObject{
+		"items": testObjects,
+	}
+	serializedJSON, _ := json.Marshal(wrappedData)
+
+	sut := NewSloCorrectionConfigJSONUnmarshaller(&testObject{})
+
+	result, err := sut.UnmarshalArray(serializedJSON)
+
+	require.NoError(t, err)
+	require.NotNil(t, result)
+	require.Equal(t, len(testObjects), len(*result))
+	require.Equal(t, testObjects[0].ID, (*result)[0].ID)
+	require.Equal(t, testObjects[0].Name, (*result)[0].Name)
+}

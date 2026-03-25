@@ -107,3 +107,13 @@ func TestAPIPermissionSetWithRolesIsEmpty(t *testing.T) {
 		t.Error("Expected IsEmpty to return false for non-empty permission set")
 	}
 }
+
+func TestToStringSlice(t *testing.T) {
+	SupportedInstanaPermissions := InstanaPermissions{
+		PermissionCanConfigureApplications,
+	}
+	persmissionSet := SupportedInstanaPermissions.ToStringSlice()
+	if persmissionSet[0] != "CAN_CONFIGURE_APPLICATIONS" {
+		t.Error("ToStringSlice not working correctly")
+	}
+}

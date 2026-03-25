@@ -35,3 +35,13 @@ func TestCustomEventSpecRuleTypeConstants(t *testing.T) {
 		})
 	}
 }
+
+func TestGetIDForResourcePath(t *testing.T) {
+	config := CustomEventSpecification{
+		ID: "12345",
+	}
+	if config.GetIDForResourcePath() != "12345" {
+		t.Errorf("Expected %s to be %s", config.ID, "12345")
+	}
+
+}

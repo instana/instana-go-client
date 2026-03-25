@@ -1,7 +1,9 @@
-package api
+package api_test
 
 import (
 	"testing"
+
+	. "github.com/instana/instana-go-client/api"
 )
 
 func TestSyntheticLocationResourcePath(t *testing.T) {

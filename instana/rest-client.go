@@ -21,11 +21,9 @@ const contentTypeHeader = "Content-Type"
 const encodingApplicationJSON = "application/json; charset=utf-8"
 
 // RestClient interface to access REST resources of the Instana API
-// Deprecated: Use rest.RestClient from shared/rest package instead
 type RestClient = rest.RestClient
 
 // InstanaDataObject is a marker interface for any data object provided by any resource of the Instana REST API
-// Deprecated: Use rest.InstanaDataObject from shared/rest package instead
 type InstanaDataObject = rest.InstanaDataObject
 
 type apiRequest struct {
@@ -42,7 +40,7 @@ type apiResponse struct {
 }
 
 // NewClient creates a new instance of the Instana REST API client with default configuration
-// Deprecated: Use NewClientWithConfig for more control over client behavior
+// Use NewClientWithConfig for more control over client behavior
 func NewClient(apiToken string, host string, skipTlsVerification bool) RestClient {
 	cfg := config.DefaultClientConfig()
 	cfg.APIToken = apiToken

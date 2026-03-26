@@ -29,7 +29,6 @@ func NewInstanaAPI(apiToken string, endpoint string, skipTlsVerification bool) c
 }
 
 // NewInstanaAPIWithUserAgent creates a new instance of the Instana API client with a custom user agent.
-// This is useful for identifying the client application in API logs and metrics.
 //
 // Parameters:
 //   - apiToken: The API token for authentication

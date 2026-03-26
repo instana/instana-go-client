@@ -260,13 +260,13 @@ The API client provides high-level resource access:
 
 **Location:** [`config/`](config/)
 
-Multi-layered configuration system:
+Flexible configuration system:
 
 ```
 ┌─────────────────────────────────────┐
 │     Configuration Sources           │
 ├─────────────────────────────────────┤
-│  Builder → Env Vars → JSON → Code  │
+│  Builder Pattern → Code → Defaults │
 └─────────────────────────────────────┘
            ↓
 ┌─────────────────────────────────────┐
@@ -420,38 +420,28 @@ Return to User
 
 ## Configuration System
 
-### Configuration Hierarchy
+### Configuration Approach
 
 ```
 1. Code Defaults (lowest priority)
    ↓
-2. JSON Configuration File
-   ↓
-3. Environment Variables
-   ↓
-4. Builder Pattern (highest priority)
+2. Builder Pattern (highest priority)
 ```
 
-### Configuration Loading
+### Configuration Creation
 
 ```go
 // 1. Start with defaults
 config := DefaultClientConfig()
 
-// 2. Load from JSON (optional)
-if jsonConfig, err := LoadFromJSON("config.json"); err == nil {
-    config = mergeConfigs(config, jsonConfig)
-}
+// 2. Customize with builder
+config, err := NewConfigBuilder().
+    WithBaseURL("https://tenant.instana.io").
+    WithAPIToken("token").
+    WithMaxRetryAttempts(5).
+    Build()
 
-// 3. Override with environment variables
-if envConfig, err := LoadFromEnv(); err == nil {
-    config = mergeConfigs(config, envConfig)
-}
-
-// 4. Apply builder overrides
-config = builder.applyOverrides(config)
-
-// 5. Validate final configuration
+// 3. Validate configuration
 if err := ValidateConfig(config); err != nil {
     return nil, err
 }

@@ -1,18 +1,16 @@
 # Instana Go Client - Usage Guide
 
-## Current Status
+## Overview
 
-The configuration system is **fully implemented** but **not yet integrated** with the REST client. This guide shows:
-1. **Current Usage** - How to use the existing client (as-is)
-2. **Future Usage** - How to use the new configuration system (after integration)
+This guide demonstrates how to use the Instana Go Client library effectively. The configuration system is fully implemented and integrated with the REST client.
 
 ---
 
-## Current Usage (Existing Client)
+## Basic Usage
 
-### How It Works Now
+### Simple Client Creation
 
-The existing `NewClient()` function uses simple parameters:
+The simplest way to create a client (legacy compatible):
 
 ```go
 package main
@@ -22,34 +20,26 @@ import (
 )
 
 func main() {
-    // Current way - simple parameters
+    // Simple client creation
     client := instana.NewClient(
-        "your-api-token",           // API token
-        "https://tenant.instana.io", // Host URL
-        false,                       // Skip TLS verification
+        "your-api-token",
+        "tenant.instana.io",
+        false, // skipTlsVerification
     )
     
     // Use the client for API calls
-    // data, err := client.Get("/api/application-monitoring/applications")
+    data, err := client.Get("/api/application-monitoring/applications")
+    if err != nil {
+        // Handle error
+    }
 }
 ```
 
-### Limitations of Current Approach
-- ❌ Hardcoded timeout (30 seconds)
-- ❌ Hardcoded throttle rate (5 requests/second)
-- ❌ No retry logic
-- ❌ No rate limiting configuration
-- ❌ No custom headers support
-- ❌ No connection pooling configuration
-- ❌ Basic error messages (not typed)
-
 ---
 
-## Future Usage (After Integration)
+## Advanced Usage with Configuration
 
-### How It Will Work
-
-Once we integrate the configuration system (Phase 3 completion), you'll be able to use the new `NewClientWithConfig()` function:
+### Method 1: Using Builder Pattern (Recommended)
 
 ```go
 package main
@@ -58,12 +48,13 @@ import (
     "log"
     "time"
     
+    "github.com/instana/instana-go-client/config"
     "github.com/instana/instana-go-client/instana"
 )
 
 func main() {
-    // Method 1: Using Builder Pattern (Recommended)
-    config, err := instana.NewConfigBuilder().
+    // Create configuration using builder pattern
+    cfg, err := config.NewConfigBuilder().
         WithBaseURL("https://tenant-unit.instana.io").
         WithAPIToken("your-api-token").
         WithConnectionTimeout(45 * time.Second).
@@ -79,30 +70,23 @@ func main() {
         log.Fatalf("Failed to build config: %v", err)
     }
     
-    // Create client with configuration
-    client, err := instana.NewClientWithConfig(config)
+    // Create API client with configuration
+    api, err := instana.NewInstanaAPIWithConfig(cfg)
     if err != nil {
-        log.Fatalf("Failed to create client: %v", err)
+        log.Fatalf("Failed to create API: %v", err)
     }
     
-    // Use the client - now with retry, rate limiting, etc.
-    data, err := client.Get("/api/application-monitoring/applications")
+    // Use the API - now with retry, rate limiting, etc.
+    tokens, err := api.APITokens().GetAll()
     if err != nil {
         log.Fatalf("API call failed: %v", err)
     }
+    
+    log.Printf("Retrieved %d tokens", len(*tokens))
 }
 ```
 
-### Method 2: Environment Variables
-
-```bash
-# Set environment variables
-export INSTANA_BASE_URL=https://tenant-unit.instana.io
-export INSTANA_API_TOKEN=your-api-token
-export INSTANA_CONNECTION_TIMEOUT=30s
-export INSTANA_MAX_RETRY_ATTEMPTS=3
-export INSTANA_RATE_LIMIT_RPS=100
-```
+### Method 2: Using Default Configuration
 
 ```go
 package main
@@ -110,283 +94,307 @@ package main
 import (
     "log"
     
+    "github.com/instana/instana-go-client/config"
     "github.com/instana/instana-go-client/instana"
 )
 
 func main() {
-    // Load configuration from environment
-    config, err := instana.LoadFromEnv()
-    if err != nil {
-        log.Fatalf("Failed to load config: %v", err)
+    // Start with default configuration
+    cfg := config.DefaultClientConfig()
+    cfg.BaseURL = "https://tenant-unit.instana.io"
+    cfg.APIToken = "your-api-token"
+    
+    // Customize as needed
+    cfg.Retry.MaxAttempts = 5
+    cfg.RateLimit.RequestsPerSecond = 50
+    
+    // Validate configuration
+    if err := cfg.Validate(); err != nil {
+        log.Fatalf("Invalid config: %v", err)
     }
     
-    // Create client
-    client, err := instana.NewClientWithConfig(config)
+    // Create API client
+    api, err := instana.NewInstanaAPIWithConfig(cfg)
     if err != nil {
-        log.Fatalf("Failed to create client: %v", err)
+        log.Fatalf("Failed to create API: %v", err)
     }
     
-    // Use the client
-    data, err := client.Get("/api/application-monitoring/applications")
-}
-```
-
-### Method 3: JSON Configuration File
-
-**config.json:**
-```json
-{
-  "baseURL": "https://tenant-unit.instana.io",
-  "apiToken": "your-api-token",
-  "timeout": {
-    "connection": "30s",
-    "request": "60s",
-    "idleConnection": "90s"
-  },
-  "retry": {
-    "maxAttempts": 3,
-    "initialDelay": "1s",
-    "maxDelay": "30s",
-    "backoffMultiplier": 2.0,
-    "retryableStatusCodes": [408, 429, 500, 502, 503, 504],
-    "retryOnTimeout": true,
-    "retryOnConnectionError": true,
-    "jitter": true
-  },
-  "rateLimit": {
-    "enabled": true,
-    "requestsPerSecond": 100,
-    "burstCapacity": 200,
-    "waitForToken": true
-  },
-  "batch": {
-    "size": 100,
-    "concurrentRequests": 5
-  },
-  "connectionPool": {
-    "maxIdleConnections": 100,
-    "maxConnectionsPerHost": 10,
-    "keepAliveDuration": "30s"
-  },
-  "userAgent": "my-app/1.0.0",
-  "debug": false
-}
-```
-
-```go
-package main
-
-import (
-    "log"
-    
-    "github.com/instana/instana-go-client/instana"
-)
-
-func main() {
-    // Load configuration from JSON file
-    config, err := instana.LoadFromJSON("config.json")
+    // Use the API
+    apps, err := api.ApplicationConfigs().GetAll()
     if err != nil {
-        log.Fatalf("Failed to load config: %v", err)
+        log.Fatalf("Failed to get applications: %v", err)
     }
     
-    // Create client
-    client, err := instana.NewClientWithConfig(config)
-    if err != nil {
-        log.Fatalf("Failed to create client: %v", err)
-    }
-    
-    // Use the client
-    data, err := client.Get("/api/application-monitoring/applications")
-}
-```
-
-### Method 4: Hybrid (JSON + Environment Override)
-
-```go
-package main
-
-import (
-    "log"
-    
-    "github.com/instana/instana-go-client/instana"
-)
-
-func main() {
-    // Load from JSON, override with environment variables
-    config, err := instana.LoadFromJSONWithEnvOverride("config.json")
-    if err != nil {
-        log.Fatalf("Failed to load config: %v", err)
-    }
-    
-    // Create client
-    client, err := instana.NewClientWithConfig(config)
-    if err != nil {
-        log.Fatalf("Failed to create client: %v", err)
-    }
-    
-    // Use the client
-    data, err := client.Get("/api/application-monitoring/applications")
+    log.Printf("Retrieved %d applications", len(*apps))
 }
 ```
 
 ---
 
-## Benefits of New Configuration System
+## Configuration Options
 
-### 1. Automatic Retry
+### Timeouts
+
 ```go
-// Automatically retries on transient failures
-data, err := client.Get("/api/applications")
-// If it fails with 503, it will automatically retry with exponential backoff
+cfg, err := config.NewConfigBuilder().
+    WithConnectionTimeout(30 * time.Second).
+    WithRequestTimeout(60 * time.Second).
+    WithIdleConnectionTimeout(90 * time.Second).
+    WithResponseHeaderTimeout(10 * time.Second).
+    WithTLSHandshakeTimeout(10 * time.Second).
+    Build()
 ```
 
-### 2. Rate Limiting
+### Retry Configuration
+
 ```go
-// Automatically respects rate limits
-for i := 0; i < 1000; i++ {
-    data, err := client.Get("/api/applications")
-    // Rate limiter ensures we don't exceed configured RPS
+cfg, err := config.NewConfigBuilder().
+    WithMaxRetryAttempts(5).
+    WithRetryInitialDelay(1 * time.Second).
+    WithRetryMaxDelay(30 * time.Second).
+    WithRetryBackoffMultiplier(2.0).
+    WithRetryOnTimeout(true).
+    WithRetryOnConnectionError(true).
+    WithRetryJitter(true).
+    Build()
+```
+
+### Rate Limiting
+
+```go
+cfg, err := config.NewConfigBuilder().
+    WithRateLimitEnabled(true).
+    WithRateLimitRequestsPerSecond(100).
+    WithRateLimitBurstCapacity(200).
+    WithRateLimitWaitForToken(true).
+    Build()
+```
+
+### Connection Pooling
+
+```go
+cfg, err := config.NewConfigBuilder().
+    WithMaxIdleConnections(100).
+    WithMaxConnectionsPerHost(10).
+    WithMaxIdleConnectionsPerHost(10).
+    WithKeepAliveDuration(30 * time.Second).
+    WithDisableKeepAlives(false).
+    WithDisableCompression(false).
+    Build()
+```
+
+### Custom Headers
+
+```go
+cfg, err := config.NewConfigBuilder().
+    WithCustomHeader("X-Request-ID", "unique-id").
+    WithCustomHeader("X-Trace-ID", "trace-123").
+    WithCustomHeaders(map[string]string{
+        "X-Custom-1": "value1",
+        "X-Custom-2": "value2",
+    }).
+    Build()
+```
+
+### Logging
+
+```go
+// Use default logger with log level
+logger := config.NewDefaultLogger(config.ClientLogLevelInfo)
+
+// Or use no-op logger to disable logging
+logger := config.NewNoOpLogger()
+
+cfg, err := config.NewConfigBuilder().
+    WithLogger(logger).
+    WithDebug(true).
+    Build()
+```
+
+---
+
+## Error Handling
+
+### Basic Error Handling
+
+```go
+data, err := client.Get("/api/endpoint")
+if err != nil {
+    log.Printf("Error: %v\n", err)
 }
 ```
 
-### 3. Typed Errors
+### Advanced Error Handling with Typed Errors
+
 ```go
-data, err := client.Get("/api/applications")
+import "github.com/instana/instana-go-client/config"
+
+data, err := client.Get("/api/endpoint")
 if err != nil {
+    // Check if it's an Instana error
+    if instanaErr, ok := err.(*config.InstanaError); ok {
+        switch instanaErr.Type {
+        case config.ErrorTypeAuthentication:
+            log.Println("Authentication failed")
+        case config.ErrorTypeRateLimit:
+            log.Println("Rate limit exceeded")
+        case config.ErrorTypeValidation:
+            log.Println("Validation error")
+        case config.ErrorTypeNetwork:
+            log.Println("Network error")
+        case config.ErrorTypeTimeout:
+            log.Println("Request timeout")
+        }
+        
+        log.Printf("Status Code: %d\n", instanaErr.StatusCode)
+        log.Printf("Message: %s\n", instanaErr.Message)
+        log.Printf("Retryable: %v\n", instanaErr.IsRetryable())
+    }
+    
     // Check if error is retryable
-    if instana.IsRetryableError(err) {
-        // Handle retryable error
+    if config.IsRetryableError(err) {
+        log.Println("This error can be retried")
+    }
+    
+    // Check if error is temporary
+    if config.IsTemporaryError(err) {
+        log.Println("This is a temporary error")
     }
     
     // Extract status code
-    statusCode := instana.ExtractStatusCode(err)
-    
-    // Type assertion for detailed info
-    if instanaErr, ok := err.(*instana.InstanaError); ok {
-        log.Printf("Error Type: %s", instanaErr.Type)
-        log.Printf("Retryable: %v", instanaErr.IsRetryable())
-    }
+    statusCode := config.ExtractStatusCode(err)
+    log.Printf("HTTP Status Code: %d\n", statusCode)
 }
 ```
 
-### 4. Custom Headers
+---
+
+## Using the API Client
+
+### Accessing Resources
+
 ```go
-config := instana.NewConfigBuilder().
-    WithBaseURL("https://tenant.instana.io").
-    WithAPIToken("token").
-    WithCustomHeader("X-Request-ID", "unique-id").
-    WithCustomHeader("X-Trace-ID", "trace-123").
-    Build()
+// Create API client
+api, err := instana.NewInstanaAPIWithConfig(cfg)
+if err != nil {
+    log.Fatal(err)
+}
 
-client, _ := instana.NewClientWithConfig(config)
-// All requests will include custom headers
-```
+// API Tokens
+tokens, err := api.APITokens().GetAll()
+token, err := api.APITokens().GetOne("token-id")
+created, err := api.APITokens().Create(newToken)
+updated, err := api.APITokens().Update(token)
+err = api.APITokens().Delete(token)
 
-### 5. Connection Pooling
-```go
-config := instana.NewConfigBuilder().
-    WithBaseURL("https://tenant.instana.io").
-    WithAPIToken("token").
-    WithMaxIdleConnections(100).
-    WithMaxConnectionsPerHost(10).
-    WithKeepAliveDuration(30 * time.Second).
-    Build()
+// Application Configurations
+apps, err := api.ApplicationConfigs().GetAll()
+app, err := api.ApplicationConfigs().GetOne("app-id")
+created, err := api.ApplicationConfigs().Create(newApp)
 
-client, _ := instana.NewClientWithConfig(config)
-// HTTP connections are pooled and reused efficiently
+// Alert Configurations
+alerts, err := api.ApplicationAlertConfigs().GetAll()
+alert, err := api.ApplicationAlertConfigs().GetOne("alert-id")
+
+// And many more resources...
 ```
 
 ---
 
-## Migration Path
+## Production-Ready Configuration
 
-### Step 1: Current Code (No Changes Needed)
 ```go
-// This will continue to work
-client := instana.NewClient("token", "https://tenant.instana.io", false)
+cfg, err := config.NewConfigBuilder().
+    // Core settings
+    WithBaseURL("https://tenant-unit.instana.io").
+    WithAPIToken("your-api-token").
+    WithUserAgent("MyApp/1.0.0").
+    
+    // Timeouts
+    WithConnectionTimeout(10 * time.Second).
+    WithRequestTimeout(30 * time.Second).
+    WithIdleConnectionTimeout(90 * time.Second).
+    
+    // Retry with exponential backoff
+    WithMaxRetryAttempts(5).
+    WithRetryInitialDelay(1 * time.Second).
+    WithRetryMaxDelay(30 * time.Second).
+    WithRetryBackoffMultiplier(2.0).
+    WithRetryJitter(true).
+    WithRetryOnTimeout(true).
+    WithRetryOnConnectionError(true).
+    
+    // Rate limiting
+    WithRateLimitEnabled(true).
+    WithRateLimitRequestsPerSecond(10).
+    WithRateLimitBurstCapacity(20).
+    
+    // Connection pooling
+    WithMaxIdleConnections(100).
+    WithMaxConnectionsPerHost(10).
+    WithKeepAliveDuration(90 * time.Second).
+    
+    // Custom headers for tracking
+    WithCustomHeader("X-Application", "my-app").
+    WithCustomHeader("X-Environment", "production").
+    
+    // Logging
+    WithDebug(false).
+    Build()
+
+if err != nil {
+    log.Fatalf("Failed to build config: %v", err)
+}
+
+api, err := instana.NewInstanaAPIWithConfig(cfg)
+if err != nil {
+    log.Fatalf("Failed to create API: %v", err)
+}
 ```
 
-### Step 2: After Integration (Opt-in to New Features)
+---
+
+## Migration from Legacy Client
+
+### Before (Legacy)
+
 ```go
-// Use new configuration for enhanced features
-config := instana.NewConfigBuilder().
+client := instana.NewClient("token", "tenant.instana.io", false)
+data, err := client.Get("/api/endpoint")
+```
+
+### After (With Configuration)
+
+```go
+cfg, _ := config.NewConfigBuilder().
     WithBaseURL("https://tenant.instana.io").
     WithAPIToken("token").
     WithMaxRetryAttempts(5).
+    WithRateLimitEnabled(true).
     Build()
 
-client, _ := instana.NewClientWithConfig(config)
-```
-
-### Step 3: Deprecation (Future)
-```go
-// Old NewClient() will be marked as deprecated
-// Recommended to migrate to NewClientWithConfig()
+client, _ := instana.NewClientWithConfig(cfg)
+data, err := client.Get("/api/endpoint")
 ```
 
 ---
 
-## Implementation Status
+## Best Practices
 
-### ✅ Completed
-- Configuration structures (`ClientConfig`, `TimeoutConfig`, etc.)
-- Configuration validation
-- Builder pattern (`NewConfigBuilder()`)
-- Environment variable loading (`LoadFromEnv()`)
-- JSON file loading (`LoadFromJSON()`)
-- Retry mechanism (`Retryer`)
-- Rate limiter (`RateLimiter`)
-- Typed errors (`InstanaError`)
-- Logging infrastructure (`Logger`)
-
-### 🔄 In Progress (Phase 3 - 40% Remaining)
-- Refactor `NewClient()` to `NewClientWithConfig()`
-- Integrate retry mechanism into REST client
-- Integrate rate limiter into REST client
-- Add custom headers support to HTTP requests
-- Configure HTTP transport with connection pooling
-- Update error handling to use typed errors
-
-### ⏳ Pending
-- Comprehensive testing
-- CI/CD pipeline
-- Additional examples
-- Migration guide
+1. **Use Builder Pattern**: For production code, use the builder pattern for better configuration control
+2. **Enable Retry**: Configure retry mechanism for better reliability
+3. **Rate Limiting**: Enable rate limiting to avoid hitting API limits
+4. **Error Handling**: Use typed errors for better error handling
+5. **Connection Pooling**: Configure connection pooling for better performance
+6. **Custom Headers**: Add custom headers for request tracking and debugging
+7. **Logging**: Use appropriate log levels for different environments
 
 ---
 
-## Timeline
+## See Also
 
-- **Current**: Configuration system ready, not yet integrated
-- **Week 4**: Complete REST client integration
-- **Week 5-6**: Testing and validation
-- **Week 7+**: CI/CD, documentation, release
-
----
-
-## Questions?
-
-For more information:
-- See [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) for detailed roadmap
-- See [PROGRESS_SUMMARY.md](PROGRESS_SUMMARY.md) for current status
-- See [README.md](README.md) for complete documentation
-- See [examples/](examples/) for working code examples
-
----
-
-## Summary
-
-**Current State:**
-- ✅ Configuration system is fully implemented and tested
-- ✅ All configuration methods work (builder, env, JSON)
-- ✅ Retry, rate limiting, and error handling are ready
-- ❌ Not yet integrated with REST client
-
-**Next Step:**
-- Refactor REST client to accept `ClientConfig`
-- This will enable all the new features
-
-**Your Action:**
-- Continue using `NewClient()` for now
-- Watch for `NewClientWithConfig()` in the next update
-- Start planning your configuration (JSON file or env vars)
+- [README](README.md) - Project overview and features
+- [Quick Start Guide](QUICK_START.md) - Getting started quickly
+- [API Reference](API_REFERENCE.md) - Complete API documentation
+- [Architecture](ARCHITECTURE.md) - System architecture
+- [Examples](examples/) - Code examples

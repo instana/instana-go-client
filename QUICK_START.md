@@ -46,7 +46,7 @@ func main() {
 }
 ```
 
-### 2. Using the New Configuration System (Recommended)
+### 2. Using Configuration Builder (Recommended)
 
 ```go
 package main
@@ -56,17 +56,20 @@ import (
     "log"
     "time"
     
+    "github.com/instana/instana-go-client/config"
     "github.com/instana/instana-go-client/instana"
 )
 
 func main() {
     // Create configuration using builder pattern
-    config, err := instana.NewConfigBuilder().
+    cfg, err := config.NewConfigBuilder().
         WithBaseURL("https://your-tenant.instana.io").
         WithAPIToken("your-api-token").
         WithConnectionTimeout(30 * time.Second).
         WithRequestTimeout(60 * time.Second).
         WithMaxRetryAttempts(3).
+        WithRateLimitEnabled(true).
+        WithRateLimitRequestsPerSecond(100).
         WithDebug(true).
         Build()
     
@@ -74,23 +77,23 @@ func main() {
         log.Fatal(err)
     }
     
-    // Create client with configuration
-    client, err := instana.NewClientWithConfig(config)
+    // Create API client with configuration
+    api, err := instana.NewInstanaAPIWithConfig(cfg)
     if err != nil {
         log.Fatal(err)
     }
     
-    // Use the client...
-    data, err := client.Get("/api/application-monitoring/applications")
+    // Use the API
+    tokens, err := api.APITokens().GetAll()
     if err != nil {
         log.Fatal(err)
     }
     
-    fmt.Printf("Response: %s\n", string(data))
+    fmt.Printf("Retrieved %d tokens\n", len(*tokens))
 }
 ```
 
-### 3. Loading Configuration from Environment Variables
+### 3. Using Default Configuration
 
 ```go
 package main
@@ -99,83 +102,38 @@ import (
     "fmt"
     "log"
     
+    "github.com/instana/instana-go-client/config"
     "github.com/instana/instana-go-client/instana"
 )
 
 func main() {
-    // Set environment variables first:
-    // export INSTANA_BASE_URL="https://your-tenant.instana.io"
-    // export INSTANA_API_TOKEN="your-api-token"
-    // export INSTANA_MAX_RETRY_ATTEMPTS="5"
-    // export INSTANA_DEBUG="true"
+    // Start with default configuration
+    cfg := config.DefaultClientConfig()
+    cfg.BaseURL = "https://your-tenant.instana.io"
+    cfg.APIToken = "your-api-token"
     
-    // Load configuration from environment
-    config, err := instana.LoadFromEnv()
+    // Customize as needed
+    cfg.Retry.MaxAttempts = 5
+    cfg.RateLimit.RequestsPerSecond = 50
+    
+    // Validate configuration
+    if err := cfg.Validate(); err != nil {
+        log.Fatal(err)
+    }
+    
+    // Create API client
+    api, err := instana.NewInstanaAPIWithConfig(cfg)
     if err != nil {
         log.Fatal(err)
     }
     
-    // Create client
-    client, err := instana.NewClientWithConfig(config)
+    // Use the API
+    apps, err := api.ApplicationConfigs().GetAll()
     if err != nil {
         log.Fatal(err)
     }
     
-    // Use the client...
-    data, err := client.Get("/api/application-monitoring/applications")
-    if err != nil {
-        log.Fatal(err)
-    }
-    
-    fmt.Printf("Response: %s\n", string(data))
-}
-```
-
-### 4. Loading Configuration from JSON File
-
-```go
-package main
-
-import (
-    "fmt"
-    "log"
-    
-    "github.com/instana/instana-go-client/instana"
-)
-
-func main() {
-    // Create config.json file:
-    // {
-    //   "baseURL": "https://your-tenant.instana.io",
-    //   "apiToken": "your-api-token",
-    //   "timeout": {
-    //     "connection": 30000000000,
-    //     "request": 60000000000
-    //   },
-    //   "retry": {
-    //     "maxAttempts": 5
-    //   }
-    // }
-    
-    // Load configuration from JSON file
-    config, err := instana.LoadFromJSON("config.json")
-    if err != nil {
-        log.Fatal(err)
-    }
-    
-    // Create client
-    client, err := instana.NewClientWithConfig(config)
-    if err != nil {
-        log.Fatal(err)
-    }
-    
-    // Use the client...
-    data, err := client.Get("/api/application-monitoring/applications")
-    if err != nil {
-        log.Fatal(err)
-    }
-    
-    fmt.Printf("Response: %s\n", string(data))
+    fmt.Printf("Retrieved %d applications\n", len(*apps))
 }
 ```
 
@@ -341,46 +299,29 @@ if err != nil {
 
 ---
 
-## 🌍 Environment Variables
+## 🔧 Configuration Defaults
 
-All configuration can be set via environment variables:
+The library provides sensible defaults for all configuration options:
 
-```bash
-# Core Configuration
-export INSTANA_BASE_URL="https://your-tenant.instana.io"
-export INSTANA_API_TOKEN="your-api-token"
-export INSTANA_DEBUG="true"
-
-# Timeouts (duration strings or seconds)
-export INSTANA_CONNECTION_TIMEOUT="30s"
-export INSTANA_REQUEST_TIMEOUT="60s"
-export INSTANA_IDLE_CONNECTION_TIMEOUT="90s"
-
-# Retry Configuration
-export INSTANA_MAX_RETRY_ATTEMPTS="5"
-export INSTANA_RETRY_INITIAL_DELAY="1s"
-export INSTANA_RETRY_MAX_DELAY="30s"
-export INSTANA_RETRY_BACKOFF_MULTIPLIER="2.0"
-
-# Rate Limiting
-export INSTANA_RATE_LIMIT_ENABLED="true"
-export INSTANA_RATE_LIMIT_RPS="100"
-export INSTANA_RATE_LIMIT_BURST="200"
-
-# Connection Pool
-export INSTANA_MAX_IDLE_CONNECTIONS="100"
-export INSTANA_MAX_CONNECTIONS_PER_HOST="50"
-export INSTANA_KEEP_ALIVE_DURATION="30s"
-
-# Batch Configuration
-export INSTANA_BATCH_SIZE="100"
-export INSTANA_BATCH_CONCURRENT_REQUESTS="10"
-```
-
-To see all available environment variables:
 ```go
-fmt.Println(instana.PrintEnvVarHelp())
+cfg := config.DefaultClientConfig()
+// Defaults:
+// - Connection Timeout: 30s
+// - Request Timeout: 60s
+// - Idle Connection Timeout: 90s
+// - Max Retry Attempts: 3
+// - Retry Initial Delay: 1s
+// - Retry Max Delay: 30s
+// - Rate Limit: 100 req/s
+// - Burst Capacity: 200
+// - Max Idle Connections: 100
+// - Max Connections Per Host: 10
+// - Keep-Alive Duration: 30s
+// - Batch Size: 100
+// - Batch Concurrent Requests: 5
 ```
+
+You can override any of these using the builder pattern or by modifying the config directly.
 
 ---
 
@@ -515,7 +456,7 @@ func main() {
 }
 ```
 
-### Example 4: Configuration from Multiple Sources
+### Example 4: Production-Ready Configuration
 
 ```go
 package main
@@ -524,31 +465,45 @@ import (
     "log"
     "time"
     
+    "github.com/instana/instana-go-client/config"
     "github.com/instana/instana-go-client/instana"
 )
 
 func main() {
-    // Load from JSON file, override with environment variables
-    config, err := instana.LoadFromJSONWithEnvOverride("config.json")
-    if err != nil {
-        log.Fatal(err)
-    }
-    
-    // Further customize with builder
-    config, _ = instana.NewConfigBuilderFromConfig(config).
-        WithDebug(true).
-        WithMaxRetryAttempts(10).
+    // Create production-ready configuration
+    cfg, err := config.NewConfigBuilder().
+        WithBaseURL("https://your-tenant.instana.io").
+        WithAPIToken("your-api-token").
+        WithConnectionTimeout(10 * time.Second).
+        WithRequestTimeout(30 * time.Second).
+        WithMaxRetryAttempts(5).
+        WithRetryInitialDelay(1 * time.Second).
+        WithRetryMaxDelay(30 * time.Second).
+        WithRateLimitEnabled(true).
+        WithRateLimitRequestsPerSecond(10).
+        WithRateLimitBurstCapacity(20).
+        WithMaxIdleConnections(100).
+        WithMaxConnectionsPerHost(10).
+        WithCustomHeader("X-Application", "my-app").
+        WithDebug(false).
         Build()
     
-    client, _ := instana.NewClientWithConfig(config)
-    
-    // Use client...
-    data, err := client.Get("/api/application-monitoring/applications")
     if err != nil {
         log.Fatal(err)
     }
     
-    log.Printf("Fetched %d bytes\n", len(data))
+    api, err := instana.NewInstanaAPIWithConfig(cfg)
+    if err != nil {
+        log.Fatal(err)
+    }
+    
+    // Use API...
+    tokens, err := api.APITokens().GetAll()
+    if err != nil {
+        log.Fatal(err)
+    }
+    
+    log.Printf("Retrieved %d tokens\n", len(*tokens))
 }
 ```
 

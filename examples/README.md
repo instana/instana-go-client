@@ -10,16 +10,10 @@ This directory contains practical examples demonstrating how to use the Instana 
 Demonstrates the fundamental usage patterns of the Instana Go Client:
 - Basic client creation (legacy compatible)
 - Using the builder pattern for configuration
-- Loading configuration from environment variables
 - Enhanced error handling with typed errors
 
 **Run:**
 ```bash
-# Set environment variables
-export INSTANA_BASE_URL="https://your-tenant.instana.io"
-export INSTANA_API_TOKEN="your-api-token"
-
-# Run the example
 cd basic_usage
 go run main.go
 ```
@@ -47,6 +41,13 @@ Demonstrates low-level REST client operations:
 - Direct REST API calls
 - Custom HTTP operations
 - Request/response handling
+- Production-ready configuration
+
+**Run:**
+```bash
+cd rest_client_usage
+go run main.go
+```
 
 ## 🚀 Quick Start
 
@@ -62,28 +63,47 @@ package main
 import (
     "fmt"
     "log"
+    "time"
+    
+    "github.com/instana/instana-go-client/config"
     "github.com/instana/instana-go-client/instana"
 )
 
 func main() {
-    // Create client
-    client := instana.NewClient("api-token", "tenant.instana.io", false)
+    // Create configuration using builder pattern
+    cfg, err := config.NewConfigBuilder().
+        WithBaseURL("https://tenant-unit.instana.io").
+        WithAPIToken("your-api-token").
+        WithConnectionTimeout(30 * time.Second).
+        WithMaxRetryAttempts(3).
+        Build()
     
-    // Make request
-    data, err := client.Get("/api/application-monitoring/applications")
     if err != nil {
         log.Fatal(err)
     }
     
-    fmt.Printf("Retrieved %d bytes\n", len(data))
+    // Create API client
+    api, err := instana.NewInstanaAPIWithConfig(cfg)
+    if err != nil {
+        log.Fatal(err)
+    }
+    
+    // Use the API
+    tokens, err := api.APITokens().GetAll()
+    if err != nil {
+        log.Fatal(err)
+    }
+    
+    fmt.Printf("Retrieved %d tokens\n", len(*tokens))
 }
 ```
 
 ## 📚 More Resources
 
 - [Quick Start Guide](../QUICK_START.md) - Comprehensive getting started guide
-- [Migration Guide](../MIGRATION_GUIDE.md) - Migrating from Terraform provider
-- [Configuration Guide](../DEFAULT_CONFIG_ANALYSIS.md) - Detailed configuration options
+- [Architecture Guide](../ARCHITECTURE.md) - System architecture and design
+- [API Reference](../API_REFERENCE.md) - Complete API documentation
+- [Usage Guide](../USAGE_GUIDE.md) - Detailed usage patterns
 - [API Documentation](https://pkg.go.dev/github.com/instana/instana-go-client)
 
 ## 💡 Tips
@@ -92,7 +112,7 @@ func main() {
 2. **Enable Retry**: Configure retry mechanism for better reliability
 3. **Rate Limiting**: Enable rate limiting to avoid hitting API limits
 4. **Error Handling**: Use typed errors for better error handling
-5. **Environment Variables**: Use environment variables for configuration in different environments
+5. **Connection Pooling**: Configure connection pooling for better performance
 
 ## 🆘 Need Help?
 

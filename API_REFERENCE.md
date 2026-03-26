@@ -52,9 +52,6 @@ Package for client configuration management.
 
 - [`DefaultClientConfig()`](config/config.go) - Get default configuration
 - [`NewConfigBuilder()`](config/config_builder.go) - Create configuration builder
-- [`LoadFromEnv()`](config/config_loader.go) - Load configuration from environment
-- [`LoadFromJSON(path)`](config/config_loader.go) - Load configuration from JSON file
-- [`LoadFromJSONWithEnvOverride(path)`](config/config_loader.go) - Load from JSON with env overrides
 
 ---
 
@@ -97,15 +94,15 @@ config, err := instana.NewConfigBuilder().
 api, err := instana.NewInstanaAPIWithConfig(config)
 ```
 
-### Configuration from Environment
+### Configuration with Defaults
 
 ```go
-// Set environment variables first:
-// export INSTANA_BASE_URL="https://tenant.instana.io"
-// export INSTANA_API_TOKEN="your-token"
+// Start with default configuration
+cfg := config.DefaultClientConfig()
+cfg.BaseURL = "https://tenant.instana.io"
+cfg.APIToken = "your-token"
 
-config, err := instana.LoadFromEnv()
-api, err := instana.NewInstanaAPIWithConfig(config)
+api, err := instana.NewInstanaAPIWithConfig(cfg)
 ```
 
 ---
@@ -119,7 +116,7 @@ The [`ConfigBuilder`](config/config_builder.go) provides a fluent interface for 
 #### Core Settings
 
 ```go
-builder := instana.NewConfigBuilder().
+builder := config.NewConfigBuilder().
     WithBaseURL("https://tenant.instana.io").
     WithAPIToken("token").
     WithUserAgent("MyApp/1.0").
@@ -183,28 +180,21 @@ builder.
     })
 ```
 
-### Environment Variables
+### Configuration Defaults
 
-| Variable | Type | Default | Description |
-|----------|------|---------|-------------|
-| `INSTANA_BASE_URL` | string | - | Base URL of Instana API |
-| `INSTANA_API_TOKEN` | string | - | API authentication token |
-| `INSTANA_DEBUG` | bool | false | Enable debug logging |
-| `INSTANA_CONNECTION_TIMEOUT` | duration | 30s | Connection timeout |
-| `INSTANA_REQUEST_TIMEOUT` | duration | 60s | Request timeout |
-| `INSTANA_IDLE_CONNECTION_TIMEOUT` | duration | 90s | Idle connection timeout |
-| `INSTANA_MAX_RETRY_ATTEMPTS` | int | 3 | Maximum retry attempts |
-| `INSTANA_RETRY_INITIAL_DELAY` | duration | 1s | Initial retry delay |
-| `INSTANA_RETRY_MAX_DELAY` | duration | 30s | Maximum retry delay |
-| `INSTANA_RETRY_BACKOFF_MULTIPLIER` | float | 2.0 | Backoff multiplier |
-| `INSTANA_RATE_LIMIT_ENABLED` | bool | true | Enable rate limiting |
-| `INSTANA_RATE_LIMIT_RPS` | int | 100 | Requests per second |
-| `INSTANA_RATE_LIMIT_BURST` | int | 200 | Burst capacity |
-| `INSTANA_MAX_IDLE_CONNECTIONS` | int | 100 | Max idle connections |
-| `INSTANA_MAX_CONNECTIONS_PER_HOST` | int | 10 | Max connections per host |
-| `INSTANA_KEEP_ALIVE_DURATION` | duration | 30s | Keep-alive duration |
-| `INSTANA_BATCH_SIZE` | int | 100 | Batch operation size |
-| `INSTANA_BATCH_CONCURRENT_REQUESTS` | int | 5 | Concurrent batch requests |
+All configuration options have sensible defaults. You can override them using the builder pattern:
+
+```go
+cfg := config.DefaultClientConfig()
+// Defaults:
+// - Connection Timeout: 30s
+// - Request Timeout: 60s
+// - Max Retry Attempts: 3
+// - Rate Limit: 100 req/s
+// - Burst Capacity: 200
+// - Max Idle Connections: 100
+// - Max Connections Per Host: 10
+```
 
 ---
 

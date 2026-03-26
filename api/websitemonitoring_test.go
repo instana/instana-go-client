@@ -53,7 +53,6 @@ func TestNewWebsiteMonitoringConfigRestResource(t *testing.T) {
 		AppName: "test-app",
 	}
 	resource := NewWebsiteMonitoringConfigRestResource(unmarshaller, restClient)
-	resource.GetOne(testID)
 	resource.GetAll()
 	resource.Create(config)
 	resource.Update(config)

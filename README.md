@@ -52,12 +52,13 @@ import (
     "log"
     "time"
     
+    "github.com/instana/instana-go-client/config"
     "github.com/instana/instana-go-client/instana"
 )
 
 func main() {
     // Create configuration using builder pattern
-    config, err := instana.NewConfigBuilder().
+    cfg, err := config.NewConfigBuilder().
         WithBaseURL("https://tenant-unit.instana.io").
         WithAPIToken("your-api-token").
         WithConnectionTimeout(30 * time.Second).
@@ -68,8 +69,19 @@ func main() {
         log.Fatalf("Failed to create config: %v", err)
     }
     
-    // Use the configuration
-    log.Printf("Client configured for: %s", config.BaseURL)
+    // Create API client
+    api, err := instana.NewInstanaAPIWithConfig(cfg)
+    if err != nil {
+        log.Fatalf("Failed to create API: %v", err)
+    }
+    
+    // Use the API
+    tokens, err := api.APITokens().GetAll()
+    if err != nil {
+        log.Fatalf("Failed to get tokens: %v", err)
+    }
+    
+    log.Printf("Retrieved %d tokens", len(*tokens))
 }
 ```
 
@@ -91,46 +103,15 @@ config, err := instana.NewConfigBuilder().
     Build()
 ```
 
-#### 2. Environment Variables
-
-```bash
-export INSTANA_BASE_URL=https://tenant-unit.instana.io
-export INSTANA_API_TOKEN=your-api-token
-export INSTANA_CONNECTION_TIMEOUT=30s
-export INSTANA_MAX_RETRY_ATTEMPTS=3
-export INSTANA_RATE_LIMIT_RPS=100
-```
+#### 2. Using Default Configuration
 
 ```go
-config, err := instana.LoadFromEnv()
-```
+cfg := config.DefaultClientConfig()
+cfg.BaseURL = "https://tenant-unit.instana.io"
+cfg.APIToken = "your-api-token"
+cfg.Retry.MaxAttempts = 5
 
-#### 3. JSON Configuration File
-
-```json
-{
-  "baseURL": "https://tenant-unit.instana.io",
-  "apiToken": "your-api-token",
-  "timeout": {
-    "connection": "30s",
-    "request": "60s"
-  },
-  "retry": {
-    "maxAttempts": 3,
-    "initialDelay": "1s",
-    "maxDelay": "30s"
-  }
-}
-```
-
-```go
-config, err := instana.LoadFromJSON("config.json")
-```
-
-#### 4. Hybrid Approach (JSON + Environment Override)
-
-```go
-config, err := instana.LoadFromJSONWithEnvOverride("config.json")
+api, err := instana.NewInstanaAPIWithConfig(cfg)
 ```
 
 ## Configuration Options
@@ -138,7 +119,7 @@ config, err := instana.LoadFromJSONWithEnvOverride("config.json")
 ### Timeouts
 
 ```go
-config := instana.NewConfigBuilder().
+cfg, err := config.NewConfigBuilder().
     WithConnectionTimeout(30 * time.Second).      // Default: 30s
     WithRequestTimeout(60 * time.Second).         // Default: 60s
     WithIdleConnectionTimeout(90 * time.Second).  // Default: 90s
@@ -150,7 +131,7 @@ config := instana.NewConfigBuilder().
 ### Retry Configuration
 
 ```go
-config := instana.NewConfigBuilder().
+cfg, err := config.NewConfigBuilder().
     WithMaxRetryAttempts(5).                      // Default: 3
     WithRetryInitialDelay(2 * time.Second).       // Default: 1s
     WithRetryMaxDelay(60 * time.Second).          // Default: 30s
@@ -164,7 +145,7 @@ config := instana.NewConfigBuilder().
 ### Rate Limiting
 
 ```go
-config := instana.NewConfigBuilder().
+cfg, err := config.NewConfigBuilder().
     WithRateLimitEnabled(true).                   // Default: true
     WithRateLimitRequestsPerSecond(50).           // Default: 100
     WithRateLimitBurstCapacity(100).              // Default: 200
@@ -175,7 +156,7 @@ config := instana.NewConfigBuilder().
 ### Custom Headers
 
 ```go
-config := instana.NewConfigBuilder().
+cfg, err := config.NewConfigBuilder().
     WithCustomHeader("X-Request-ID", "unique-id").
     WithCustomHeader("X-Trace-ID", "trace-123").
     WithCustomHeaders(map[string]string{
@@ -188,7 +169,7 @@ config := instana.NewConfigBuilder().
 ### Connection Pooling
 
 ```go
-config := instana.NewConfigBuilder().
+cfg, err := config.NewConfigBuilder().
     WithMaxIdleConnections(100).                  // Default: 100
     WithMaxConnectionsPerHost(10).                // Default: 10
     WithMaxIdleConnectionsPerHost(10).            // Default: 10
@@ -201,7 +182,7 @@ config := instana.NewConfigBuilder().
 ### Batch Operations
 
 ```go
-config := instana.NewConfigBuilder().
+cfg, err := config.NewConfigBuilder().
     WithBatchSize(100).                           // Default: 100
     WithBatchConcurrentRequests(5).               // Default: 5
     WithBatchStopOnError(false).                  // Default: false
@@ -213,12 +194,12 @@ config := instana.NewConfigBuilder().
 
 ```go
 // Use default logger with log level
-logger := instana.NewDefaultLogger(instana.ClientLogLevelInfo)
+logger := config.NewDefaultLogger(config.ClientLogLevelInfo)
 
 // Or use no-op logger to disable logging
-logger := instana.NewNoOpLogger()
+logger := config.NewNoOpLogger()
 
-config := instana.NewConfigBuilder().
+cfg, err := config.NewConfigBuilder().
     WithLogger(logger).
     WithDebug(true).
     Build()
@@ -229,23 +210,23 @@ config := instana.NewConfigBuilder().
 The library provides typed errors for better error handling:
 
 ```go
-import "github.com/instana/instana-go-client/instana"
+import "github.com/instana/instana-go-client/config"
 
 // Check if error is retryable
-if instana.IsRetryableError(err) {
+if config.IsRetryableError(err) {
     // Retry the operation
 }
 
 // Check if error is temporary
-if instana.IsTemporaryError(err) {
+if config.IsTemporaryError(err) {
     // Wait and retry
 }
 
 // Extract HTTP status code
-statusCode := instana.ExtractStatusCode(err)
+statusCode := config.ExtractStatusCode(err)
 
 // Type assertion for detailed error information
-if instanaErr, ok := err.(*instana.InstanaError); ok {
+if instanaErr, ok := err.(*config.InstanaError); ok {
     fmt.Printf("Error Type: %s\n", instanaErr.Type)
     fmt.Printf("Status Code: %d\n", instanaErr.StatusCode)
     fmt.Printf("Retryable: %v\n", instanaErr.IsRetryable())
@@ -269,12 +250,12 @@ The library includes automatic retry with exponential backoff:
 ```go
 import (
     "context"
-    "github.com/instana/instana-go-client/instana"
+    "github.com/instana/instana-go-client/config"
 )
 
 // Use the built-in retryer
-retryConfig := instana.DefaultRetryConfig()
-retryer := instana.NewRetryer(retryConfig, logger)
+retryConfig := config.DefaultRetryConfig()
+retryer := config.NewRetryer(retryConfig, logger)
 
 err := retryer.Do(context.Background(), func() error {
     // Your operation here
@@ -297,17 +278,17 @@ Built-in rate limiting using token bucket algorithm:
 ```go
 import (
     "context"
-    "github.com/instana/instana-go-client/instana"
+    "github.com/instana/instana-go-client/config"
 )
 
-rateLimitConfig := instana.RateLimitConfig{
+rateLimitConfig := config.RateLimitConfig{
     Enabled:           true,
     RequestsPerSecond: 50,
     BurstCapacity:     100,
     WaitForToken:      true,
 }
 
-rateLimiter := instana.NewRateLimiter(rateLimitConfig, logger)
+rateLimiter := config.NewRateLimiter(rateLimitConfig, logger)
 defer rateLimiter.Stop()
 
 // Wait for rate limit token before making request
@@ -315,31 +296,6 @@ if err := rateLimiter.Wait(context.Background()); err != nil {
     log.Printf("Rate limit error: %v", err)
 }
 ```
-
-## Environment Variables
-
-The library supports the following environment variables:
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `INSTANA_BASE_URL` | Base URL of Instana API | - |
-| `INSTANA_API_TOKEN` | API token for authentication | - |
-| `INSTANA_DEBUG` | Enable debug logging | false |
-| `INSTANA_CONNECTION_TIMEOUT` | Connection timeout | 30s |
-| `INSTANA_REQUEST_TIMEOUT` | Request timeout | 60s |
-| `INSTANA_IDLE_CONNECTION_TIMEOUT` | Idle connection timeout | 90s |
-| `INSTANA_MAX_RETRY_ATTEMPTS` | Maximum retry attempts | 3 |
-| `INSTANA_RETRY_INITIAL_DELAY` | Initial retry delay | 1s |
-| `INSTANA_RETRY_MAX_DELAY` | Maximum retry delay | 30s |
-| `INSTANA_RETRY_BACKOFF_MULTIPLIER` | Backoff multiplier | 2.0 |
-| `INSTANA_BATCH_SIZE` | Batch operation size | 100 |
-| `INSTANA_BATCH_CONCURRENT_REQUESTS` | Concurrent batch requests | 5 |
-| `INSTANA_RATE_LIMIT_ENABLED` | Enable rate limiting | true |
-| `INSTANA_RATE_LIMIT_RPS` | Requests per second | 100 |
-| `INSTANA_RATE_LIMIT_BURST` | Burst capacity | 200 |
-| `INSTANA_MAX_IDLE_CONNECTIONS` | Max idle connections | 100 |
-| `INSTANA_MAX_CONNECTIONS_PER_HOST` | Max connections per host | 10 |
-| `INSTANA_KEEP_ALIVE_DURATION` | Keep-alive duration | 30s |
 
 ## Examples
 

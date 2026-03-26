@@ -1,3 +1,6 @@
+//go:build ignore
+// +build ignore
+
 package main
 
 import (
@@ -8,7 +11,6 @@ import (
 	"time"
 
 	"github.com/instana/instana-go-client/config"
-
 	"github.com/instana/instana-go-client/instana"
 )
 
@@ -27,12 +29,8 @@ func main() {
 	fmt.Println("\n=== Example 2: Builder Pattern ===")
 	builderExample()
 
-	// Example 3: Loading from environment
-	fmt.Println("\n=== Example 3: Environment Variables ===")
-	envExample()
-
-	// Example 4: Error handling
-	fmt.Println("\n=== Example 4: Error Handling ===")
+	// Example 3: Error handling
+	fmt.Println("\n=== Example 3: Error Handling ===")
 	errorHandlingExample()
 }
 
@@ -68,12 +66,14 @@ func basicExample() {
 // builderExample demonstrates using the builder pattern
 func builderExample() {
 	// Create configuration using builder
-	config, err := config.NewConfigBuilder().
+	cfg, err := config.NewConfigBuilder().
 		WithBaseURL("https://your-tenant.instana.io").
 		WithAPIToken("your-api-token").
 		WithConnectionTimeout(30 * time.Second).
 		WithRequestTimeout(60 * time.Second).
 		WithMaxRetryAttempts(3).
+		WithRateLimitEnabled(true).
+		WithRateLimitRequestsPerSecond(100).
 		WithDebug(true).
 		Build()
 
@@ -83,38 +83,7 @@ func builderExample() {
 	}
 
 	// Create client with configuration
-	client, err := instana.NewClientWithConfig(config)
-	if err != nil {
-		log.Printf("Failed to create client: %v\n", err)
-		return
-	}
-
-	// Use the client
-	data, err := client.Get("/api/application-monitoring/applications")
-	if err != nil {
-		log.Printf("Error: %v\n", err)
-		return
-	}
-
-	fmt.Printf("Retrieved %d bytes of data\n", len(data))
-}
-
-// envExample demonstrates loading configuration from environment variables
-func envExample() {
-	// Set environment variables first:
-	// export INSTANA_BASE_URL="https://your-tenant.instana.io"
-	// export INSTANA_API_TOKEN="your-api-token"
-	// export INSTANA_DEBUG="true"
-
-	// Load configuration from environment
-	config, err := config.LoadFromEnv()
-	if err != nil {
-		log.Printf("Failed to load config from environment: %v\n", err)
-		return
-	}
-
-	// Create client
-	client, err := instana.NewClientWithConfig(config)
+	client, err := instana.NewClientWithConfig(cfg)
 	if err != nil {
 		log.Printf("Failed to create client: %v\n", err)
 		return
@@ -132,12 +101,12 @@ func envExample() {
 
 // errorHandlingExample demonstrates enhanced error handling
 func errorHandlingExample() {
-	conf, _ := config.NewConfigBuilder().
+	cfg, _ := config.NewConfigBuilder().
 		WithBaseURL("https://your-tenant.instana.io").
 		WithAPIToken("invalid-token"). // Intentionally invalid
 		Build()
 
-	client, _ := instana.NewClientWithConfig(conf)
+	client, _ := instana.NewClientWithConfig(cfg)
 
 	// Make request that will fail
 	_, err := client.Get("/api/application-monitoring/applications")
@@ -174,3 +143,5 @@ func errorHandlingExample() {
 		}
 	}
 }
+
+// Made with Bob

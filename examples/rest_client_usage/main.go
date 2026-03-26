@@ -1,3 +1,6 @@
+//go:build ignore
+// +build ignore
+
 package main
 
 import (
@@ -7,7 +10,6 @@ import (
 	"time"
 
 	"github.com/instana/instana-go-client/config"
-
 	"github.com/instana/instana-go-client/instana"
 )
 
@@ -55,32 +57,8 @@ func main() {
 	}
 	fmt.Printf("Client created with custom configuration: %T\n\n", client)
 
-	// Example 3: Using environment variables
-	fmt.Println("3. Client from Environment Variables")
-	fmt.Println("-------------------------------------")
-	fmt.Println("Set these environment variables:")
-	fmt.Println("  export INSTANA_BASE_URL=https://tenant-unit.instana.io")
-	fmt.Println("  export INSTANA_API_TOKEN=your-api-token")
-	fmt.Println("  export INSTANA_MAX_RETRY_ATTEMPTS=5")
-	fmt.Println("  export INSTANA_RATE_LIMIT_ENABLED=true")
-	fmt.Println("  export INSTANA_RATE_LIMIT_RPS=10")
-
-	envConfig, err := config.LoadFromEnv()
-	if err != nil {
-		fmt.Printf("Note: Environment variables not set, using defaults: %v\n", err)
-		envConfig = config.DefaultClientConfig()
-		envConfig.BaseURL = "https://tenant-unit.instana.io"
-		envConfig.APIToken = "your-api-token"
-	}
-
-	envClient, err := instana.NewClientWithConfig(envConfig)
-	if err != nil {
-		log.Fatalf("Failed to create client from env: %v", err)
-	}
-	fmt.Printf("Client created from environment: %T\n\n", envClient)
-
-	// Example 4: Making API calls with the new client
-	fmt.Println("4. Making API Calls")
+	// Example 3: Making API calls with the new client
+	fmt.Println("3. Making API Calls")
 	fmt.Println("-------------------")
 
 	// Note: These are example calls - they will fail without valid credentials
@@ -107,8 +85,8 @@ func main() {
 	}
 	fmt.Println()
 
-	// Example 5: Demonstrating retry mechanism
-	fmt.Println("5. Retry Mechanism")
+	// Example 4: Demonstrating retry mechanism
+	fmt.Println("4. Retry Mechanism")
 	fmt.Println("------------------")
 	retryConfig := config.DefaultClientConfig()
 	retryConfig.BaseURL = "https://tenant-unit.instana.io"
@@ -127,8 +105,8 @@ func main() {
 	}
 	fmt.Println()
 
-	// Example 6: Rate limiting demonstration
-	fmt.Println("6. Rate Limiting")
+	// Example 5: Rate limiting demonstration
+	fmt.Println("5. Rate Limiting")
 	fmt.Println("----------------")
 	rateLimitConfig := config.DefaultClientConfig()
 	rateLimitConfig.BaseURL = "https://tenant-unit.instana.io"
@@ -147,8 +125,8 @@ func main() {
 	}
 	fmt.Printf("Total time: %v (should be ~2 seconds due to rate limiting)\n\n", time.Since(start).Round(time.Millisecond))
 
-	// Example 7: Custom headers
-	fmt.Println("7. Custom Headers")
+	// Example 6: Custom headers
+	fmt.Println("6. Custom Headers")
 	fmt.Println("-----------------")
 	headerConfig := config.DefaultClientConfig()
 	headerConfig.BaseURL = "https://tenant-unit.instana.io"
@@ -166,8 +144,8 @@ func main() {
 	}
 	fmt.Printf("Client: %T\n\n", headerClient)
 
-	// Example 8: Connection pooling
-	fmt.Println("8. Connection Pooling")
+	// Example 7: Connection pooling
+	fmt.Println("7. Connection Pooling")
 	fmt.Println("---------------------")
 	poolConfig := config.DefaultClientConfig()
 	poolConfig.BaseURL = "https://tenant-unit.instana.io"
@@ -183,8 +161,8 @@ func main() {
 	fmt.Printf("  Keep-Alive Duration: %v\n", poolConfig.ConnectionPool.KeepAliveDuration)
 	fmt.Printf("Client: %T\n\n", poolClient)
 
-	// Example 9: Complete production-ready configuration
-	fmt.Println("9. Production-Ready Configuration")
+	// Example 8: Complete production-ready configuration
+	fmt.Println("8. Production-Ready Configuration")
 	fmt.Println("----------------------------------")
 	prodConfig, err := config.NewConfigBuilder().
 		WithBaseURL("https://tenant-unit.instana.io").
@@ -238,11 +216,12 @@ func main() {
 	fmt.Println("\nKey Features Demonstrated:")
 	fmt.Println("1. ✓ Backward compatibility with legacy NewClient()")
 	fmt.Println("2. ✓ Flexible configuration with builder pattern")
-	fmt.Println("3. ✓ Environment variable loading")
-	fmt.Println("4. ✓ Automatic retry with exponential backoff")
-	fmt.Println("5. ✓ Rate limiting with token bucket algorithm")
-	fmt.Println("6. ✓ Custom headers support")
-	fmt.Println("7. ✓ Connection pooling")
-	fmt.Println("8. ✓ Typed error handling")
-	fmt.Println("9. ✓ Production-ready configuration")
+	fmt.Println("3. ✓ Automatic retry with exponential backoff")
+	fmt.Println("4. ✓ Rate limiting with token bucket algorithm")
+	fmt.Println("5. ✓ Custom headers support")
+	fmt.Println("6. ✓ Connection pooling")
+	fmt.Println("7. ✓ Typed error handling")
+	fmt.Println("8. ✓ Production-ready configuration")
 }
+
+// Made with Bob

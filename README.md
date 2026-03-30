@@ -9,7 +9,7 @@ A comprehensive, production-ready Go client library for the [Instana](https://ww
 ## Features
 
 ### 🚀 Production-Ready
-- **Comprehensive Configuration**: Flexible configuration via builder pattern, environment variables, or JSON files
+- **Comprehensive Configuration**: Flexible configuration via builder pattern
 - **Automatic Retry**: Exponential backoff with jitter for transient failures
 - **Rate Limiting**: Token bucket algorithm to prevent API throttling
 - **Connection Pooling**: Optimized HTTP connection management

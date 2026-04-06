@@ -79,5 +79,3 @@ func TestSliEntityStructure(t *testing.T) {
 		t.Errorf("Expected ApplicationID to be %s, got %s", appID, *entity.ApplicationID)
 	}
 }
-
-// Made with Bob

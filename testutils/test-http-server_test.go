@@ -624,5 +624,3 @@ func (m *mockResponseWriter) Write(data []byte) (int, error) {
 func (m *mockResponseWriter) WriteHeader(statusCode int) {
 	m.statusCode = statusCode
 }
-
-// Made with Bob

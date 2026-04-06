@@ -143,5 +143,3 @@ func errorHandlingExample() {
 		}
 	}
 }
-
-// Made with Bob

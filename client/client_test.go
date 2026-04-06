@@ -533,5 +533,3 @@ func TestLazyInitializationCaching(t *testing.T) {
 		t.Error("Groups should return cached instance")
 	}
 }
-
-// Made with Bob

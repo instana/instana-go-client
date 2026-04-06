@@ -472,5 +472,3 @@ func TestAllEntities(t *testing.T) {
 		})
 	}
 }
-
-// Made with Bob

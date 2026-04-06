@@ -70,5 +70,3 @@ func TestMockInstanaAPI_CanBeEmbedded(t *testing.T) {
 		t.Error("Embedded mock should return nil")
 	}
 }
-
-// Made with Bob

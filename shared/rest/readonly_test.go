@@ -320,5 +320,3 @@ func TestReadOnlyRestResource_GetByQuery_EmptyParams(t *testing.T) {
 		t.Fatal("Expected non-nil result")
 	}
 }
-
-// Made with Bob

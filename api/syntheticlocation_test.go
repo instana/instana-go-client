@@ -50,5 +50,3 @@ func TestSyntheticLocationStructure(t *testing.T) {
 		t.Errorf("Expected LocationType to be %s, got %s", locationType, location.LocationType)
 	}
 }
-
-// Made with Bob

@@ -34,21 +34,6 @@ cd advanced_usage
 go run main.go
 ```
 
-### 3. REST Client Usage
-**Location:** [`rest_client_usage/`](rest_client_usage/)
-
-Demonstrates low-level REST client operations:
-- Direct REST API calls
-- Custom HTTP operations
-- Request/response handling
-- Production-ready configuration
-
-**Run:**
-```bash
-cd rest_client_usage
-go run main.go
-```
-
 ## 🚀 Quick Start
 
 ### Prerequisites

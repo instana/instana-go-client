@@ -284,5 +284,3 @@ func TestNewInstanaAPIWithUserAgent_EmptyUserAgent(t *testing.T) {
 		t.Fatal("Expected API client to be created even with empty user agent")
 	}
 }
-
-// Made with Bob

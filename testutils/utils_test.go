@@ -285,5 +285,3 @@ func TestGetRootFolder_Integration(t *testing.T) {
 		t.Errorf("Expected testutils directory to exist at %s", testutilsPath)
 	}
 }
-
-// Made with Bob

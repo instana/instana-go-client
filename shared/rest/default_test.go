@@ -693,5 +693,3 @@ func TestDefaultRestResource_Update_NotSupported_UnmarshalError(t *testing.T) {
 		t.Errorf("Unexpected error message: %v", err)
 	}
 }
-
-// Made with Bob

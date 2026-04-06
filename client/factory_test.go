@@ -306,5 +306,3 @@ func TestReadOnlyFactoryReturnsCorrectType(t *testing.T) {
 	// Verify it implements ReadOnlyRestResource interface
 	var _ rest.ReadOnlyRestResource[*mocks.MockInstanaDataObject] = resource
 }
-
-// Made with Bob

@@ -84,5 +84,3 @@ func TestDNSFilterQueryTimeStructure(t *testing.T) {
 		t.Errorf("Expected Value to be %d, got %d", value, filter.Value)
 	}
 }
-
-// Made with Bob

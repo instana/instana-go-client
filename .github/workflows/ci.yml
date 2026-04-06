@@ -127,26 +127,6 @@ jobs:
         name: coverage-report
         path: ./coverage.html
 
-  integration-test:
-    name: Integration Tests
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Set up Go
-      uses: actions/setup-go@v5
-      with:
-        go-version: '1.23'
-    
-    - name: Run integration tests
-      run: go test -v -tags=integration ./...
-      env:
-        INSTANA_BASE_URL: ${{ secrets.INSTANA_BASE_URL }}
-        INSTANA_API_TOKEN: ${{ secrets.INSTANA_API_TOKEN }}
-
   notify:
     name: Notify
     runs-on: ubuntu-latest

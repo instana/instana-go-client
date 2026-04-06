@@ -222,7 +222,7 @@ func (c *instanaAPI) InfraAlertConfigs() rest.RestResource[*api.InfraAlertConfig
 	if c.infraAlertConfigs == nil {
 		c.infraAlertConfigs = NewRestResource(
 			c.restClient,
-			api.ResourcePath,
+			api.InfraAlertConfigResourcePath,
 			rest.DefaultRestResourceModeCreateAndUpdatePOST,
 			rest.NewCustomPayloadFieldsUnmarshallerAdapter(rest.NewGenericUnmarshaller[*api.InfraAlertConfig]()),
 		)
@@ -274,7 +274,7 @@ func (c *instanaAPI) Roles() rest.RestResource[*api.Role] {
 	if c.roles == nil {
 		c.roles = NewRestResource(
 			c.restClient,
-			api.ResourcePath,
+			api.RolesResourcePath,
 			rest.DefaultRestResourceModeCreatePOSTUpdatePUT,
 			rest.NewGenericUnmarshaller[*api.Role](),
 		)
@@ -352,7 +352,7 @@ func (c *instanaAPI) SyntheticLocations() rest.ReadOnlyRestResource[*api.Synthet
 	if c.syntheticLocations == nil {
 		c.syntheticLocations = NewReadOnlyRestResource(
 			c.restClient,
-			api.ResourcePath,
+			api.SyntheticLocationResourcePath,
 			rest.NewGenericUnmarshaller[*api.SyntheticLocation](),
 		)
 	}
@@ -364,7 +364,7 @@ func (c *instanaAPI) SyntheticTests() rest.RestResource[*api.SyntheticTest] {
 	if c.syntheticTests == nil {
 		c.syntheticTests = NewRestResource(
 			c.restClient,
-			api.ResourcePath,
+			api.SyntheticTestResourcePath,
 			rest.DefaultRestResourceModeCreatePOSTUpdatePUT,
 			rest.NewGenericUnmarshaller[*api.SyntheticTest](),
 		)
@@ -377,7 +377,7 @@ func (c *instanaAPI) Teams() rest.RestResource[*api.Team] {
 	if c.teams == nil {
 		c.teams = NewRestResource(
 			c.restClient,
-			api.ResourcePath,
+			api.TeamsResourcePath,
 			rest.DefaultRestResourceModeCreatePOSTUpdatePUT,
 			rest.NewGenericUnmarshaller[*api.Team](),
 		)
@@ -390,7 +390,7 @@ func (c *instanaAPI) Users() rest.ReadOnlyRestResource[*api.User] {
 	if c.users == nil {
 		c.users = NewReadOnlyRestResource(
 			c.restClient,
-			api.ResourcePath,
+			api.UsersResourcePath,
 			rest.NewGenericUnmarshaller[*api.User](),
 		)
 	}
@@ -402,7 +402,7 @@ func (c *instanaAPI) WebsiteAlertConfigs() rest.RestResource[*api.WebsiteAlertCo
 	if c.websiteAlertConfigs == nil {
 		c.websiteAlertConfigs = NewRestResource(
 			c.restClient,
-			api.ResourcePath,
+			api.WebsiteAlertConfigResourcePath,
 			rest.DefaultRestResourceModeCreateAndUpdatePOST,
 			rest.NewCustomPayloadFieldsUnmarshallerAdapter(rest.NewGenericUnmarshaller[*api.WebsiteAlertConfig]()),
 		)

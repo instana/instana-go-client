@@ -182,9 +182,11 @@ type sloConfigJSONUnmarshaller[T any] struct {
 
 // Unmarshal unmarshals JSON data into the target object (for Get method).
 func (u *sloConfigJSONUnmarshaller[T]) Unmarshal(data []byte) (T, error) {
-	target := u.objectType
+	// Create a new instance to avoid shared state issues
+	var target T
 	if err := json.Unmarshal(data, &target); err != nil {
-		return target, fmt.Errorf("failed to parse json: %w", err)
+		var zero T
+		return zero, fmt.Errorf("failed to parse json: %w", err)
 	}
 	return target, nil
 }

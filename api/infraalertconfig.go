@@ -5,9 +5,7 @@ import (
 	"github.com/instana/instana-go-client/shared/types"
 )
 
-// ResourcePath is the path to the Infrastructure Alert Configurations resource in the Instana API
-const ResourcePath = "/api/events/settings/infra-alert-configs"
-
+// InfraAlertConfigResourcePath is the path to the Infrastructure Alert Configurations resource in the Instana API
 const InfraAlertConfigResourcePath = "/api/events/settings/infra-alert-configs"
 
 type InfraAlertConfig struct {

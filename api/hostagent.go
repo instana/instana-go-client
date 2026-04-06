@@ -41,19 +41,22 @@ type hostAgentJSONUnmarshaller[T any] struct {
 
 // UnmarshalJSON unmarshals JSON data into the target object.
 func (u *hostAgentJSONUnmarshaller[T]) Unmarshal(data []byte) (T, error) {
-	target := u.objectType
+	// Create a new instance to avoid shared state issues
+	var target T
 	if err := json.Unmarshal(data, &target); err != nil {
-		return target, fmt.Errorf("failed to parse json: %w", err)
+		var zero T
+		return zero, fmt.Errorf("failed to parse json: %w", err)
 	}
 	return target, nil
 }
 
 // UnmarshalJSONArray unmarshals JSON array data into a slice of target objects.
 func (u *hostAgentJSONUnmarshaller[T]) UnmarshalArray(data []byte) (*[]T, error) {
-	target := u.arrayType
+	// Create a new map instance to avoid shared state issues
+	target := make(map[string][]T)
 	if err := json.Unmarshal(data, &target); err != nil {
 		return nil, fmt.Errorf("failed to parse json: %w", err)
 	}
-	hostAgents := (*target)["items"]
+	hostAgents := target["items"]
 	return &hostAgents, nil
 }

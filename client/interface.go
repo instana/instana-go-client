@@ -60,6 +60,9 @@ type InstanaAPI interface {
 	// MobileAlertConfigs returns the mobile app alert configurations client
 	MobileAlertConfigs() rest.RestResource[*api.MobileAlertConfig]
 
+	// MobileAppConfig returns the mobile app alert configurations client
+	MobileAppConfig() rest.RestResource[*api.MobileAppConfig]
+
 	// Roles returns the RBAC roles client
 	Roles() rest.RestResource[*api.Role]
 

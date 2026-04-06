@@ -90,6 +90,11 @@ func (m *MockInstanaAPI) MobileAlertConfig() rest.RestResource[*api.MobileAlertC
 	return nil
 }
 
+// MobileAlertConfig mock implementation
+func (m *MockInstanaAPI) MobileAppConfig() rest.RestResource[*api.MobileAppConfig] {
+	return nil
+}
+
 // MaintenanceWindows mock implementation
 func (m *MockInstanaAPI) MaintenanceWindows() rest.RestResource[*api.MaintenanceWindow] {
 	return nil

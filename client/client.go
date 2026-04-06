@@ -28,6 +28,7 @@ type instanaAPI struct {
 	logAlertConfigs               rest.RestResource[*api.LogAlertConfig]
 	maintenanceWindows            rest.RestResource[*api.MaintenanceWindow]
 	mobileAlertConfigs            rest.RestResource[*api.MobileAlertConfig]
+	mobileAppConfig               rest.RestResource[*api.MobileAppConfig]
 	roles                         rest.RestResource[*api.Role]
 	sliConfigs                    rest.RestResource[*api.SliConfig]
 	sloAlertConfigs               rest.RestResource[*api.SloAlertConfig]
@@ -265,8 +266,21 @@ func (c *instanaAPI) MobileAlertConfigs() rest.RestResource[*api.MobileAlertConf
 			rest.DefaultRestResourceModeCreateAndUpdatePOST,
 			rest.NewCustomPayloadFieldsUnmarshallerAdapter(rest.NewGenericUnmarshaller[*api.MobileAlertConfig]()),
 		)
+
 	}
 	return c.mobileAlertConfigs
+}
+
+// MobileAlertConfigs returns the mobile app configurations client (lazy initialization)
+func (c *instanaAPI) MobileAppConfig() rest.RestResource[*api.MobileAppConfig] {
+	if c.mobileAppConfig == nil {
+		c.mobileAppConfig = api.NewMobileAppConfigRestResource(
+			rest.NewGenericUnmarshaller[*api.MobileAppConfig](),
+			c.restClient,
+		)
+
+	}
+	return c.mobileAppConfig
 }
 
 // Roles returns the roles client (lazy initialization)

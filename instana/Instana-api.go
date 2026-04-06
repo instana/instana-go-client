@@ -3,6 +3,8 @@ package instana
 import (
 	"crypto/tls"
 	"net/http"
+	"os"
+	"strings"
 
 	"github.com/instana/instana-go-client/client"
 	"github.com/instana/instana-go-client/config"
@@ -52,7 +54,7 @@ func NewInstanaAPIWithUserAgent(apiToken string, endpoint string, skipTlsVerific
 	cfg.APIToken = apiToken
 	cfg.BaseURL = "https://" + endpoint
 	cfg.UserAgent = userAgent
-	cfg.Logger = config.NewDefaultLogger(config.ClientLogLevelInfo)
+	cfg.Logger = config.NewDefaultLogger(resolveClientLogLevel())
 
 	// Create HTTP client with TLS configuration
 	httpClient := createHTTPClient(cfg)
@@ -117,5 +119,22 @@ func createHTTPClient(cfg *config.ClientConfig) *http.Client {
 	return &http.Client{
 		Transport: transport,
 		Timeout:   cfg.Timeout.Request,
+	}
+}
+
+func resolveClientLogLevel() config.ClientLogLevel {
+	switch strings.ToUpper(strings.TrimSpace(os.Getenv("TF_LOG"))) {
+	case "TRACE", "DEBUG":
+		return config.ClientLogLevelDebug
+	case "INFO":
+		return config.ClientLogLevelInfo
+	case "WARN", "WARNING":
+		return config.ClientLogLevelWarn
+	case "ERROR":
+		return config.ClientLogLevelError
+	case "OFF":
+		return config.ClientLogLevelNone
+	default:
+		return config.ClientLogLevelInfo
 	}
 }

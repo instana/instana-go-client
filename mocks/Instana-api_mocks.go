@@ -273,6 +273,14 @@ func (m *MockInstanaAPI) MobileAlertConfigs() rest.RestResource[*api.MobileAlert
 	return ret0
 }
 
+// MobileAppConfig mock implementation
+func (m *MockInstanaAPI) MobileAppConfig() rest.RestResource[*api.MobileAppConfig] {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "MobileAppConfig")
+	ret0, _ := ret[0].(rest.RestResource[*api.MobileAppConfig])
+	return ret0
+}
+
 // MobileAlertConfigs indicates an expected call of MobileAlertConfigs.
 func (mr *MockInstanaAPIMockRecorder) MobileAlertConfigs() *gomock.Call {
 	mr.mock.ctrl.T.Helper()

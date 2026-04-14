@@ -57,6 +57,7 @@ jobs:
         echo "✅ Version format is valid"
     
     - name: Check tag doesn't exist
+      if: github.event_name == 'workflow_dispatch'
       run: |
         VERSION="${{ steps.get_version.outputs.version }}"
         if git rev-parse "$VERSION" >/dev/null 2>&1; then
@@ -218,102 +219,10 @@ jobs:
         
         echo "✅ Module import structure validated"
 
-  generate-changelog:
-    name: Generate CHANGELOG
-    runs-on: ubuntu-latest
-    needs: [version-validation, module-import-test]
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-        token: ${{ secrets.GITHUB_TOKEN }}
-    
-    - name: Generate CHANGELOG entry
-      run: |
-        VERSION="${{ needs.version-validation.outputs.version }}"
-        LAST_TAG="${{ needs.version-validation.outputs.last_tag }}"
-        DATE=$(date +%Y-%m-%d)
-        
-        echo "Generating CHANGELOG for $VERSION"
-        echo "Comparing with $LAST_TAG"
-        
-        # Get commits since last tag (excluding "Initial commit")
-        if [ -z "$LAST_TAG" ]; then
-          COMMITS=$(git log --pretty=format:"%s" --no-merges | grep -v "^Initial commit$")
-        else
-          COMMITS=$(git log ${LAST_TAG}..HEAD --pretty=format:"%s" --no-merges | grep -v "^Initial commit$")
-        fi
-        
-        # Build changes list
-        CHANGES=""
-        while IFS= read -r subject; do
-          # Skip empty lines
-          [ -z "$subject" ] && continue
-          
-          # Extract PR number if present
-          PR_NUM=$(echo "$subject" | grep -oP '\(#\K\d+(?=\))' || echo "")
-          
-          # Clean up commit message (remove PR number from subject)
-          CLEAN_SUBJECT=$(echo "$subject" | sed 's/ (#[0-9]\+)$//')
-          
-          # Build change entry
-          if [ -n "$PR_NUM" ]; then
-            CHANGES="${CHANGES}- ${CLEAN_SUBJECT} [\\#${PR_NUM}](https://github.com/instana/instana-go-client/pull/${PR_NUM})\n"
-          else
-            CHANGES="${CHANGES}- ${CLEAN_SUBJECT}\n"
-          fi
-        done <<< "$COMMITS"
-        
-        # Generate new CHANGELOG section
-        cat > NEW_CHANGELOG.md << EOF
-        ## [${VERSION}](https://github.com/instana/instana-go-client/tree/${VERSION}) (${DATE})
-        
-        EOF
-        
-        # Add comparison link only if there's a previous tag
-        if [ -n "$LAST_TAG" ]; then
-          echo "[Full Changelog](https://github.com/instana/instana-go-client/compare/${LAST_TAG}...${VERSION})" >> NEW_CHANGELOG.md
-          echo "" >> NEW_CHANGELOG.md
-        fi
-        
-        cat >> NEW_CHANGELOG.md << EOF
-        **Changes:**
-        
-        ${CHANGES}
-        
-        EOF
-        
-        # Prepend to existing CHANGELOG
-        if [ -f CHANGELOG.md ]; then
-          cat NEW_CHANGELOG.md CHANGELOG.md > TEMP_CHANGELOG.md
-          mv TEMP_CHANGELOG.md CHANGELOG.md
-        else
-          mv NEW_CHANGELOG.md CHANGELOG.md
-        fi
-        
-        echo "✅ CHANGELOG generated"
-        echo "Preview:"
-        head -n 20 CHANGELOG.md
-    
-    - name: Commit CHANGELOG
-      run: |
-        VERSION="${{ needs.version-validation.outputs.version }}"
-        
-        git config user.name "github-actions[bot]"
-        git config user.email "github-actions[bot]@users.noreply.github.com"
-        
-        git add CHANGELOG.md
-        git commit -m "chore: update CHANGELOG.md for release ${VERSION}"
-        git push
-        
-        echo "✅ CHANGELOG committed and pushed"
-
   create-release:
     name: Create Release
     runs-on: ubuntu-latest
-    needs: [version-validation, generate-changelog]
+    needs: [version-validation, module-import-test]
     
     steps:
     - name: Checkout code
@@ -327,13 +236,55 @@ jobs:
       with:
         go-version: '1.23'
     
-    - name: Extract release notes
+    - name: Generate release notes from commits
       id: release_notes
       run: |
         VERSION="${{ needs.version-validation.outputs.version }}"
+        LAST_TAG="${{ needs.version-validation.outputs.last_tag }}"
         
-        # Extract the section for this version from CHANGELOG.md
-        awk "/## \[${VERSION}\]/,/## \[/" CHANGELOG.md | head -n -1 > RELEASE_NOTES.md
+        # Get commits since last tag (excluding "Initial commit")
+        if [ -z "$LAST_TAG" ]; then
+          COMMITS=$(git log --pretty=format:"%s" --no-merges | grep -v "^Initial commit$" || true)
+        else
+          COMMITS=$(git log ${LAST_TAG}..HEAD --pretty=format:"%s" --no-merges | grep -v "^Initial commit$" || true)
+        fi
+        
+        # Build release notes
+        cat > RELEASE_NOTES.md << EOF
+        ## Changes
+        
+        EOF
+        
+        # Add commits to release notes
+        if [ -n "$COMMITS" ]; then
+          while IFS= read -r subject; do
+            # Skip empty lines
+            [ -z "$subject" ] && continue
+            
+            # Extract PR number if present
+            PR_NUM=$(echo "$subject" | grep -oP '\(#\K\d+(?=\))' || echo "")
+            
+            # Clean up commit message (remove PR number from subject)
+            CLEAN_SUBJECT=$(echo "$subject" | sed 's/ (#[0-9]\+)$//')
+            
+            # Build change entry
+            if [ -n "$PR_NUM" ]; then
+              echo "- ${CLEAN_SUBJECT} [#${PR_NUM}](https://github.com/instana/instana-go-client/pull/${PR_NUM})" >> RELEASE_NOTES.md
+            else
+              echo "- ${CLEAN_SUBJECT}" >> RELEASE_NOTES.md
+            fi
+          done <<< "$COMMITS"
+        else
+          echo "- No changes documented" >> RELEASE_NOTES.md
+        fi
+        
+        # Add comparison link if there's a previous tag
+        if [ -n "$LAST_TAG" ]; then
+          cat >> RELEASE_NOTES.md << EOF
+        
+        [Full Changelog](https://github.com/instana/instana-go-client/compare/${LAST_TAG}...${VERSION})
+        EOF
+        fi
         
         # Add installation instructions
         cat >> RELEASE_NOTES.md << EOF
@@ -344,12 +295,6 @@ jobs:
         go get github.com/instana/instana-go-client@${VERSION}
         \`\`\`
         
-        ## Documentation
-        
-        - [Quick Start Guide](https://github.com/instana/instana-go-client/blob/${VERSION}/QUICK_START.md)
-        - [API Reference](https://github.com/instana/instana-go-client/blob/${VERSION}/API_REFERENCE.md)
-        - [Architecture](https://github.com/instana/instana-go-client/blob/${VERSION}/ARCHITECTURE.md)
-        - [API Documentation](https://pkg.go.dev/github.com/instana/instana-go-client@${VERSION})
         EOF
         
         echo "Release notes generated"

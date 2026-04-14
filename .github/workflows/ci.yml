@@ -1,0 +1,153 @@
+name: Instana Go Client CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.23'
+    
+    - name: Run golangci-lint
+      uses: golangci/golangci-lint-action@v8
+      with:
+        version: v2.1.0
+        args: --timeout=5m
+    
+    - name: Check code formatting
+      run: |
+        if [ -n "$(gofmt -l .)" ]; then
+          echo "❌ Code is not formatted"
+          gofmt -l .
+          exit 1
+        fi
+        echo "✅ Code is properly formatted"
+
+  test:
+    name: Test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        go-version: ['1.23']  # Only test minimum required version from go.mod
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: ${{ matrix.go-version }}
+    
+    - name: Cache Go modules
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/go/pkg/mod
+          ~/.cache/go-build
+        key: ${{ runner.os }}-go-${{ matrix.go-version }}-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-${{ matrix.go-version }}-
+    
+    - name: Download dependencies
+      run: go mod download
+    
+    - name: Verify dependencies
+      run: go mod verify
+    
+    - name: Run tests
+      shell: bash
+      run: go test -v -race ./...
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.23'
+    
+    - name: Build
+      run: go build -v ./...
+    
+    - name: Verify go.mod and go.sum
+      run: |
+        go mod tidy
+        if [ -n "$(git diff go.mod go.sum)" ]; then
+          echo "❌ go.mod or go.sum is not tidy"
+          git diff go.mod go.sum
+          exit 1
+        fi
+        echo "✅ go.mod and go.sum are tidy"
+
+  coverage-report:
+    name: Coverage Report
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.23'
+    
+    - name: Generate coverage report
+      shell: bash
+      run: |
+        go test -coverprofile=coverage.out -covermode=atomic ./...
+        go tool cover -html=coverage.out -o coverage.html
+        COVERAGE=$(go tool cover -func=coverage.out | grep total | awk '{print $3}')
+        echo "Coverage: ${COVERAGE}"
+    
+    - name: Upload coverage report
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report
+        path: ./coverage.html
+
+  notify:
+    name: Notify
+    runs-on: ubuntu-latest
+    needs: [lint, test, build, coverage-report]
+    if: always()
+    
+    steps:
+    - name: Check job status
+      run: |
+        if [ "${{ needs.lint.result }}" == "failure" ] || \
+           [ "${{ needs.test.result }}" == "failure" ] || \
+           [ "${{ needs.build.result }}" == "failure" ] || \
+           [ "${{ needs.coverage-report.result }}" == "failure" ]; then
+          echo "❌ CI pipeline failed"
+          echo "Lint: ${{ needs.lint.result }}"
+          echo "Test: ${{ needs.test.result }}"
+          echo "Build: ${{ needs.build.result }}"
+          echo "Coverage: ${{ needs.coverage-report.result }}"
+          exit 1
+        else
+          echo "✅ CI pipeline passed"
+        fi
+
+

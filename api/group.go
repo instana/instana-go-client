@@ -129,6 +129,10 @@ const (
 	PermissionCanConfigureIPFiltering = InstanaPermission("CAN_CONFIGURE_IP_FILTERING")
 	//PermissionCanConfigureWebsiteConversions const for Instana permission CAN_CONFIGURE_WEBSITE_CONVERSIONS
 	PermissionCanConfigureWebsiteConversions = InstanaPermission("CAN_CONFIGURE_WEBSITE_CONVERSIONS")
+	//PermissionCanConfigurePersonallyIdentifiableInformationMasking const for Instana permission CAN_CONFIGURE_PERSONALLY_IDENTIFIABLE_INFORMATION_MASKING
+	PermissionCanConfigurePersonallyIdentifiableInformationMasking = InstanaPermission("CAN_CONFIGURE_PERSONALLY_IDENTIFIABLE_INFORMATION_MASKING")
+	//PermissionCanDownloadAgentConfiguration const for Instana permission CAN_DOWNLOAD_AGENT_CONFIGURATION
+	PermissionCanDownloadAgentConfiguration = InstanaPermission("CAN_DOWNLOAD_AGENT_CONFIGURATION")
 
 	PermissionCanConfigureApdex                         = InstanaPermission("CAN_CONFIGURE_APDEX")
 	PermissionCanConfigureCustomEntities                = InstanaPermission("CAN_CONFIGURE_CUSTOM_ENTITIES")
@@ -244,6 +248,8 @@ var SupportedInstanaPermissions = InstanaPermissions{
 	PermissionCanConfigureAutomationActions,
 	PermissionCanConfigureIPFiltering,
 	PermissionCanConfigureWebsiteConversions,
+	PermissionCanConfigurePersonallyIdentifiableInformationMasking,
+	PermissionCanDownloadAgentConfiguration,
 	PermissionLimitedApplicationScope,
 	PermissionLimittedLinuxKvmHypervisorScope,
 	PermissionLimitedVspherScope,

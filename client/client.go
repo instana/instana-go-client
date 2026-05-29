@@ -11,6 +11,7 @@ type instanaAPI struct {
 	restClient rest.RestClient
 
 	// Lazy-initialized API clients
+	apdexConfigs                  rest.RestResource[*api.ApdexConfig]
 	apiTokens                     rest.RestResource[*api.APIToken]
 	alertingChannels              rest.RestResource[*api.AlertingChannel]
 	alertingConfigurations        rest.RestResource[*api.AlertingConfiguration]
@@ -49,6 +50,19 @@ func NewInstanaRestAPI(restClient rest.RestClient) InstanaAPI {
 	return &instanaAPI{
 		restClient: restClient,
 	}
+}
+
+// ApdexConfigs returns the Apdex V2 configurations client (lazy initialization)
+func (c *instanaAPI) ApdexConfigs() rest.RestResource[*api.ApdexConfig] {
+	if c.apdexConfigs == nil {
+		c.apdexConfigs = NewRestResource(
+			c.restClient,
+			api.ApdexConfigResourcePath,
+			rest.DefaultRestResourceModeCreatePOSTUpdatePUT,
+			api.NewApdexConfigJSONUnmarshaller[*api.ApdexConfig](&api.ApdexConfig{}),
+		)
+	}
+	return c.apdexConfigs
 }
 
 // APITokens returns the API tokens client (lazy initialization)

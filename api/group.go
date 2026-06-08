@@ -129,12 +129,6 @@ const (
 	PermissionCanConfigurePersonallyIdentifiableInformationMasking = InstanaPermission("CAN_CONFIGURE_PERSONALLY_IDENTIFIABLE_INFORMATION_MASKING")
 	//PermissionCanDownloadAgentConfiguration const for Instana permission CAN_DOWNLOAD_AGENT_CONFIGURATION
 	PermissionCanDownloadAgentConfiguration = InstanaPermission("CAN_DOWNLOAD_AGENT_CONFIGURATION")
-	//PermissionCanConfigureAIAgents const for Instana permission CAN_CONFIGURE_AI_AGENTS
-	PermissionCanConfigureAIAgents = InstanaPermission("CAN_CONFIGURE_AI_AGENTS")
-	//PermissionCanViewBusinessActivities const for Instana permission CAN_VIEW_BUSINESS_ACTIVITIES
-	PermissionCanViewBusinessActivities = InstanaPermission("CAN_VIEW_BUSINESS_ACTIVITIES")
-	//PermissionCanViewBusinessProcesses const for Instana permission CAN_VIEW_BUSINESS_PROCESSES
-	PermissionCanViewBusinessProcesses = InstanaPermission("CAN_VIEW_BUSINESS_PROCESSES")
 
 	PermissionCanConfigureApdex                         = InstanaPermission("CAN_CONFIGURE_APDEX")
 	PermissionCanConfigureCustomEntities                = InstanaPermission("CAN_CONFIGURE_CUSTOM_ENTITIES")
@@ -158,7 +152,6 @@ const (
 	PermissionLimitedBizopsScope              = InstanaPermission("LIMITED_BIZOPS_SCOPE")
 	PermissionLimitedPhmcScope                = InstanaPermission("LIMITED_PHMC_SCOPE")
 	PermissionLimitedGenAiScope               = InstanaPermission("LIMITED_GEN_AI_SCOPE")
-	PermissionLimitedGenAiCapabilitiesScope   = InstanaPermission("LIMITED_GEN_AI_CAPABILITIES_SCOPE")
 	PermissionLimitedInfrastructureScope      = InstanaPermission("LIMITED_INFRASTRUCTURE_SCOPE")
 	PermissionLimitedNutanixScope             = InstanaPermission("LIMITED_NUTANIX_SCOPE")
 	PermissionLimitedWindowsHypervisorScope   = InstanaPermission("LIMITED_WINDOWS_HYPERVISOR_SCOPE")
@@ -253,9 +246,6 @@ var SupportedInstanaPermissions = InstanaPermissions{
 	PermissionCanConfigureWebsiteConversions,
 	PermissionCanConfigurePersonallyIdentifiableInformationMasking,
 	PermissionCanDownloadAgentConfiguration,
-	PermissionCanConfigureAIAgents,
-	PermissionCanViewBusinessActivities,
-	PermissionCanViewBusinessProcesses,
 	PermissionLimitedApplicationScope,
 	PermissionLimittedLinuxKvmHypervisorScope,
 	PermissionLimitedVspherScope,
@@ -272,7 +262,6 @@ var SupportedInstanaPermissions = InstanaPermissions{
 	PermissionLimitedBizopsScope,
 	PermissionLimitedPhmcScope,
 	PermissionLimitedGenAiScope,
-	PermissionLimitedGenAiCapabilitiesScope,
 	PermissionLimitedInfrastructureScope,
 	PermissionLimitedNutanixScope,
 	PermissionLimitedWindowsHypervisorScope,

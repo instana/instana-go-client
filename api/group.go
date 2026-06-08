@@ -35,8 +35,6 @@ const (
 	PermissionCanConfigureMobileAppMonitoring = InstanaPermission("CAN_CONFIGURE_MOBILE_APP_MONITORING")
 	//PermissionCanConfigureAPITokens const for Instana permission CAN_CONFIGURE_API_TOKENS
 	PermissionCanConfigureAPITokens = InstanaPermission("CAN_CONFIGURE_API_TOKENS")
-	//PermissionCanConfigureServiceLevelIndicators const for Instana permission CAN_CONFIGURE_SERVICE_LEVEL_INDICATORS
-	PermissionCanConfigureServiceLevelIndicators = InstanaPermission("CAN_CONFIGURE_SERVICE_LEVEL_INDICATORS")
 	//PermissionCanConfigureAuthenticationMethods const for Instana permission CAN_CONFIGURE_AUTHENTICATION_METHODS
 	PermissionCanConfigureAuthenticationMethods = InstanaPermission("CAN_CONFIGURE_AUTHENTICATION_METHODS")
 	//PermissionCanConfigureReleases const for Instana permission CAN_CONFIGURE_RELEASES
@@ -85,8 +83,6 @@ const (
 	PermissionCanConfigureLogRetentionPeriod = InstanaPermission("CAN_CONFIGURE_LOG_RETENTION_PERIOD")
 	//PermissionCanConfigurePersonalAPITokens const for Instana permission CAN_CONFIGURE_PERSONAL_API_TOKENS
 	PermissionCanConfigurePersonalAPITokens = InstanaPermission("CAN_CONFIGURE_PERSONAL_API_TOKENS")
-	//PermissionAccessInfrastructureAnalyze const for Instana permission ACCESS_INFRASTRUCTURE_ANALYZE
-	PermissionAccessInfrastructureAnalyze = InstanaPermission("ACCESS_INFRASTRUCTURE_ANALYZE")
 	//PermissionCanViewLogVolume const for Instana permission CAN_VIEW_LOG_VOLUME
 	PermissionCanViewLogVolume = InstanaPermission("CAN_VIEW_LOG_VOLUME")
 	//PermissionCanRunAutomationActions const for Instana permission CAN_RUN_AUTOMATION_ACTIONS
@@ -129,6 +125,10 @@ const (
 	PermissionCanConfigureIPFiltering = InstanaPermission("CAN_CONFIGURE_IP_FILTERING")
 	//PermissionCanConfigureWebsiteConversions const for Instana permission CAN_CONFIGURE_WEBSITE_CONVERSIONS
 	PermissionCanConfigureWebsiteConversions = InstanaPermission("CAN_CONFIGURE_WEBSITE_CONVERSIONS")
+	//PermissionCanConfigurePersonallyIdentifiableInformationMasking const for Instana permission CAN_CONFIGURE_PERSONALLY_IDENTIFIABLE_INFORMATION_MASKING
+	PermissionCanConfigurePersonallyIdentifiableInformationMasking = InstanaPermission("CAN_CONFIGURE_PERSONALLY_IDENTIFIABLE_INFORMATION_MASKING")
+	//PermissionCanDownloadAgentConfiguration const for Instana permission CAN_DOWNLOAD_AGENT_CONFIGURATION
+	PermissionCanDownloadAgentConfiguration = InstanaPermission("CAN_DOWNLOAD_AGENT_CONFIGURATION")
 
 	PermissionCanConfigureApdex                         = InstanaPermission("CAN_CONFIGURE_APDEX")
 	PermissionCanConfigureCustomEntities                = InstanaPermission("CAN_CONFIGURE_CUSTOM_ENTITIES")
@@ -159,6 +159,8 @@ const (
 	PermissionLimitedMObileAppsScope          = InstanaPermission("LIMITED_MOBILE_APPS_SCOPE")
 	PermissionLimitedWebsitesScope            = InstanaPermission("LIMITED_WEBSITES_SCOPE")
 
+	//PermissionAccessInfrastructureAnalyze const for Instana permission ACCESS_INFRASTRUCTURE_ANALYZE
+	PermissionAccessInfrastructureAnalyze = InstanaPermission("ACCESS_INFRASTRUCTURE_ANALYZE")
 	//PermissionAccessApplications const for Instana permission ACCESS_APPLICATIONS
 	PermissionAccessApplications = InstanaPermission("ACCESS_APPLICATIONS")
 	// PermissionAccessMobileApps const for Instana permission ACCESS_MOBILE_APPS
@@ -197,7 +199,6 @@ var SupportedInstanaPermissions = InstanaPermissions{
 	PermissionCanConfigureGlobalAlertPayload,
 	PermissionCanConfigureMobileAppMonitoring,
 	PermissionCanConfigureAPITokens,
-	PermissionCanConfigureServiceLevelIndicators,
 	PermissionCanConfigureAuthenticationMethods,
 	PermissionCanConfigureReleases,
 	PermissionCanViewAuditLog,
@@ -222,7 +223,6 @@ var SupportedInstanaPermissions = InstanaPermissions{
 	PermissionCanConfigureDatabaseManagement,
 	PermissionCanConfigureLogRetentionPeriod,
 	PermissionCanConfigurePersonalAPITokens,
-	PermissionAccessInfrastructureAnalyze,
 	PermissionCanViewLogVolume,
 	PermissionCanRunAutomationActions,
 	PermissionCanViewSyntheticTestResults,
@@ -244,6 +244,8 @@ var SupportedInstanaPermissions = InstanaPermissions{
 	PermissionCanConfigureAutomationActions,
 	PermissionCanConfigureIPFiltering,
 	PermissionCanConfigureWebsiteConversions,
+	PermissionCanConfigurePersonallyIdentifiableInformationMasking,
+	PermissionCanDownloadAgentConfiguration,
 	PermissionLimitedApplicationScope,
 	PermissionLimittedLinuxKvmHypervisorScope,
 	PermissionLimitedVspherScope,
@@ -271,6 +273,7 @@ var SupportedInstanaPermissions = InstanaPermissions{
 	PermissionCanConfigureServiceLevels,
 	PermissionCanConfigureServiceLevelCorrectionWindows,
 	PermissionCanConfigureServiceLevelSmartAlerts,
+	PermissionAccessInfrastructureAnalyze,
 	PermissionAccessApplications,
 	PermissionAccessMobileApps,
 	PermissionAccessSynthetics,

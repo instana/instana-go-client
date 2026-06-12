@@ -1,5 +1,24 @@
 # Changelog
 
+## [v1.0.2](https://github.com/instana/instana-go-client/releases/tag/v1.0.2) - 2026-06-12
+
+### Added
+- **API Token Permissions**: Added 7 missing permission fields to API Token resource
+  - `CanCollectNetTraceLogs` - Permission to collect network trace logs
+  - `CanConfigureCustomEntities` - Permission to configure custom entities
+  - `CanConfigureWebsiteConversions` - Permission to configure website conversions
+  - `CanConfigureIPFiltering` - Permission to configure IP filtering
+  - `CanConfigureLlmModelPrice` - Permission to configure LLM model pricing
+  - `CanConfigurePersonallyIdentifiableInformationMasking` - Permission to configure PII masking
+  - `CanDownloadAgentConfiguration` - Permission to download agent configuration
+
+
+## [v1.0.1](https://github.com/instana/instana-go-client/releases/tag/v1.0.1) - 2026-06-08
+
+### Added
+- Added missing permissions for Roles
+- Enhanced SLO resource handling
+
 
 ## [v1.0.0](https://github.com/instana/instana-go-client/releases/tag/v1.0.0) - 2026-04-14
 

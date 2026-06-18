@@ -35,18 +35,19 @@ type RbacTag struct {
 }
 
 type SloEntity struct {
-	Type             string               `json:"type"`
-	ApplicationID    *string              `json:"applicationId"`
-	ServiceID        *string              `json:"serviceId"`
-	EndpointID       *string              `json:"endpointId"`
-	BoundaryScope    *string              `json:"boundaryScope"`
-	IncludeSynthetic *bool                `json:"includeSynthetic"`
-	IncludeInternal  *bool                `json:"includeInternal"`
-	FilterExpression *tagfilter.TagFilter `json:"tagFilterExpression"`
-	WebsiteId        *string              `json:"websiteId"`
-	BeaconType       *string              `json:"beaconType"`
-	SyntheticTestIDs []interface{}        `json:"syntheticTestIds"`
-	InfraType        *string              `json:"infraType"`
+	Type                          string               `json:"type"`
+	ApplicationID                 *string              `json:"applicationId"`
+	ServiceID                     *string              `json:"serviceId"`
+	EndpointID                    *string              `json:"endpointId"`
+	BoundaryScope                 *string              `json:"boundaryScope"`
+	IncludeSynthetic              *bool                `json:"includeSynthetic"`
+	IncludeInternal               *bool                `json:"includeInternal"`
+	FilterExpression              *tagfilter.TagFilter `json:"tagFilterExpression"`
+	WebsiteId                     *string              `json:"websiteId"`
+	BeaconType                    *string              `json:"beaconType"`
+	SyntheticTestIDs              []interface{}        `json:"syntheticTestIds"`
+	IncludeUnscheduledTestResults *bool                `json:"includeUnscheduledTestResults,omitempty"`
+	InfraType                     *string              `json:"infraType"`
 }
 
 // SloEntity represents the nested object sli entity of the sli config REST resource at Instana

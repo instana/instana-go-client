@@ -102,7 +102,6 @@ func (u *apdexConfigJSONUnmarshaller[T]) UnmarshalArray(data []byte) (*[]T, erro
 	return &response.Items, nil
 }
 
-
 // Validate validates the ApdexEntity structure based on its type
 func (e *ApdexEntity) Validate() error {
 	// Validate common required fields

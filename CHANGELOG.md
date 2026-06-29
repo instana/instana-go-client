@@ -1,5 +1,13 @@
 # Changelog
 
+## [v1.1.0](https://github.com/instana/instana-go-client/releases/tag/v1.1.0) - 2026-06-29
+
+### Added
+- **Apdex V2 Configuration Support**: Complete implementation of Apdex configuration management
+  - Support for Application Apdex configurations with boundary scope options
+  - Support for Website Apdex configurations with beacon types
+
+
 ## [v1.0.2](https://github.com/instana/instana-go-client/releases/tag/v1.0.2) - 2026-06-12
 
 ### Added

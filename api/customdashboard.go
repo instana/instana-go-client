@@ -13,6 +13,7 @@ type CustomDashboard struct {
 	ID          string             `json:"id"`
 	Title       string             `json:"title"`
 	AccessRules []types.AccessRule `json:"accessRules"`
+	RbacTags    []RbacTag          `json:"rbacTags,omitempty"`
 	Widgets     json.RawMessage    `json:"widgets"`
 }
 

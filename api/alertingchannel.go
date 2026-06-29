@@ -46,6 +46,7 @@ const (
 type AlertingChannel struct {
 	ID                    string              `json:"id"`
 	Name                  string              `json:"name"`
+	RbacTags              []RbacTag           `json:"rbacTags,omitempty"`
 	Kind                  AlertingChannelType `json:"kind"`
 	Emails                []string            `json:"emails"`
 	WebhookURL            *string             `json:"webhookUrl"`

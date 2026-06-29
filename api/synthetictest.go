@@ -112,7 +112,7 @@ type SyntheticTest struct {
 	Locations        []string            `json:"locations"`
 	PlaybackMode     string              `json:"playbackMode"`
 	TestFrequency    *int32              `json:"testFrequency,omitempty"`
-	RbacTags         []ApiTag            `json:"rbacTags,omitempty"`
+	RbacTags         []RbacTag           `json:"rbacTags,omitempty"`
 	TenantId         *string             `json:"tenantId,omitempty"`
 }
 

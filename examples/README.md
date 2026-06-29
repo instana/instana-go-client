@@ -28,6 +28,7 @@ go get github.com/instana/instana-go-client
 
 The `InstanaAPI` interface provides access to all Instana resources:
 
+- **ApdexConfigs()** - Manage Apdex V2 configurations for applications and websites
 - **APITokens()** - Manage API authentication tokens
 - **AlertingChannels()** - Manage notification channels
 - **AlertingConfigurations()** - Manage alert rules

@@ -9,6 +9,9 @@ import (
 // It provides access to all API endpoints through dedicated client methods.
 // Each method returns a REST resource client for the corresponding API.
 type InstanaAPI interface {
+	// ApdexConfigs returns the Apdex V2 configurations client
+	ApdexConfigs() rest.RestResource[*api.ApdexConfig]
+
 	// APITokens returns the API tokens client for managing API authentication tokens
 	APITokens() rest.RestResource[*api.APIToken]
 

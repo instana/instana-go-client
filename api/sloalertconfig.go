@@ -10,6 +10,12 @@ import (
 const (
 	//SloAlertConfigResourcePath path to slo alert config resource of Instana RESTful API
 	SloAlertConfigResourcePath = "/api/events/settings/global-alert-configs/service-levels"
+
+	// SloAlertRuleAlertTypeApdex is the alertType value for Apdex smart alerts
+	SloAlertRuleAlertTypeApdex = "APDEX"
+
+	// SloAlertMetricScore is the metric value used for Apdex smart alerts
+	SloAlertMetricScore = "SCORE"
 )
 
 // SloAlertConfig represents the REST resource of SLO Alert Configuration at Instana
@@ -24,6 +30,7 @@ type SloAlertConfig struct {
 	Threshold             *SloAlertThreshold              `json:"threshold,omitempty"`
 	TimeThreshold         SloAlertTimeThreshold           `json:"timeThreshold"`
 	SloIds                []string                        `json:"sloIds"`
+	ApdexIds              []string                        `json:"apdexIds"`
 	AlertChannelIds       []string                        `json:"alertChannelIds"`
 	CustomerPayloadFields []types.CustomPayloadField[any] `json:"customPayloadFields"`
 	BurnRateConfigs       *[]BurnRateConfig               `json:"burnRateConfig,omitempty"`

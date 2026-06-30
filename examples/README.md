@@ -45,7 +45,7 @@ The `InstanaAPI` interface provides access to all Instana resources:
 - **MobileAlertConfigs()** - Mobile app alert configurations
 - **Roles()** - RBAC roles
 - **SliConfigs()** - SLI configurations
-- **SloAlertConfigs()** - SLO alert configurations
+- **SloAlertConfigs()** - SLO and Apdex alert configurations
 - **SloConfigs()** - SLO configurations
 - **SyntheticAlertConfigs()** - Synthetic alert configurations
 - **SyntheticTests()** - Synthetic tests

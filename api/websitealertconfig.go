@@ -20,6 +20,7 @@ type WebsiteAlertConfig struct {
 	TagFilterExpression   *tagfilter.TagFilter             `json:"tagFilterExpression"`
 	AlertChannelIDs       []string                         `json:"alertChannelIds"`
 	Granularity           model.Granularity                `json:"granularity"`
+	GracePeriod           *int64                           `json:"gracePeriod,omitempty"`
 	CustomerPayloadFields []model.CustomPayloadField[any]  `json:"customPayloadFields"`
 	Rule                  *WebsiteAlertRule                `json:"rule"`
 	Threshold             *model.Threshold                 `json:"threshold"`

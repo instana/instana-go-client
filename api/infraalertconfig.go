@@ -15,6 +15,7 @@ type InfraAlertConfig struct {
 	TagFilterExpression   *tagfilter.TagFilter                      `json:"tagFilterExpression"`
 	GroupBy               []string                                  `json:"groupBy"`
 	Granularity           types.Granularity                         `json:"granularity"`
+	GracePeriod           *int64                                    `json:"gracePeriod,omitempty"`
 	TimeThreshold         *InfraTimeThreshold                       `json:"timeThreshold"`
 	CustomerPayloadFields []types.CustomPayloadField[any]           `json:"customPayloadFields"`
 	Rules                 []types.RuleWithThreshold[InfraAlertRule] `json:"rules"`

@@ -10,8 +10,16 @@ import (
 )
 
 const (
-	//SloConfigResourcePath path to sli config resource of Instana RESTful API
+	// SloConfigResourcePath path to sli config resource of Instana RESTful API
 	SloConfigResourcePath = "/api/settings/slo"
+
+	// Blueprint type name constants — match BlueprintType enum in the backend
+	SloBlueprintLatency        = "latency"
+	SloBlueprintAvailability   = "availability"
+	SloBlueprintTraffic        = "traffic"
+	SloBlueprintSaturation     = "saturation"
+	SloBlueprintCustom         = "custom"
+	SloBlueprintAdvancedCustom = "advanced-custom"
 )
 
 // SloConfig represents the REST resource of slo configuration at Instana
@@ -46,8 +54,9 @@ type SloEntity struct {
 	WebsiteId                     *string              `json:"websiteId"`
 	BeaconType                    *string              `json:"beaconType"`
 	SyntheticTestIDs              []interface{}        `json:"syntheticTestIds"`
-	IncludeUnscheduledTestResults *bool                `json:"includeUnscheduledTestResults,omitempty"`
+	IncludeUnscheduledTestResults *bool                `json:"includeUnscheduledTestResults"`
 	InfraType                     *string              `json:"infraType"`
+	MobileIds                     []string             `json:"mobileIds"`
 }
 
 // SloEntity represents the nested object sli entity of the sli config REST resource at Instana
@@ -74,6 +83,25 @@ type SloInfraEntity struct {
 	InfraType string `json:"infraType"`
 }
 
+type SloMobileEntity struct {
+	Type             string               `json:"type"`
+	MobileIds        []string             `json:"mobileIds"`
+	FilterExpression *tagfilter.TagFilter `json:"tagFilterExpression"`
+}
+
+// NewSloMobileEntity creates a SloMobileEntity, defaulting FilterExpression to an empty
+// AND expression when nil — matching the backend SloEntity constructor behaviour.
+func NewSloMobileEntity(mobileIds []string, filterExpression *tagfilter.TagFilter) SloMobileEntity {
+	if filterExpression == nil {
+		filterExpression = tagfilter.NewLogicalAndTagFilter([]*tagfilter.TagFilter{})
+	}
+	return SloMobileEntity{
+		Type:             "mobile",
+		MobileIds:        mobileIds,
+		FilterExpression: filterExpression,
+	}
+}
+
 type SloSyntheticEntity struct {
 	Type             string               `json:"type"`
 	SyntheticTestIDs []interface{}        `json:"syntheticTestIds"`
@@ -87,31 +115,41 @@ type SloIndicator struct {
 	Aggregation               *string              `json:"aggregation"`
 	Operator                  *string              `json:"operator"`
 	TrafficType               *string              `json:"trafficType"`
-	MetricName                *string              `json:"metricName,omitempty"`
+	MetricName                *string              `json:"metricName"`
 	GoodEventFilterExpression *tagfilter.TagFilter `json:"goodEventsFilter"`
 	BadEventFilterExpression  *tagfilter.TagFilter `json:"badEventsFilter"`
+	Metric                    *SloEntityMetric     `json:"metric"`
+	// GoodEvents and BadEvents are populated when Blueprint == SloBlueprintAdvancedCustom
+	GoodEvents *SloAdvancedFilter `json:"goodEvents"`
+	BadEvents  *SloAdvancedFilter `json:"badEvents"`
 }
 
 // Blueprints
 type SloTimeBasedLatencyIndicator struct {
-	Blueprint   string  `json:"blueprint"`
-	Type        string  `json:"type"`
-	Threshold   float64 `json:"threshold"`
-	Aggregation string  `json:"aggregation"`
+	Blueprint   string           `json:"blueprint"`
+	Type        string           `json:"type"`
+	Threshold   float64          `json:"threshold"`
+	Aggregation string           `json:"aggregation"`
+	Operator    *string          `json:"operator"`
+	Metric      *SloEntityMetric `json:"metric"`
 }
 
 type SloTimeBasedAvailabilityIndicator struct {
-	Blueprint   string  `json:"blueprint"`
-	Type        string  `json:"type"`
-	Threshold   float64 `json:"threshold"`
-	Aggregation string  `json:"aggregation"`
+	Blueprint   string           `json:"blueprint"`
+	Type        string           `json:"type"`
+	Threshold   float64          `json:"threshold"`
+	Aggregation string           `json:"aggregation"`
+	Operator    *string          `json:"operator"`
+	Metric      *SloEntityMetric `json:"metric"`
 }
 
 type SloTrafficIndicator struct {
-	Blueprint   string  `json:"blueprint"`
-	TrafficType string  `json:"trafficType"`
-	Threshold   float64 `json:"threshold"`
-	Aggregation string  `json:"aggregation"`
+	Blueprint   string           `json:"blueprint"`
+	TrafficType string           `json:"trafficType"`
+	Threshold   float64          `json:"threshold"`
+	Aggregation string           `json:"aggregation"`
+	Operator    *string          `json:"operator"`
+	Metric      *SloEntityMetric `json:"metric"`
 }
 
 type SloEventBasedLatencyIndicator struct {
@@ -130,6 +168,53 @@ type SloCustomIndicator struct {
 	Blueprint                 string               `json:"blueprint"`
 	GoodEventFilterExpression *tagfilter.TagFilter `json:"goodEventsFilter"`
 	BadEventFilterExpression  *tagfilter.TagFilter `json:"badEventsFilter"`
+}
+
+// SloSaturationIndicator represents the saturation blueprint indicator
+// (maps to SaturationBlueprintIndicator). MetricName identifies the infra/custom metric;
+// Metric carries the entity-metric scope used for mobile/advanced scenarios.
+type SloSaturationIndicator struct {
+	Blueprint   string           `json:"blueprint"`
+	Type        string           `json:"type"`
+	MetricName  *string          `json:"metricName"`
+	Threshold   float64          `json:"threshold"`
+	Aggregation string           `json:"aggregation"`
+	Operator    *string          `json:"operator"`
+	Metric      *SloEntityMetric `json:"metric"`
+}
+
+// SloEntityMetricScope represents the scope of an entity metric (maps to EntityMetricScope).
+// For a Mobile App SLO, Type is the beacon type (e.g. "httpRequests", "crashes").
+type SloEntityMetricScope struct {
+	Type             string               `json:"type"`
+	FilterExpression *tagfilter.TagFilter `json:"tagFilterExpression"`
+}
+
+// SloEntityMetric represents the metric definition for an indicator (maps to EntityMetric).
+// Name is the metric name and Scope narrows which beacons/signals are measured.
+type SloEntityMetric struct {
+	Name  string                `json:"name"`
+	Scope *SloEntityMetricScope `json:"scope"`
+}
+
+// SloAdvancedFilter represents one side (good or bad) of an advanced-custom indicator
+// (maps to AdvancedFilter). The Metric field identifies the signal; Aggregation, Threshold
+// and Operator define the pass/fail condition.
+type SloAdvancedFilter struct {
+	Aggregation string           `json:"aggregation"`
+	Threshold   float64          `json:"threshold"`
+	Operator    string           `json:"operator"`
+	Metric      *SloEntityMetric `json:"metric"`
+}
+
+// SloAdvancedCustomIndicator represents the advanced-custom blueprint indicator
+// (maps to AdvancedCustomBlueprintIndicator). GoodEvents and BadEvents each carry
+// their own metric, aggregation, threshold and operator.
+type SloAdvancedCustomIndicator struct {
+	Blueprint  string             `json:"blueprint"`
+	Type       string             `json:"type"`
+	GoodEvents *SloAdvancedFilter `json:"goodEvents"`
+	BadEvents  *SloAdvancedFilter `json:"badEvents"`
 }
 
 type SloTimeWindow struct {

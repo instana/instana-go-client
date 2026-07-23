@@ -45,6 +45,9 @@ type InstanaAPI interface {
 	// CustomEventSpecifications returns the custom event specifications client
 	CustomEventSpecifications() rest.RestResource[*api.CustomEventSpecification]
 
+	// GroupMappings returns the RBAC group mappings client
+	GroupMappings() rest.RestResource[*api.GroupMapping]
+
 	// Groups returns the RBAC groups client
 	Groups() rest.RestResource[*api.Group]
 

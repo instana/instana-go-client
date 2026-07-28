@@ -195,6 +195,20 @@ func (mr *MockInstanaAPIMockRecorder) GlobalApplicationAlertConfigs() *gomock.Ca
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GlobalApplicationAlertConfigs", reflect.TypeOf((*MockInstanaAPI)(nil).GlobalApplicationAlertConfigs))
 }
 
+// GroupMappings mocks base method.
+func (m *MockInstanaAPI) GroupMappings() rest.RestResource[*api.GroupMapping] {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GroupMappings")
+	ret0, _ := ret[0].(rest.RestResource[*api.GroupMapping])
+	return ret0
+}
+
+// GroupMappings indicates an expected call of GroupMappings.
+func (mr *MockInstanaAPIMockRecorder) GroupMappings() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GroupMappings", reflect.TypeOf((*MockInstanaAPI)(nil).GroupMappings))
+}
+
 // Groups mocks base method.
 func (m *MockInstanaAPI) Groups() rest.RestResource[*api.Group] {
 	m.ctrl.T.Helper()

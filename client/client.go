@@ -23,6 +23,7 @@ type instanaAPI struct {
 	builtinEventSpecifications    rest.ReadOnlyRestResource[*api.BuiltinEventSpecification]
 	customDashboards              rest.RestResource[*api.CustomDashboard]
 	customEventSpecifications     rest.RestResource[*api.CustomEventSpecification]
+	groupMappings                 rest.RestResource[*api.GroupMapping]
 	groups                        rest.RestResource[*api.Group]
 	hostAgents                    rest.ReadOnlyRestResource[*api.HostAgent]
 	infraAlertConfigs             rest.RestResource[*api.InfraAlertConfig]
@@ -205,6 +206,19 @@ func (c *instanaAPI) CustomEventSpecifications() rest.RestResource[*api.CustomEv
 		)
 	}
 	return c.customEventSpecifications
+}
+
+// GroupMappings returns the group mappings client (lazy initialization)
+func (c *instanaAPI) GroupMappings() rest.RestResource[*api.GroupMapping] {
+	if c.groupMappings == nil {
+		c.groupMappings = NewRestResource(
+			c.restClient,
+			api.GroupMappingResourcePath,
+			rest.DefaultRestResourceModeCreatePOSTUpdatePUT,
+			rest.NewGenericUnmarshaller[*api.GroupMapping](),
+		)
+	}
+	return c.groupMappings
 }
 
 // Groups returns the groups client (lazy initialization)

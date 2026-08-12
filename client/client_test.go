@@ -494,6 +494,7 @@ func TestAllClientsReturnNonNil(t *testing.T) {
 		{"Users", func() interface{} { return client.Users() }},
 		{"WebsiteAlertConfigs", func() interface{} { return client.WebsiteAlertConfigs() }},
 		{"WebsiteMonitoringConfigs", func() interface{} { return client.WebsiteMonitoringConfigs() }},
+		{"SessionSettings", func() interface{} { return client.SessionSettings() }},
 	}
 
 	for _, tt := range tests {
@@ -531,5 +532,31 @@ func TestLazyInitializationCaching(t *testing.T) {
 	group2 := client.Groups()
 	if group1 != group2 {
 		t.Error("Groups should return cached instance")
+	}
+}
+
+// TestSessionSettingsLazyInitialization tests lazy initialization of the SessionSettings client
+func TestSessionSettingsLazyInitialization(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockRestClient := mocks.NewMockRestClient(ctrl)
+	client := NewInstanaRestAPI(mockRestClient).(*instanaAPI)
+
+	// Initially should be nil
+	if client.sessionSettings != nil {
+		t.Error("Expected sessionSettings to be nil before first access")
+	}
+
+	// First access should initialize
+	ss := client.SessionSettings()
+	if ss == nil {
+		t.Fatal("Expected non-nil SessionSettings client")
+	}
+
+	// Second access should return same instance
+	ss2 := client.SessionSettings()
+	if ss != ss2 {
+		t.Error("Expected same instance on second access")
 	}
 }

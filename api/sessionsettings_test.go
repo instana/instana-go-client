@@ -152,3 +152,26 @@ func TestSessionSettingsGet_EmptyBody_ReturnsDefaults(t *testing.T) {
 		t.Errorf("IdleTimeInMillis: want 28800000 (default), got %d", got.IdleTimeInMillis)
 	}
 }
+
+func TestSessionSettingsGet_NilBody_ReturnsDefaults(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	// Simulate RestClient returning nil bytes (some HTTP client implementations return nil
+	// rather than []byte{} on a 200 with no body content).
+	mockClient := mocks.NewMockRestClient(ctrl)
+	mockClient.EXPECT().Get(api.SessionSettingsResourcePath).Return(nil, nil)
+
+	resource := api.NewSessionSettingsRestResource(mockClient)
+	got, err := resource.Get()
+
+	if err != nil {
+		t.Fatalf("unexpected error for nil body: %v", err)
+	}
+	if got.TokenLifeTimeInMillis != 604800000 {
+		t.Errorf("TokenLifeTimeInMillis: want 604800000 (default), got %d", got.TokenLifeTimeInMillis)
+	}
+	if got.IdleTimeInMillis != 28800000 {
+		t.Errorf("IdleTimeInMillis: want 28800000 (default), got %d", got.IdleTimeInMillis)
+	}
+}

@@ -477,7 +477,7 @@ func (m *MockInstanaAPI) SessionSettings() rest.SingletonRestResource[*api.Sessi
 	return ret0
 }
 
-// SessionSettings indicates an expected call of SessionSettings.
+// SessionSettings indicates an expected call of SessionSettings on the mock recorder.
 func (mr *MockInstanaAPIMockRecorder) SessionSettings() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SessionSettings", reflect.TypeOf((*MockInstanaAPI)(nil).SessionSettings))

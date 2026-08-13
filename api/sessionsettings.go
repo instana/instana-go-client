@@ -62,7 +62,7 @@ func (r *sessionSettingsRestResource) Upsert(settings *SessionSettings) (*Sessio
 	}
 	data, err := r.client.Put(&sessionSettingsDataObject{payload: body, path: r.resourcePath}, r.resourcePath)
 	if err != nil {
-		return settings, err
+		return nil, err
 	}
 	return r.unmarshal(data)
 }

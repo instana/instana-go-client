@@ -554,7 +554,9 @@ func TestSessionSettingsLazyInitialization(t *testing.T) {
 		t.Fatal("Expected non-nil SessionSettings client")
 	}
 
-	// Second access should return same instance
+	// Second access must return the exact same concrete pointer. Interface value comparison
+	// is valid here because both sides wrap the same *sessionSettingsRestResource allocated
+	// on first access — the lazy-init stores the concrete pointer, not a copy.
 	ss2 := client.SessionSettings()
 	if ss != ss2 {
 		t.Error("Expected same instance on second access")

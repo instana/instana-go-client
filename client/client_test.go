@@ -369,6 +369,20 @@ func TestSyntheticAlertConfigsLazyInitialization(t *testing.T) {
 	}
 }
 
+// TestSyntheticCredentialsLazyInitialization tests lazy initialization of SyntheticCredentials client
+func TestSyntheticCredentialsLazyInitialization(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockRestClient := mocks.NewMockRestClient(ctrl)
+	client := NewInstanaRestAPI(mockRestClient).(*instanaAPI)
+
+	creds := client.SyntheticCredentials()
+	if creds == nil {
+		t.Fatal("Expected non-nil SyntheticCredentials client")
+	}
+}
+
 // TestSyntheticLocationsLazyInitialization tests lazy initialization of SyntheticLocations client
 func TestSyntheticLocationsLazyInitialization(t *testing.T) {
 	ctrl := gomock.NewController(t)
@@ -488,6 +502,7 @@ func TestAllClientsReturnNonNil(t *testing.T) {
 		{"SloConfigs", func() interface{} { return client.SloConfigs() }},
 		{"SloCorrectionConfigs", func() interface{} { return client.SloCorrectionConfigs() }},
 		{"SyntheticAlertConfigs", func() interface{} { return client.SyntheticAlertConfigs() }},
+		{"SyntheticCredentials", func() interface{} { return client.SyntheticCredentials() }},
 		{"SyntheticLocations", func() interface{} { return client.SyntheticLocations() }},
 		{"SyntheticTests", func() interface{} { return client.SyntheticTests() }},
 		{"Teams", func() interface{} { return client.Teams() }},

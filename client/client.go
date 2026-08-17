@@ -44,6 +44,7 @@ type instanaAPI struct {
 	users                         rest.ReadOnlyRestResource[*api.User]
 	websiteAlertConfigs           rest.RestResource[*api.WebsiteAlertConfig]
 	websiteMonitoringConfigs      rest.RestResource[*api.WebsiteMonitoringConfig]
+	sessionSettings               rest.SingletonRestResource[*api.SessionSettings]
 }
 
 // NewInstanaRestAPI creates a new Instana API client with the provided REST client.
@@ -475,4 +476,12 @@ func (c *instanaAPI) WebsiteMonitoringConfigs() rest.RestResource[*api.WebsiteMo
 		)
 	}
 	return c.websiteMonitoringConfigs
+}
+
+// SessionSettings returns the singleton session settings client (lazy initialization)
+func (c *instanaAPI) SessionSettings() rest.SingletonRestResource[*api.SessionSettings] {
+	if c.sessionSettings == nil {
+		c.sessionSettings = api.NewSessionSettingsRestResource(c.restClient)
+	}
+	return c.sessionSettings
 }

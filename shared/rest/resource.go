@@ -23,6 +23,17 @@ type ReadOnlyRestResource[T InstanaDataObject] interface {
 	GetOne(id string) (T, error)
 }
 
+// SingletonRestResource interface definition for a singleton REST resource where only one instance
+// exists per tenant unit. The resource has no ID — GET/PUT/DELETE all operate on the fixed path.
+type SingletonRestResource[T any] interface {
+	// Get retrieves the singleton resource.
+	Get() (T, error)
+	// Upsert creates or updates the singleton resource using HTTP PUT.
+	Upsert(data T) (T, error)
+	// Delete removes the singleton resource, restoring it to defaults.
+	Delete() error
+}
+
 // JSONUnmarshaller interface definition for unmarshalling that unmarshalls JSON to go data structures
 type JSONUnmarshaller[T any] interface {
 	// Unmarshal converts the provided json bytes into the go data structure as provided in the target

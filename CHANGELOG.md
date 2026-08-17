@@ -1,5 +1,51 @@
 # Changelog
 
+## [v1.2.0](https://github.com/instana/instana-go-client/releases/tag/v1.2.0) - 2026-08-17
+
+### Added
+- **Session Settings**: Added support for the Session Settings API (`/api/settings/session`)
+  - `SessionSettings` struct with `TokenLifeTimeInMillis` and `IdleTimeInMillis` fields
+  - Singleton REST resource client with get/update operations
+  - Server-enforced constraints: token lifetime 10 min–7 days, idle time 10 min–8 hours
+
+
+## [v1.1.4](https://github.com/instana/instana-go-client/releases/tag/v1.1.4) - 2026-07-28
+
+### Added
+- **Group Mapping (RBAC)**: Added support for the Group Mapping API (`/api/settings/rbac/mappings`)
+  - `GroupMapping` struct mapping IdP (LDAP, OIDC, SAML) attribute key/value pairs to Instana groups
+  - Optional `TeamID` field for team-scoped mappings
+
+
+## [v1.1.3](https://github.com/instana/instana-go-client/releases/tag/v1.1.3) - 2026-07-13
+
+### Added
+- **Mobile SLO Support**: Extended SLO configuration with mobile entity support
+  - `SloMobileEntity` struct with mobile app IDs and tag filter expression
+  - `NewSloMobileEntity` constructor defaulting filter to an empty AND expression
+  - `MobileIds` field added to `SloEntity`
+  - Blueprint type constants: `latency`, `availability`, `traffic`, `saturation`, `custom`, `advanced-custom`
+  - `SloIndicator` extended with `Metric`, `GoodEvents`, and `BadEvents` fields for advanced custom blueprints
+
+
+## [v1.1.2](https://github.com/instana/instana-go-client/releases/tag/v1.1.2) - 2026-07-07
+
+### Added
+- **RBAC Tags**: Added `RbacTags` field to `AlertingChannel`, `CustomDashboard`, and `SyntheticTest` API structs
+  - Enables team/RBAC tag assignment for these resources in terraform-provider-instana
+  - `SyntheticTest.RbacTags` type updated from `[]ApiTag` to `[]RbacTag` to align with the `RbacTag` struct
+
+
+## [v1.1.1](https://github.com/instana/instana-go-client/releases/tag/v1.1.1) - 2026-07-01
+
+### Added
+- **Grace Period**: Added `grace_period` field support to `InfraAlertConfig` and `WebsiteAlertConfig`
+- **Apdex Smart Alerts**: Extended `SloAlertConfig` with Apdex smart alert support
+  - `SloAlertRuleAlertTypeApdex` constant (`"APDEX"`)
+  - `SloAlertMetricScore` constant (`"SCORE"`)
+  - `ApdexIds` field on `SloAlertConfig` for linking Apdex configurations to SLO alerts
+
+
 ## [v1.1.0](https://github.com/instana/instana-go-client/releases/tag/v1.1.0) - 2026-06-29
 
 ### Added

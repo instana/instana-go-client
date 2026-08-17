@@ -107,4 +107,8 @@ type InstanaAPI interface {
 
 	// WebsiteMonitoringConfigs returns the website monitoring configurations client
 	WebsiteMonitoringConfigs() rest.RestResource[*api.WebsiteMonitoringConfig]
+
+	// SessionSettings returns the singleton session settings client for managing
+	// tenant unit token lifetime and idle timeout configuration
+	SessionSettings() rest.SingletonRestResource[*api.SessionSettings]
 }

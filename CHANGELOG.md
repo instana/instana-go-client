@@ -1,5 +1,15 @@
 # Changelog
 
+## [v1.3.0](https://github.com/instana/instana-go-client/releases/tag/v1.3.0) - 2026-08-17
+
+### Added
+- **Synthetic Credentials**: Added support for the Synthetic Credentials API (`/api/synthetics/settings/credentials`)
+  - `SyntheticCredential` struct with `CredentialName`, `CredentialValue`, `Applications`, `MobileApps`, `Websites`, and `RbacTags` fields
+  - Custom REST resource implementation that re-fetches the full object via `/associations` after create/update, working around the empty-body API responses from `POST`/`PUT`
+  - `GetOne` reads from the `/associations` sub-path to return the full credential including scope associations
+  - `SyntheticCredentials()` accessor added to the `InstanaAPI` interface and client with lazy initialisation
+
+
 ## [v1.2.0](https://github.com/instana/instana-go-client/releases/tag/v1.2.0) - 2026-08-17
 
 ### Added

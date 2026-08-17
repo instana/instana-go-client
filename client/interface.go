@@ -90,6 +90,9 @@ type InstanaAPI interface {
 	// SyntheticLocations returns the read-only synthetic test locations client
 	SyntheticLocations() rest.ReadOnlyRestResource[*api.SyntheticLocation]
 
+	// SyntheticCredentials returns the synthetic credentials client
+	SyntheticCredentials() rest.RestResource[*api.SyntheticCredential]
+
 	// SyntheticTests returns the synthetic tests client
 	SyntheticTests() rest.RestResource[*api.SyntheticTest]
 

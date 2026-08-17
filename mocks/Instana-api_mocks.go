@@ -385,6 +385,20 @@ func (mr *MockInstanaAPIMockRecorder) SyntheticAlertConfigs() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SyntheticAlertConfigs", reflect.TypeOf((*MockInstanaAPI)(nil).SyntheticAlertConfigs))
 }
 
+// SyntheticCredentials mocks base method.
+func (m *MockInstanaAPI) SyntheticCredentials() rest.RestResource[*api.SyntheticCredential] {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SyntheticCredentials")
+	ret0, _ := ret[0].(rest.RestResource[*api.SyntheticCredential])
+	return ret0
+}
+
+// SyntheticCredentials indicates an expected call of SyntheticCredentials.
+func (mr *MockInstanaAPIMockRecorder) SyntheticCredentials() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SyntheticCredentials", reflect.TypeOf((*MockInstanaAPI)(nil).SyntheticCredentials))
+}
+
 // SyntheticLocations mocks base method.
 func (m *MockInstanaAPI) SyntheticLocations() rest.ReadOnlyRestResource[*api.SyntheticLocation] {
 	m.ctrl.T.Helper()

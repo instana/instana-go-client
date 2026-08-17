@@ -37,6 +37,7 @@ type instanaAPI struct {
 	sloConfigs                    rest.RestResource[*api.SloConfig]
 	sloCorrections                rest.RestResource[*api.SloCorrectionConfig]
 	syntheticAlertConfigs         rest.RestResource[*api.SyntheticAlertConfig]
+	syntheticCredentials          rest.RestResource[*api.SyntheticCredential]
 	syntheticLocations            rest.ReadOnlyRestResource[*api.SyntheticLocation]
 	syntheticTests                rest.RestResource[*api.SyntheticTest]
 	teams                         rest.RestResource[*api.Team]
@@ -388,6 +389,19 @@ func (c *instanaAPI) SyntheticAlertConfigs() rest.RestResource[*api.SyntheticAle
 		)
 	}
 	return c.syntheticAlertConfigs
+}
+
+// SyntheticCredentials returns the synthetic credentials client (lazy initialization).
+// A custom REST resource is used because the create/update endpoints return an empty body;
+// the implementation fetches the full object via the associations endpoint after each mutation.
+func (c *instanaAPI) SyntheticCredentials() rest.RestResource[*api.SyntheticCredential] {
+	if c.syntheticCredentials == nil {
+		c.syntheticCredentials = api.NewSyntheticCredentialRestResource(
+			rest.NewGenericUnmarshaller[*api.SyntheticCredential](),
+			c.restClient,
+		)
+	}
+	return c.syntheticCredentials
 }
 
 // SyntheticLocations returns the synthetic locations client (lazy initialization)

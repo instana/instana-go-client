@@ -259,6 +259,7 @@ func TestNewInstanaAPI_AllAPIMethods(t *testing.T) {
 		{"HostAgents", func() interface{} { return api.HostAgents() }},
 		{"Users", func() interface{} { return api.Users() }},
 		{"LogAlertConfigs", func() interface{} { return api.LogAlertConfigs() }},
+		{"SessionSettings", func() interface{} { return api.SessionSettings() }},
 	}
 
 	for _, tt := range tests {

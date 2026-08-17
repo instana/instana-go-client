@@ -468,3 +468,17 @@ func (mr *MockInstanaAPIMockRecorder) WebsiteMonitoringConfigs() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "WebsiteMonitoringConfigs", reflect.TypeOf((*MockInstanaAPI)(nil).WebsiteMonitoringConfigs))
 }
+
+// SessionSettings mocks base method.
+func (m *MockInstanaAPI) SessionSettings() rest.SingletonRestResource[*api.SessionSettings] {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SessionSettings")
+	ret0, _ := ret[0].(rest.SingletonRestResource[*api.SessionSettings])
+	return ret0
+}
+
+// SessionSettings indicates an expected call of SessionSettings on the mock recorder.
+func (mr *MockInstanaAPIMockRecorder) SessionSettings() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SessionSettings", reflect.TypeOf((*MockInstanaAPI)(nil).SessionSettings))
+}

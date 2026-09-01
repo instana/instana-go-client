@@ -5,18 +5,18 @@ const ReleaseResourcePath = "/api/releases"
 
 // Release represents the request/update body for a release in the Instana API
 type Release struct {
-	Name         string                    `json:"name"`
-	Start        int64                     `json:"start"`
+	Name         string                     `json:"name"`
+	Start        int64                      `json:"start"`
 	Applications []*ReleaseApplicationScope `json:"applications,omitempty"`
 	Services     []*ReleaseServiceScope     `json:"services,omitempty"`
 }
 
 // ReleaseWithMetadata represents a release as returned by the Instana API (includes server-set fields)
 type ReleaseWithMetadata struct {
-	ID           string                    `json:"id"`
-	Name         string                    `json:"name"`
-	Start        int64                     `json:"start"`
-	LastUpdated  int64                     `json:"lastUpdated"`
+	ID           string                     `json:"id"`
+	Name         string                     `json:"name"`
+	Start        int64                      `json:"start"`
+	LastUpdated  int64                      `json:"lastUpdated"`
 	Applications []*ReleaseApplicationScope `json:"applications,omitempty"`
 	Services     []*ReleaseServiceScope     `json:"services,omitempty"`
 }

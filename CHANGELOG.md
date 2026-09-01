@@ -1,5 +1,11 @@
 # Changelog
 
+## [v1.4.0](https://github.com/instana/instana-go-client/releases/tag/v1.4.0) - 2026-09-01
+
+### Added
+- **Release Markers**: Added support for managing release markers via the Instana Release Markers API
+
+
 ## [v1.3.0](https://github.com/instana/instana-go-client/releases/tag/v1.3.0) - 2026-08-17
 
 ### Added

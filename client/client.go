@@ -45,6 +45,7 @@ type instanaAPI struct {
 	websiteAlertConfigs           rest.RestResource[*api.WebsiteAlertConfig]
 	websiteMonitoringConfigs      rest.RestResource[*api.WebsiteMonitoringConfig]
 	sessionSettings               rest.SingletonRestResource[*api.SessionSettings]
+	releases                      rest.RestResource[*api.ReleaseWithMetadata]
 }
 
 // NewInstanaRestAPI creates a new Instana API client with the provided REST client.
@@ -484,4 +485,17 @@ func (c *instanaAPI) SessionSettings() rest.SingletonRestResource[*api.SessionSe
 		c.sessionSettings = api.NewSessionSettingsRestResource(c.restClient)
 	}
 	return c.sessionSettings
+}
+
+// Releases returns the release tags client (lazy initialization)
+func (c *instanaAPI) Releases() rest.RestResource[*api.ReleaseWithMetadata] {
+	if c.releases == nil {
+		c.releases = NewRestResource(
+			c.restClient,
+			api.ReleaseResourcePath,
+			rest.DefaultRestResourceModeCreatePOSTUpdatePUT,
+			rest.NewGenericUnmarshaller[*api.ReleaseWithMetadata](),
+		)
+	}
+	return c.releases
 }

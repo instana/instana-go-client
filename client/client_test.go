@@ -510,6 +510,7 @@ func TestAllClientsReturnNonNil(t *testing.T) {
 		{"WebsiteAlertConfigs", func() interface{} { return client.WebsiteAlertConfigs() }},
 		{"WebsiteMonitoringConfigs", func() interface{} { return client.WebsiteMonitoringConfigs() }},
 		{"SessionSettings", func() interface{} { return client.SessionSettings() }},
+		{"Releases", func() interface{} { return client.Releases() }},
 	}
 
 	for _, tt := range tests {

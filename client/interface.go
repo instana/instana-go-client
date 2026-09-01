@@ -111,4 +111,7 @@ type InstanaAPI interface {
 	// SessionSettings returns the singleton session settings client for managing
 	// tenant unit token lifetime and idle timeout configuration
 	SessionSettings() rest.SingletonRestResource[*api.SessionSettings]
+
+	// Releases returns the release tags client for managing release markers
+	Releases() rest.RestResource[*api.ReleaseWithMetadata]
 }

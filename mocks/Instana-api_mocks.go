@@ -496,3 +496,17 @@ func (mr *MockInstanaAPIMockRecorder) SessionSettings() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SessionSettings", reflect.TypeOf((*MockInstanaAPI)(nil).SessionSettings))
 }
+
+// Releases mocks base method.
+func (m *MockInstanaAPI) Releases() rest.RestResource[*api.ReleaseWithMetadata] {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Releases")
+	ret0, _ := ret[0].(rest.RestResource[*api.ReleaseWithMetadata])
+	return ret0
+}
+
+// Releases indicates an expected call of Releases on the mock recorder.
+func (mr *MockInstanaAPIMockRecorder) Releases() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Releases", reflect.TypeOf((*MockInstanaAPI)(nil).Releases))
+}

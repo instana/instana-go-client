@@ -1,5 +1,11 @@
 # Changelog
 
+## [v1.4.1](https://github.com/instana/instana-go-client/releases/tag/v1.4.1) - 2026-09-04
+
+### Added
+- **Synthetic Test ICMP**: Added support for ICMP (Ping) synthetic tests, enabling network reachability, round-trip time (RTT), and packet loss monitoring across target hosts and customizable validation rules
+
+
 ## [v1.4.0](https://github.com/instana/instana-go-client/releases/tag/v1.4.0) - 2026-09-01
 
 ### Added

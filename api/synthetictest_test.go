@@ -341,11 +341,11 @@ func TestSyntheticTestConfigSSLValidationRulesRoundtrip(t *testing.T) {
 	sslPort := int32(443)
 
 	original := SyntheticTestConfig{
-		MarkSyntheticCall: true,
-		SyntheticType:     SyntheticTypeSSLCertificate,
-		Hostname:          &hostname,
+		MarkSyntheticCall:  true,
+		SyntheticType:      SyntheticTypeSSLCertificate,
+		Hostname:           &hostname,
 		DaysRemainingCheck: &daysRemaining,
-		SSLPort:           &sslPort,
+		SSLPort:            &sslPort,
 		ValidationRules: []SSLCertificateValidation{
 			{Key: "expiryDays", Operator: "GREATER_THAN", Value: "30"},
 		},

@@ -102,10 +102,10 @@ type SyntheticTestConfig struct {
 	TargetValues     []DNSFilterTargetValue `json:"targetValues,omitempty"`
 
 	// SSLCertificate fields
-	Hostname             *string                    `json:"hostname,omitempty"`
-	DaysRemainingCheck   *int32                     `json:"daysRemainingCheck,omitempty"`
-	SSLPort              *int32                     `json:"sslPort,omitempty"`
-	AcceptSelfSignedCert *bool                      `json:"acceptSelfSignedCertificate,omitempty"`
+	Hostname             *string `json:"hostname,omitempty"`
+	DaysRemainingCheck   *int32  `json:"daysRemainingCheck,omitempty"`
+	SSLPort              *int32  `json:"sslPort,omitempty"`
+	AcceptSelfSignedCert *bool   `json:"acceptSelfSignedCertificate,omitempty"`
 	// ValidationRules holds SSL certificate validation rules (syntheticType=SSLCertificate).
 	// For ICMP validation rules see ICMPValidationRules.
 	ValidationRules []SSLCertificateValidation `json:"-"`

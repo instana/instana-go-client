@@ -1,0 +1,75 @@
+version: '2'
+
+tasks:
+  code-checks:
+    steps:
+      - name: peer-review
+        when: false
+  code-build:
+    displayName: "Instana Go Client Publish"
+    steps:
+      - name: build-artifact
+        displayName: "Build and publish GitHub Release"
+        image: golang:1.23
+        script: |
+          #!/usr/bin/env bash
+          set -e
+
+          echo "Fetching variables from SPS Environment Properties..."
+          export GITHUB_TOKEN=$(get_env GHP_PAT)
+          export GIT_USER_EMAIL=$(get_env GIT_USER_EMAIL)
+          export GIT_USER_NAME=$(get_env GIT_USER_NAME)
+          export TAG=$(get_env TAG)
+
+          echo "Git setup..."
+          git config --global user.email "$GIT_USER_EMAIL"
+          git config --global user.name "$GIT_USER_NAME"
+          git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/instana/instana-go-client.git
+
+          echo "Validating tag $TAG for semantic versioning..."
+          if echo "$TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+'; then
+            echo "Tag is valid. Continuing..."
+          else
+            echo "Error: TAG '$TAG' is not valid SemVer (X.Y.Z)"
+            exit 1
+          fi
+
+          echo "Checking if tag v$TAG exists..."
+          if ! git rev-parse "v$TAG" >/dev/null 2>&1; then
+            echo "Tag v$TAG not found. Creating and pushing tag..."
+            git tag -a "v$TAG" -m "Release v$TAG"
+            git push origin "v$TAG"
+          else
+            echo "Error: Tag v$TAG already exists"
+            exit 1
+          fi
+
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "Warning: dirty git state detected"
+            git status --porcelain
+            echo "Aborting..."
+            exit 1
+          fi
+
+          echo "Running build verification..."
+          go build ./...
+
+          echo "Creating GitHub Release v$TAG..."
+          curl -sf -X POST \
+            -H "Authorization: token ${GITHUB_TOKEN}" \
+            -H "Content-Type: application/json" \
+            -d "{\"tag_name\":\"v${TAG}\",\"name\":\"Instana Go Client v${TAG}\",\"draft\":false,\"prerelease\":false}" \
+            "https://api.github.com/repos/instana/instana-go-client/releases"
+
+          echo "Release v$TAG published successfully."
+
+      - name: unit-test
+        when: false
+      - name: sign-artifact
+        when: false
+      - name: scan-artifact
+        when: false
+      - name: collect-evidence
+        when: false
+      - name: setup
+        when: false

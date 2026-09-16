@@ -40,6 +40,12 @@ const (
 	SlackAppChannelType = AlertingChannelType("BIDIRECTIONAL_SLACK")
 	// MsTeamsAppChannelType constant value for alerting channel type BIDIRECTIONAL_MS_TEAMS
 	MsTeamsAppChannelType = AlertingChannelType("BIDIRECTIONAL_MS_TEAMS")
+	// ZChatOpsChannelType constant value for alerting channel type Z_CHATOPS
+	ZChatOpsChannelType = AlertingChannelType("Z_CHATOPS")
+	// SalesforceChannelType constant value for alerting channel type SALESFORCE
+	SalesforceChannelType = AlertingChannelType("SALESFORCE")
+	// NS1ChannelType constant value for alerting channel type NS1
+	NS1ChannelType = AlertingChannelType("NS1")
 )
 
 // AlertingChannel represents an alerting channel in Instana
@@ -90,6 +96,16 @@ type AlertingChannel struct {
 	ServiceURL *string `json:"serviceUrl"`
 	TenantID   *string `json:"tenantId"`
 	TenantName *string `json:"tenantName"`
+	// IBM Z ChatOps fields
+	ZChatOpsIncidentsURL *string  `json:"zchatOpsIncidentsUrl"`
+	BearerAuthToken      *string  `json:"bearerAuthToken"`
+	Channels             []string `json:"channels"`
+	// Salesforce fields
+	SalesforceURL *string `json:"salesforceUrl"`
+	ClientID      *string `json:"clientId"`
+	ClientSecret  *string `json:"clientSecret"`
+	// IBM NS1 Connect fields
+	FeedLabel *string `json:"feedLabel"`
 }
 
 // GetIDForResourcePath returns the ID to be used for the resource path

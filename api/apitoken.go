@@ -60,7 +60,7 @@ type APIToken struct {
 	LimitedXenServerScope                                bool   `json:"limitedXenServerScope"`
 	LimitedWindowsHypervisorScope                        bool   `json:"limitedWindowsHypervisorScope"`
 	LimitedAlertChannelsScope                            bool   `json:"limitedAlertChannelsScope"`
-	LimitedLinuxKvmHypervisorScope                       bool   `json:"limitedLinuxKvmHypervisorScope"`
+	LimitedLinuxKvmHypervisorScope                       bool   `json:"limitedLinuxKVMHypervisorScope"`
 	LimitedAiGatewayScope                                bool   `json:"limitedAiGatewayScope"`
 	LimitedGenAIScope                                    bool   `json:"limitedGenAIScope"`
 	LimitedSAPScope                                      bool   `json:"limitedSAPScope"`

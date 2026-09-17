@@ -48,6 +48,19 @@ const (
 	NS1ChannelType = AlertingChannelType("NS1")
 )
 
+// WebhookOAuthConfig represents the OAuth 2.0 configuration for a Webhook channel
+type WebhookOAuthConfig struct {
+	ClientID             string            `json:"clientId"`
+	ClientSecret         string            `json:"clientSecret"`
+	TokenURL             string            `json:"tokenUrl"`
+	AdditionalParameters map[string]string `json:"additionalParameters,omitempty"`
+}
+
+// WebhookOAuth represents the OAuth 2.0 wrapper for a Webhook channel
+type WebhookOAuth struct {
+	Config WebhookOAuthConfig `json:"config"`
+}
+
 // AlertingChannel represents an alerting channel in Instana
 type AlertingChannel struct {
 	ID                    string              `json:"id"`
@@ -67,6 +80,9 @@ type AlertingChannel struct {
 	Token                 *string             `json:"token"`
 	WebhookURLs           []string            `json:"webhookUrls"`
 	Headers               []string            `json:"headers"`
+	// Webhook OAuth 2.0 fields
+	OAuthEnabled *bool         `json:"oauthEnabled,omitempty"`
+	OAuth        *WebhookOAuth `json:"oauth,omitempty"`
 	// ServiceNow fields
 	ServiceNowURL      *string `json:"serviceNowUrl"`
 	Username           *string `json:"username"`

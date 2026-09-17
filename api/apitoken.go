@@ -63,6 +63,9 @@ type APIToken struct {
 	LimitedLinuxKvmHypervisorScope                       bool   `json:"limitedLinuxKvmHypervisorScope"`
 	LimitedAiGatewayScope                                bool   `json:"limitedAiGatewayScope"`
 	LimitedGenAIScope                                    bool   `json:"limitedGenAIScope"`
+	LimitedSAPScope                                      bool   `json:"limitedSAPScope"`
+	LimitedGenAICapabilitiesScope                        bool   `json:"limitedGenAICapabilitiesScope"`
+	LimitedLoggingPerspectivesScope                      bool   `json:"limitedLoggingPerspectivesScope"`
 	LimitedServiceLevelScope                             bool   `json:"limitedServiceLevelScope"`
 	CanConfigurePersonalAPITokens                        bool   `json:"canConfigurePersonalApiTokens"`
 	CanConfigureDatabaseManagement                       bool   `json:"canConfigureDatabaseManagement"`
@@ -103,6 +106,15 @@ type APIToken struct {
 	CanConfigureServiceLevelCorrectionWindows            bool   `json:"canConfigureServiceLevelCorrectionWindows"`
 	CanConfigureServiceLevelSmartAlerts                  bool   `json:"canConfigureServiceLevelSmartAlerts"`
 	CanConfigureServiceLevels                            bool   `json:"canConfigureServiceLevels"`
+	CanConfigureNetworkIntegrations                      bool   `json:"canConfigureNetworkIntegrations"`
+	CanConfigureLoggingPerspectives                      bool   `json:"canConfigureLoggingPerspectives"`
+	CanConfigureEntityPayloadTransformationRules         bool   `json:"canConfigureEntityPayloadTransformationRules"`
+	CanConfigureGenAIEvaluations                         bool   `json:"canConfigureGenAIEvaluations"`
+	CanConfigureGenAISmartAlerts                         bool   `json:"canConfigureGenAISmartAlerts"`
+	CanConfigureApplicationBusinessCriticality           bool   `json:"canConfigureApplicationBusinessCriticality"`
+	CanConfigureWebsiteBusinessCriticality               bool   `json:"canConfigureWebsiteBusinessCriticality"`
+	CanConfigureMobileAppBusinessCriticality             bool   `json:"canConfigureMobileAppBusinessCriticality"`
+	CanPlaybackSessionReplay                             bool   `json:"canPlaybackSessionReplay"`
 }
 
 // GetIDForResourcePath implemention of the interface InstanaDataObject

@@ -510,6 +510,7 @@ func TestAllClientsReturnNonNil(t *testing.T) {
 		{"WebsiteAlertConfigs", func() interface{} { return client.WebsiteAlertConfigs() }},
 		{"WebsiteMonitoringConfigs", func() interface{} { return client.WebsiteMonitoringConfigs() }},
 		{"SessionSettings", func() interface{} { return client.SessionSettings() }},
+		{"IPFiltering", func() interface{} { return client.IPFiltering() }},
 		{"Releases", func() interface{} { return client.Releases() }},
 	}
 
@@ -575,6 +576,32 @@ func TestSessionSettingsLazyInitialization(t *testing.T) {
 	// on first access — the lazy-init stores the concrete pointer, not a copy.
 	ss2 := client.SessionSettings()
 	if ss != ss2 {
+		t.Error("Expected same instance on second access")
+	}
+}
+
+// TestIPFilteringLazyInitialization tests lazy initialization of the IPFiltering client
+func TestIPFilteringLazyInitialization(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockRestClient := mocks.NewMockRestClient(ctrl)
+	client := NewInstanaRestAPI(mockRestClient).(*instanaAPI)
+
+	// Initially should be nil
+	if client.ipFiltering != nil {
+		t.Error("Expected ipFiltering to be nil before first access")
+	}
+
+	// First access should initialize
+	ipf := client.IPFiltering()
+	if ipf == nil {
+		t.Fatal("Expected non-nil IPFiltering client")
+	}
+
+	// Second access must return the exact same instance
+	ipf2 := client.IPFiltering()
+	if ipf != ipf2 {
 		t.Error("Expected same instance on second access")
 	}
 }

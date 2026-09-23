@@ -45,6 +45,7 @@ type instanaAPI struct {
 	websiteAlertConfigs           rest.RestResource[*api.WebsiteAlertConfig]
 	websiteMonitoringConfigs      rest.RestResource[*api.WebsiteMonitoringConfig]
 	sessionSettings               rest.SingletonRestResource[*api.SessionSettings]
+	ipFiltering                   api.IPFilteringRestResource
 	releases                      rest.RestResource[*api.ReleaseWithMetadata]
 }
 
@@ -485,6 +486,14 @@ func (c *instanaAPI) SessionSettings() rest.SingletonRestResource[*api.SessionSe
 		c.sessionSettings = api.NewSessionSettingsRestResource(c.restClient)
 	}
 	return c.sessionSettings
+}
+
+// IPFiltering returns the singleton IP filtering client (lazy initialization)
+func (c *instanaAPI) IPFiltering() api.IPFilteringRestResource {
+	if c.ipFiltering == nil {
+		c.ipFiltering = api.NewIPFilteringRestResource(c.restClient)
+	}
+	return c.ipFiltering
 }
 
 // Releases returns the release tags client (lazy initialization)

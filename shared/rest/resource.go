@@ -53,6 +53,7 @@ type RestClient interface {
 	PostWithID(data InstanaDataObject, resourcePath string) ([]byte, error)
 	Put(data InstanaDataObject, resourcePath string) ([]byte, error)
 	Delete(resourceID string, resourceBasePath string) error
+	Patch(data InstanaDataObject, resourcePath string) ([]byte, error)
 	GetByQuery(resourcePath string, queryParams map[string]string) ([]byte, error)
 	PostByQuery(resourcePath string, queryParams map[string]string) ([]byte, error)
 	PutByQuery(resourcePath string, is string, queryParams map[string]string) ([]byte, error)

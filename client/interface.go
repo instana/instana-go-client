@@ -112,6 +112,10 @@ type InstanaAPI interface {
 	// tenant unit token lifetime and idle timeout configuration
 	SessionSettings() rest.SingletonRestResource[*api.SessionSettings]
 
+	// IPFiltering returns the singleton IP filtering client for managing
+	// tenant unit IP filtering configuration
+	IPFiltering() api.IPFilteringRestResource
+
 	// Releases returns the release tags client for managing release markers
 	Releases() rest.RestResource[*api.ReleaseWithMetadata]
 }

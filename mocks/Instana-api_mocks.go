@@ -497,6 +497,20 @@ func (mr *MockInstanaAPIMockRecorder) SessionSettings() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SessionSettings", reflect.TypeOf((*MockInstanaAPI)(nil).SessionSettings))
 }
 
+// IPFiltering mocks base method.
+func (m *MockInstanaAPI) IPFiltering() api.IPFilteringRestResource {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "IPFiltering")
+	ret0, _ := ret[0].(api.IPFilteringRestResource)
+	return ret0
+}
+
+// IPFiltering indicates an expected call of IPFiltering on the mock recorder.
+func (mr *MockInstanaAPIMockRecorder) IPFiltering() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IPFiltering", reflect.TypeOf((*MockInstanaAPI)(nil).IPFiltering))
+}
+
 // Releases mocks base method.
 func (m *MockInstanaAPI) Releases() rest.RestResource[*api.ReleaseWithMetadata] {
 	m.ctrl.T.Helper()

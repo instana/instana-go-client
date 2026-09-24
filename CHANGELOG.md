@@ -1,5 +1,14 @@
 # Changelog
 
+## [v1.5.0](https://github.com/instana/instana-go-client/releases/tag/v1.5.0) - 2026-09-24
+
+### Added
+- **IP Filtering Resource**: Added support for tenant unit IP filtering API (`/api/settings/ip-filtering`)
+
+- **Alerting Channel Enhancements**:
+  - Support for IBM Z ChatOps (`Z_CHATOPS`), Salesforce (`SALESFORCE`), and IBM NS1 Connect (`NS1`) alerting channel types
+
+
 ## [v1.4.1](https://github.com/instana/instana-go-client/releases/tag/v1.4.1) - 2026-09-04
 
 ### Added

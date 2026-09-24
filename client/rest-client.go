@@ -221,6 +221,13 @@ func (client *restClientImpl) Delete(resourceID string, resourceBasePath string)
 	return err
 }
 
+// Patch executes a HTTP PATCH request to update the given resource
+func (client *restClientImpl) Patch(data InstanaDataObject, resourcePath string) ([]byte, error) {
+	url := client.buildResourceURL(resourcePath, data.GetIDForResourcePath())
+	req := client.createRequest().SetHeader(contentTypeHeader, encodingApplicationJSON).SetBody(data)
+	return client.executeRequestWithThrottling(resty.MethodPatch, url, req)
+}
+
 // PostByQuery executes a HTTP POST request to create the resource by providing the data as query parameters
 func (client *restClientImpl) PostByQuery(resourcePath string, queryParams map[string]string) ([]byte, error) {
 	url := client.buildURL(resourcePath)

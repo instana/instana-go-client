@@ -13,6 +13,7 @@ type mockRestClient struct {
 	postWithIDFunc  func(InstanaDataObject, string) ([]byte, error)
 	putFunc         func(InstanaDataObject, string) ([]byte, error)
 	deleteFunc      func(string, string) error
+	patchFunc       func(InstanaDataObject, string) ([]byte, error)
 	getByQueryFunc  func(string, map[string]string) ([]byte, error)
 	postByQueryFunc func(string, map[string]string) ([]byte, error)
 	putByQueryFunc  func(string, string, map[string]string) ([]byte, error)
@@ -58,6 +59,13 @@ func (m *mockRestClient) Delete(id, path string) error {
 		return m.deleteFunc(id, path)
 	}
 	return nil
+}
+
+func (m *mockRestClient) Patch(data InstanaDataObject, path string) ([]byte, error) {
+	if m.patchFunc != nil {
+		return m.patchFunc(data, path)
+	}
+	return nil, nil
 }
 
 func (m *mockRestClient) GetByQuery(path string, params map[string]string) ([]byte, error) {

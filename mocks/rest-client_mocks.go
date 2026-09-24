@@ -327,6 +327,21 @@ func (mr *MockRestClientMockRecorder) Delete(resourceID, resourceBasePath any) *
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockRestClient)(nil).Delete), resourceID, resourceBasePath)
 }
 
+// Patch mocks base method.
+func (m *MockRestClient) Patch(data rest.InstanaDataObject, resourcePath string) ([]byte, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Patch", data, resourcePath)
+	ret0, _ := ret[0].([]byte)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Patch indicates an expected call of Patch.
+func (mr *MockRestClientMockRecorder) Patch(data, resourcePath any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Patch", reflect.TypeOf((*MockRestClient)(nil).Patch), data, resourcePath)
+}
+
 // Get mocks base method.
 func (m *MockRestClient) Get(resourcePath string) ([]byte, error) {
 	m.ctrl.T.Helper()

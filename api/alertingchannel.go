@@ -40,7 +40,26 @@ const (
 	SlackAppChannelType = AlertingChannelType("BIDIRECTIONAL_SLACK")
 	// MsTeamsAppChannelType constant value for alerting channel type BIDIRECTIONAL_MS_TEAMS
 	MsTeamsAppChannelType = AlertingChannelType("BIDIRECTIONAL_MS_TEAMS")
+	// ZChatOpsChannelType constant value for alerting channel type Z_CHATOPS
+	ZChatOpsChannelType = AlertingChannelType("Z_CHATOPS")
+	// SalesforceChannelType constant value for alerting channel type SALESFORCE
+	SalesforceChannelType = AlertingChannelType("SALESFORCE")
+	// NS1ChannelType constant value for alerting channel type NS1
+	NS1ChannelType = AlertingChannelType("NS1")
 )
+
+// WebhookOAuthConfig represents the OAuth 2.0 configuration for a Webhook channel
+type WebhookOAuthConfig struct {
+	ClientID             string            `json:"clientId"`
+	ClientSecret         string            `json:"clientSecret"`
+	TokenURL             string            `json:"tokenUrl"`
+	AdditionalParameters map[string]string `json:"additionalParameters,omitempty"`
+}
+
+// WebhookOAuth represents the OAuth 2.0 wrapper for a Webhook channel
+type WebhookOAuth struct {
+	Config WebhookOAuthConfig `json:"config"`
+}
 
 // AlertingChannel represents an alerting channel in Instana
 type AlertingChannel struct {
@@ -61,6 +80,9 @@ type AlertingChannel struct {
 	Token                 *string             `json:"token"`
 	WebhookURLs           []string            `json:"webhookUrls"`
 	Headers               []string            `json:"headers"`
+	// Webhook OAuth 2.0 fields
+	OAuthEnabled *bool         `json:"oauthEnabled,omitempty"`
+	OAuth        *WebhookOAuth `json:"oauth,omitempty"`
 	// ServiceNow fields
 	ServiceNowURL      *string `json:"serviceNowUrl"`
 	Username           *string `json:"username"`
@@ -90,6 +112,16 @@ type AlertingChannel struct {
 	ServiceURL *string `json:"serviceUrl"`
 	TenantID   *string `json:"tenantId"`
 	TenantName *string `json:"tenantName"`
+	// IBM Z ChatOps fields
+	ZChatOpsIncidentsURL *string  `json:"zchatOpsIncidentsUrl"`
+	BearerAuthToken      *string  `json:"bearerAuthToken"`
+	Channels             []string `json:"channels"`
+	// Salesforce fields
+	SalesforceURL *string `json:"salesforceUrl"`
+	ClientID      *string `json:"clientId"`
+	ClientSecret  *string `json:"clientSecret"`
+	// IBM NS1 Connect fields
+	FeedLabel *string `json:"feedLabel"`
 }
 
 // GetIDForResourcePath returns the ID to be used for the resource path

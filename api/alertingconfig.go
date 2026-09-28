@@ -19,6 +19,7 @@ type EventFilteringConfiguration struct {
 type AlertingConfiguration struct {
 	ID                          string                          `json:"id"`
 	AlertName                   string                          `json:"alertName"`
+	MuteUntil                   int64                           `json:"muteUntil"`
 	IntegrationIDs              []string                        `json:"integrationIds"`
 	EventFilteringConfiguration EventFilteringConfiguration     `json:"eventFilteringConfiguration"`
 	CustomerPayloadFields       []types.CustomPayloadField[any] `json:"customPayloadFields"`

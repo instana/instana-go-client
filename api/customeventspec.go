@@ -54,7 +54,7 @@ type RuleSpecification struct {
 	MatchingEntityLabel *string              `json:"matchingEntityLabel"`
 	OfflineDuration     *int                 `json:"offlineDuration"`
 	CloseAfter          *int                 `json:"closeAfter"`
-	TagFilter           *tagfilter.TagFilter `jsom:"tagFilter"`
+	TagFilter           *tagfilter.TagFilter `json:"tagFilter"`
 }
 
 // CustomEventSpecification is the representation of a custom event specification in Instana

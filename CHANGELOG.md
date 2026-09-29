@@ -1,5 +1,16 @@
 # Changelog
 
+## [v1.6.0](https://github.com/instana/instana-go-client/releases/tag/v1.6.0) - 2026-09-29
+
+### Added
+- **Alerting Configuration**: Added `MuteUntil` field to `AlertingConfiguration`
+
+- **API Token Permissions**: Added 3 new limited scope fields (`LimitedSAPScope`, `LimitedGenAICapabilitiesScope`, `LimitedLoggingPerspectivesScope`) and 9 new permission fields (`CanConfigureNetworkIntegrations`, `CanConfigureLoggingPerspectives`, `CanConfigureEntityPayloadTransformationRules`, `CanConfigureGenAIEvaluations`, `CanConfigureGenAISmartAlerts`, `CanConfigureApplicationBusinessCriticality`, `CanConfigureWebsiteBusinessCriticality`, `CanConfigureMobileAppBusinessCriticality`, `CanPlaybackSessionReplay`)
+
+### Fixed
+- **API Token**: Corrected JSON key for `LimitedLinuxKvmHypervisorScope` from `limitedLinuxKvmHypervisorScope` to `limitedLinuxKVMHypervisorScope`
+
+
 ## [v1.5.0](https://github.com/instana/instana-go-client/releases/tag/v1.5.0) - 2026-09-24
 
 ### Added

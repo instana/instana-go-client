@@ -77,6 +77,8 @@ type TimeThreshold struct {
 type ThresholdRule struct {
 	Type            string                `json:"type"`
 	Value           *float64              `json:"value"`
+	UpperBound      *float64              `json:"upperBound,omitempty"`
+	LowerBound      *float64              `json:"lowerBound,omitempty"`
 	Seasonality     *ThresholdSeasonality `json:"seasonality"`
 	Baseline        *[][]float64          `json:"baseline"`
 	DeviationFactor *float32              `json:"deviationFactor"`

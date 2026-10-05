@@ -54,6 +54,7 @@ type InstanaError struct {
 	Type       ErrorType
 	Message    string
 	StatusCode int
+	RetryAfter int
 	Err        error
 	Retryable  bool
 	Temporary  bool
@@ -135,6 +136,7 @@ func RateLimitError(message string, retryAfter int) *InstanaError {
 		Type:       ErrorTypeRateLimit,
 		Message:    fmt.Sprintf("%s (retry after %d seconds)", message, retryAfter),
 		StatusCode: http.StatusTooManyRequests,
+		RetryAfter: retryAfter,
 		Retryable:  true,
 		Temporary:  true,
 	}

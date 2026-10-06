@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -385,7 +386,7 @@ func (client *restClientImpl) executeRequest(method string, url string, req *res
 	if statusCode == 429 {
 		return emptyResponse, config.RateLimitError(
 			"rate limit exceeded",
-			0, // No retry after header in current implementation
+			parseRetryAfterHeader(resp),
 		)
 	}
 
@@ -439,4 +440,39 @@ func (client *restClientImpl) redactURL(url string) string {
 		url = strings.ReplaceAll(url, client.config.APIToken, "***REDACTED***")
 	}
 	return url
+}
+
+// parseRetryAfterHeader extracts retry after seconds from response headers (Retry-After or X-RateLimit-Reset)
+func parseRetryAfterHeader(resp *resty.Response) int {
+	if resp == nil || resp.Header() == nil {
+		return 0
+	}
+
+	// 1. Check Retry-After header (can be delta seconds or HTTP date)
+	if retryAfterStr := resp.Header().Get("Retry-After"); retryAfterStr != "" {
+		if seconds, err := strconv.Atoi(strings.TrimSpace(retryAfterStr)); err == nil && seconds >= 0 {
+			return seconds
+		}
+		if targetTime, err := http.ParseTime(retryAfterStr); err == nil {
+			seconds := int(time.Until(targetTime).Seconds())
+			if seconds < 0 {
+				return 0
+			}
+			return seconds
+		}
+	}
+
+	// 2. Check X-RateLimit-Reset header (Unix epoch timestamp in seconds)
+	if resetStr := resp.Header().Get("X-RateLimit-Reset"); resetStr != "" {
+		if resetEpoch, err := strconv.ParseInt(strings.TrimSpace(resetStr), 10, 64); err == nil {
+			targetTime := time.Unix(resetEpoch, 0)
+			seconds := int(time.Until(targetTime).Seconds())
+			if seconds < 0 {
+				return 0
+			}
+			return seconds
+		}
+	}
+
+	return 0
 }

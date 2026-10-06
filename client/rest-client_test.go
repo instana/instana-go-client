@@ -1,12 +1,15 @@
 package client_test
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
 	"testing"
+	"time"
 
 	. "github.com/instana/instana-go-client/client"
+	"github.com/instana/instana-go-client/config"
 	"github.com/instana/instana-go-client/testutils"
 	"github.com/stretchr/testify/require"
 )
@@ -259,6 +262,65 @@ func TestShouldReturnNothingForSuccessfulDeleteRequest(t *testing.T) {
 	err := restClient.Delete(testID, testPath)
 
 	require.Nil(t, err)
+}
+
+func TestShouldReturnRateLimitErrorWithRetryAfterHeader(t *testing.T) {
+	httpServer := testutils.NewTestHTTPServer()
+	httpServer.AddRoute(http.MethodGet, testPath, func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Retry-After", "45")
+		w.WriteHeader(http.StatusTooManyRequests)
+	})
+	httpServer.Start()
+	defer httpServer.Close()
+
+	restClient := createSut(httpServer)
+	_, err := restClient.Get(testPath)
+
+	require.NotNil(t, err)
+	require.Contains(t, err.Error(), "retry after 45 seconds")
+	var instanaErr *config.InstanaError
+	require.True(t, errors.As(err, &instanaErr))
+	require.Equal(t, 45, instanaErr.RetryAfter)
+}
+
+func TestShouldReturnRateLimitErrorWithXRateLimitResetHeader(t *testing.T) {
+	httpServer := testutils.NewTestHTTPServer()
+	httpServer.AddRoute(http.MethodGet, testPath, func(w http.ResponseWriter, r *http.Request) {
+		resetEpoch := time.Now().Add(60 * time.Second).Unix()
+		w.Header().Set("X-RateLimit-Reset", strconv.FormatInt(resetEpoch, 10))
+		w.WriteHeader(http.StatusTooManyRequests)
+	})
+	httpServer.Start()
+	defer httpServer.Close()
+
+	restClient := createSut(httpServer)
+	_, err := restClient.Get(testPath)
+
+	require.NotNil(t, err)
+	var instanaErr *config.InstanaError
+	require.True(t, errors.As(err, &instanaErr))
+	// When evaluated, resetEpoch is freshly generated as Now + 60s (> MaxDelay: 30s, fails fast without retry)
+	require.True(t, instanaErr.RetryAfter >= 58 && instanaErr.RetryAfter <= 61,
+		"Expected RetryAfter to be around 60, got %d", instanaErr.RetryAfter)
+	require.Contains(t, err.Error(), fmt.Sprintf("retry after %d seconds", instanaErr.RetryAfter))
+}
+
+func TestShouldReturnRateLimitErrorWithNoHeaders(t *testing.T) {
+	httpServer := testutils.NewTestHTTPServer()
+	httpServer.AddRoute(http.MethodGet, testPath, func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusTooManyRequests)
+	})
+	httpServer.Start()
+	defer httpServer.Close()
+
+	restClient := createSut(httpServer)
+	_, err := restClient.Get(testPath)
+
+	require.NotNil(t, err)
+	require.Contains(t, err.Error(), "retry after 0 seconds")
+	var instanaErr *config.InstanaError
+	require.True(t, errors.As(err, &instanaErr))
+	require.Equal(t, 0, instanaErr.RetryAfter)
 }
 
 func TestShouldReturnErrorMessageForDeleteRequestWhenStatusIsNotASuccessStatusAndNotEntityNotFound(t *testing.T) {

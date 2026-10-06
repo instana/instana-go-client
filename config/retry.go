@@ -169,7 +169,16 @@ func (r *Retryer) shouldRetry(err error, attempt int) bool {
 			return r.config.RetryOnTimeout
 		case ErrorTypeNetwork:
 			return r.config.RetryOnConnectionError
-		case ErrorTypeRateLimit, ErrorTypeAPI:
+		case ErrorTypeRateLimit:
+			// If RetryAfter exceeds MaxDelay (e.g., 30s), retrying immediately is not useful; fail fast
+			if instanaErr.RetryAfter > int(r.config.MaxDelay.Seconds()) {
+				return false
+			}
+			if instanaErr.StatusCode > 0 {
+				return r.isRetryableStatusCode(instanaErr.StatusCode)
+			}
+			return true
+		case ErrorTypeAPI:
 			// Check if status code is in retryable list
 			if instanaErr.StatusCode > 0 {
 				return r.isRetryableStatusCode(instanaErr.StatusCode)

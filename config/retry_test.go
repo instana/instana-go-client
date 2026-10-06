@@ -217,7 +217,8 @@ func TestShouldRetryWithDifferentErrors(t *testing.T) {
 	}{
 		{"network error", NetworkError("test", nil), 0, true},
 		{"timeout error", TimeoutError("test", nil), 0, true},
-		{"rate limit error", RateLimitError("test", 60), 0, true},
+		{"rate limit error within max delay", RateLimitError("test", 10), 0, true},
+		{"rate limit error exceeding max delay", RateLimitError("test", 60), 0, false},
 		{"API 500 error", APIError(500, "test", nil), 0, true},
 		{"API 400 error", APIError(400, "test", nil), 0, false},
 		{"validation error", NewValidationError("test", nil), 0, false},

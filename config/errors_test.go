@@ -127,6 +127,10 @@ func TestRateLimitError(t *testing.T) {
 		t.Errorf("Expected status code %d, got %d", http.StatusTooManyRequests, err.StatusCode)
 	}
 
+	if err.RetryAfter != 60 {
+		t.Errorf("Expected RetryAfter 60, got %d", err.RetryAfter)
+	}
+
 	if !strings.Contains(err.Message, "60 seconds") {
 		t.Errorf("Expected message to contain retry after duration, got: %s", err.Message)
 	}

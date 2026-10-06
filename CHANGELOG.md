@@ -1,5 +1,12 @@
 # Changelog
 
+## [v1.6.1](https://github.com/instana/instana-go-client/releases/tag/v1.6.1) - 2026-10-06
+
+### Added
+- **Rate Limit Header Parsing**: The REST client now parses  `X-RateLimit-Reset` response headers on HTTP 429 responses to determine the exact backoff duration
+  - `X-RateLimit-Reset` supports Unix epoch timestamps
+
+
 ## [v1.6.0](https://github.com/instana/instana-go-client/releases/tag/v1.6.0) - 2026-09-29
 
 ### Added

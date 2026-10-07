@@ -22,6 +22,7 @@ type InfraAlertConfig struct {
 	AlertChannels         map[types.AlertSeverity][]string          `json:"alertChannels"`
 	EvaluationType        InfraAlertEvaluationType                  `json:"evaluationType"`
 	Triggering            bool                                      `json:"triggering"`
+	RuleLogicalOperator   string                                    `json:"ruleLogicalOperator,omitempty"`
 }
 
 func (config *InfraAlertConfig) GetIDForResourcePath() string {
@@ -37,12 +38,14 @@ func (config *InfraAlertConfig) SetCustomerPayloadFields(fields []types.CustomPa
 }
 
 type InfraAlertRule struct {
-	AlertType              string            `json:"alertType"`
-	MetricName             string            `json:"metricName"`
-	EntityType             string            `json:"entityType"`
-	Aggregation            types.Aggregation `json:"aggregation"`
-	CrossSeriesAggregation types.Aggregation `json:"crossSeriesAggregation"`
-	Regex                  bool              `json:"regex"`
+	AlertType                 string               `json:"alertType"`
+	MetricName                string               `json:"metricName"`
+	EntityType                string               `json:"entityType"`
+	Aggregation               types.Aggregation    `json:"aggregation"`
+	CrossSeriesAggregation    types.Aggregation    `json:"crossSeriesAggregation"`
+	Regex                     bool                 `json:"regex"`
+	MetricGroupBy             []string             `json:"metricGroupBy,omitempty"`
+	MetricTagFilterExpression *tagfilter.TagFilter `json:"metricTagFilterExpression,omitempty"`
 }
 
 // InfraAlertEvaluationType custom type representing the infrastructure alert evaluation type from the Instana API

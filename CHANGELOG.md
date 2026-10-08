@@ -1,5 +1,18 @@
 # Changelog
 
+## [v1.6.2](https://github.com/instana/instana-go-client/releases/tag/v1.6.2) - 2026-10-08
+
+### Added
+- **Custom Event Specifications**: Support for transient event configurations with `TransientEventEnabled`, `TransientEventThreshold`, and `TransientEventAlertMuted` fields
+- **Infrastructure Alert Enhancements**:
+  - Support for multi-rule configurations using the `RuleLogicalOperator` field on `InfraAlertConfig`
+  - Per-rule metric scoping and tag filtering with `MetricGroupBy` and `MetricTagFilterExpression` on `InfraAlertRule`
+- **Threshold Rule Range Bounds**: Added `UpperBound` and `LowerBound` to `ThresholdRule` to support range-based operators (`BETWEEN`, `OUTSIDE`)
+
+### Fixed
+- **Custom Event Specifications**: Corrected a typo in the JSON tag for `RuleSpecification.TagFilter` from `jsom:"tagFilter"` to `json:"tagFilter"`
+
+
 ## [v1.6.1](https://github.com/instana/instana-go-client/releases/tag/v1.6.1) - 2026-10-06
 
 ### Added

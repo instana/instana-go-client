@@ -146,12 +146,20 @@ func TestTeamScopeStructure(t *testing.T) {
 		ActionFilter:         &actionFilter,
 		LogFilter:            &logFilter,
 		BusinessPerspectives: []string{"bp1"},
+		LoggingPerspectives:  []string{"lp1"},
+		TagIDs:               []string{"tag1", "tag2"},
 		SloIDs:               []string{"slo1", "slo2"},
+		ApdexIDs:             []string{"apdex1"},
 		SyntheticTests:       []string{"test1"},
 		SyntheticCredentials: []string{"cred1"},
-		TagIDs:               []string{"tag1", "tag2"},
 	}
 
+	if len(scope.LoggingPerspectives) != 1 {
+		t.Errorf("Expected 1 logging perspective, got %d", len(scope.LoggingPerspectives))
+	}
+	if len(scope.ApdexIDs) != 1 {
+		t.Errorf("Expected 1 apdex id, got %d", len(scope.ApdexIDs))
+	}
 	if len(scope.AccessPermissions) != 2 {
 		t.Errorf("Expected 2 access permissions, got %d", len(scope.AccessPermissions))
 	}

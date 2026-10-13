@@ -10,18 +10,21 @@ const SyntheticAlertConfigsResourcePath = "/api/events/settings/global-alert-con
 
 // SyntheticAlertConfig represents the API model for synthetic alert configurations
 type SyntheticAlertConfig struct {
-	ID                    string                          `json:"id,omitempty"`
-	Name                  string                          `json:"name"`
-	Description           string                          `json:"description,omitempty"`
-	SyntheticTestIds      []string                        `json:"syntheticTestIds"`
-	Severity              int                             `json:"severity"`
-	TagFilterExpression   *tagfilter.TagFilter            `json:"tagFilterExpression,omitempty"`
-	Rule                  SyntheticAlertRule              `json:"rule"`
-	AlertChannelIds       []string                        `json:"alertChannelIds"`
-	TimeThreshold         SyntheticAlertTimeThreshold     `json:"timeThreshold"`
-	CustomerPayloadFields []types.CustomPayloadField[any] `json:"customPayloadFields,omitempty"`
-	GracePeriod           int64                           `json:"gracePeriod,omitempty"`
-	Enabled               bool                            `json:"enabled"`
+	ID                     string                          `json:"id,omitempty"`
+	Name                   string                          `json:"name"`
+	Description            string                          `json:"description,omitempty"`
+	SyntheticTestIds       []string                        `json:"syntheticTestIds"`
+	Severity               int                             `json:"severity"`
+	TagFilterExpression    *tagfilter.TagFilter            `json:"tagFilterExpression,omitempty"`
+	Rule                   SyntheticAlertRule              `json:"rule"`
+	AlertChannelIds        []string                        `json:"alertChannelIds"`
+	TimeThreshold          SyntheticAlertTimeThreshold     `json:"timeThreshold"`
+	CustomerPayloadFields  []types.CustomPayloadField[any] `json:"customPayloadFields,omitempty"`
+	GracePeriod            int64                           `json:"gracePeriod,omitempty"`
+	Enabled                bool                            `json:"enabled"`
+	IncludeOnDemand        bool                            `json:"includeOnDemand"`
+	EvaluationType         string                          `json:"evaluationType,omitempty"`
+	AffectedLocationsCount int                             `json:"affectedLocationsCount,omitempty"`
 }
 
 // SyntheticAlertRule represents the rule configuration for synthetic alerts

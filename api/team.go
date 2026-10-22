@@ -59,10 +59,12 @@ type TeamScope struct {
 	ActionFilter                *string                      `json:"actionFilter,omitempty"`
 	LogFilter                   *string                      `json:"logFilter,omitempty"`
 	BusinessPerspectives        []string                     `json:"businessPerspectives,omitempty"`
+	LoggingPerspectives         []string                     `json:"loggingPerspectives,omitempty"`
+	TagIDs                      []string                     `json:"tagIds,omitempty"`
 	SloIDs                      []string                     `json:"sloIds,omitempty"`
+	ApdexIDs                    []string                     `json:"apdexIds,omitempty"`
 	SyntheticTests              []string                     `json:"syntheticTests,omitempty"`
 	SyntheticCredentials        []string                     `json:"syntheticCredentials,omitempty"`
-	TagIDs                      []string                     `json:"tagIds,omitempty"`
 	RestrictedApplicationFilter *RestrictedApplicationFilter `json:"restrictedApplicationFilter,omitempty"`
 }
 

@@ -375,8 +375,6 @@ func TestShouldReturnAuthenticationErrorFor403WithBodyIncluded(t *testing.T) {
 	require.Contains(t, err.Error(), errorBody)
 }
 
-
-
 func setupAndStartHttpServerWithOKResponseCode(httpMethod string, fullPath string) testutils.TestHTTPServer {
 	return setupAndStartHttpServer(httpMethod, fullPath, 200)
 }

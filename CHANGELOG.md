@@ -1,5 +1,12 @@
 # Changelog
 
+## [v1.6.3](https://github.com/instana/instana-go-client/releases/tag/v1.6.3) - 2026-10-22
+
+### Added
+- **HTTP 403 Error Details**: Included response body in error messages on HTTP 403 Forbidden responses to provide detailed error context and facilitate debugging
+- **Authentication Error Status Code**: Updated `AuthenticationError` constructor to accept and retain the specific HTTP status code (supporting both 401 Unauthorized and 403 Forbidden)
+
+
 ## [v1.6.2](https://github.com/instana/instana-go-client/releases/tag/v1.6.2) - 2026-10-08
 
 ### Added

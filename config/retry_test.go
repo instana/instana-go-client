@@ -3,6 +3,7 @@ package config
 import (
 	"context"
 	"errors"
+	"net/http"
 	"testing"
 	"time"
 )
@@ -222,7 +223,7 @@ func TestShouldRetryWithDifferentErrors(t *testing.T) {
 		{"API 500 error", APIError(500, "test", nil), 0, true},
 		{"API 400 error", APIError(400, "test", nil), 0, false},
 		{"validation error", NewValidationError("test", nil), 0, false},
-		{"authentication error", AuthenticationError("test", nil), 0, false},
+		{"authentication error", AuthenticationError(http.StatusUnauthorized, "test", nil), 0, false},
 		{"max attempts reached", NetworkError("test", nil), config.MaxAttempts, false},
 		{"standard error", errors.New("test"), 0, false},
 	}

@@ -376,9 +376,23 @@ func (client *restClientImpl) executeRequest(method string, url string, req *res
 		return emptyResponse, ErrEntityNotFound
 	}
 
-	if statusCode == 401 || statusCode == 403 {
+	if statusCode == 401 {
 		return emptyResponse, config.AuthenticationError(
+			statusCode,
 			fmt.Sprintf("authentication failed: %s", resp.Status()),
+			nil,
+		)
+	}
+
+	if statusCode == 403 {
+		body := string(resp.Body())
+		message := resp.Status()
+		if body != "" {
+			message = fmt.Sprintf("%s: %s", resp.Status(), body)
+		}
+		return emptyResponse, config.AuthenticationError(
+			statusCode,
+			fmt.Sprintf("authentication failed: %s", message),
 			nil,
 		)
 	}

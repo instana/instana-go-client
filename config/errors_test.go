@@ -93,22 +93,34 @@ func TestNewValidationError(t *testing.T) {
 }
 
 func TestAuthenticationError(t *testing.T) {
-	err := AuthenticationError("invalid API token", nil)
-
-	if err == nil {
-		t.Fatal("AuthenticationError() returned nil")
+	tests := []struct {
+		name       string
+		statusCode int
+	}{
+		{"401 Unauthorized", http.StatusUnauthorized},
+		{"403 Forbidden", http.StatusForbidden},
 	}
 
-	if err.Type != ErrorTypeAuthentication {
-		t.Errorf("Expected error type %v, got %v", ErrorTypeAuthentication, err.Type)
-	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := AuthenticationError(tt.statusCode, "invalid API token", nil)
 
-	if err.StatusCode != http.StatusUnauthorized {
-		t.Errorf("Expected status code %d, got %d", http.StatusUnauthorized, err.StatusCode)
-	}
+			if err == nil {
+				t.Fatal("AuthenticationError() returned nil")
+			}
 
-	if err.IsRetryable() {
-		t.Error("Authentication errors should not be retryable")
+			if err.Type != ErrorTypeAuthentication {
+				t.Errorf("Expected error type %v, got %v", ErrorTypeAuthentication, err.Type)
+			}
+
+			if err.StatusCode != tt.statusCode {
+				t.Errorf("Expected status code %d, got %d", tt.statusCode, err.StatusCode)
+			}
+
+			if err.IsRetryable() {
+				t.Error("Authentication errors should not be retryable")
+			}
+		})
 	}
 }
 
@@ -329,7 +341,7 @@ func TestIsRetryableError(t *testing.T) {
 		{"API 500 error", APIError(500, "test", nil), true},
 		{"API 400 error", APIError(400, "test", nil), false},
 		{"validation error", NewValidationError("test", nil), false},
-		{"authentication error", AuthenticationError("test", nil), false},
+		{"authentication error", AuthenticationError(http.StatusUnauthorized, "test", nil), false},
 		{"standard error", errors.New("test"), false},
 	}
 
@@ -376,7 +388,8 @@ func TestExtractStatusCode(t *testing.T) {
 		{"nil error", nil, 0},
 		{"API error 404", APIError(404, "test", nil), 404},
 		{"API error 500", APIError(500, "test", nil), 500},
-		{"authentication error", AuthenticationError("test", nil), http.StatusUnauthorized},
+		{"authentication error 401", AuthenticationError(http.StatusUnauthorized, "test", nil), http.StatusUnauthorized},
+		{"authentication error 403", AuthenticationError(http.StatusForbidden, "test", nil), http.StatusForbidden},
 		{"rate limit error", RateLimitError("test", 60), http.StatusTooManyRequests},
 		{"network error", NetworkError("test", nil), 0},
 		{"standard error", errors.New("test"), 0},

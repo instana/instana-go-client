@@ -119,11 +119,11 @@ func NewValidationError(message string, err error) *InstanaError {
 }
 
 // AuthenticationError creates a new authentication error
-func AuthenticationError(message string, err error) *InstanaError {
+func AuthenticationError(statusCode int, message string, err error) *InstanaError {
 	return &InstanaError{
 		Type:       ErrorTypeAuthentication,
 		Message:    message,
-		StatusCode: http.StatusUnauthorized,
+		StatusCode: statusCode,
 		Err:        err,
 		Retryable:  false,
 		Temporary:  false,

@@ -334,6 +334,47 @@ func TestShouldReturnErrorMessageForDeleteRequestWhenStatusIsNotASuccessStatusAn
 	verifyFailedCallWithStatusCodeIsResponse(err, statusCode, t)
 }
 
+func TestShouldReturnAuthenticationErrorFor401WithoutBody(t *testing.T) {
+	httpServer := testutils.NewTestHTTPServer()
+	httpServer.AddRoute(http.MethodGet, testPath, func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusUnauthorized)
+	})
+	httpServer.Start()
+	defer httpServer.Close()
+
+	restClient := createSut(httpServer)
+	_, err := restClient.Get(testPath)
+
+	require.NotNil(t, err)
+	var instanaErr *config.InstanaError
+	require.True(t, errors.As(err, &instanaErr))
+	require.Equal(t, http.StatusUnauthorized, instanaErr.StatusCode)
+	require.Equal(t, config.ErrorTypeAuthentication, instanaErr.Type)
+	require.Contains(t, err.Error(), "401")
+}
+
+func TestShouldReturnAuthenticationErrorFor403WithBodyIncluded(t *testing.T) {
+	const errorBody = `{"errors":["Failed to validate credentials: {Credential and Test associations do not match=[tf_payment_api_key]}"]}`
+	httpServer := testutils.NewTestHTTPServer()
+	httpServer.AddRoute(http.MethodPut, testPathWithID, func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusForbidden)
+		w.Write([]byte(errorBody)) //nolint:errcheck
+	})
+	httpServer.Start()
+	defer httpServer.Close()
+
+	restClient := createSut(httpServer)
+	_, err := restClient.Put(testDataObject{id: testID}, testPath)
+
+	require.NotNil(t, err)
+	var instanaErr *config.InstanaError
+	require.True(t, errors.As(err, &instanaErr))
+	require.Equal(t, http.StatusForbidden, instanaErr.StatusCode)
+	require.Equal(t, config.ErrorTypeAuthentication, instanaErr.Type)
+	require.Contains(t, err.Error(), "403")
+	require.Contains(t, err.Error(), errorBody)
+}
+
 func setupAndStartHttpServerWithOKResponseCode(httpMethod string, fullPath string) testutils.TestHTTPServer {
 	return setupAndStartHttpServer(httpMethod, fullPath, 200)
 }

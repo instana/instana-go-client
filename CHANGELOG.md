@@ -1,5 +1,13 @@
 # Changelog
 
+## [v1.6.4](https://github.com/instana/instana-go-client/releases/tag/v1.6.4) - 2026-10-23
+
+### Added
+- **Team Scope (RBAC)**: Added `LoggingPerspectives` and `ApdexIDs` fields to `TeamScope`
+- **Synthetic Alert Configuration**: Added `IncludeOnDemand`, `EvaluationType`, and `AffectedLocationsCount` fields to `SyntheticAlertConfig`
+
+
+
 ## [v1.6.3](https://github.com/instana/instana-go-client/releases/tag/v1.6.3) - 2026-10-22
 
 ### Added

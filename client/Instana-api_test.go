@@ -234,6 +234,7 @@ func TestNewInstanaAPI_AllAPIMethods(t *testing.T) {
 		{"BuiltinEventSpecifications", func() interface{} { return api.BuiltinEventSpecifications() }},
 		{"APITokens", func() interface{} { return api.APITokens() }},
 		{"ApplicationConfigs", func() interface{} { return api.ApplicationConfigs() }},
+		{"BusinessPerspectives", func() interface{} { return api.BusinessPerspectives() }},
 		{"ApplicationAlertConfigs", func() interface{} { return api.ApplicationAlertConfigs() }},
 		{"GlobalApplicationAlertConfigs", func() interface{} { return api.GlobalApplicationAlertConfigs() }},
 		{"AlertingChannels", func() interface{} { return api.AlertingChannels() }},

@@ -173,6 +173,29 @@ func TestBuiltinEventSpecificationsLazyInitialization(t *testing.T) {
 	}
 }
 
+// TestBusinessPerspectivesLazyInitialization tests lazy initialization of BusinessPerspectives client
+func TestBusinessPerspectivesLazyInitialization(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockRestClient := mocks.NewMockRestClient(ctrl)
+	client := NewInstanaRestAPI(mockRestClient).(*instanaAPI)
+
+	if client.businessPerspectives != nil {
+		t.Error("Expected businessPerspectives to be nil before first access")
+	}
+
+	bp := client.BusinessPerspectives()
+	if bp == nil {
+		t.Fatal("Expected non-nil BusinessPerspectives client")
+	}
+
+	bp2 := client.BusinessPerspectives()
+	if bp != bp2 {
+		t.Error("Expected same instance on second access")
+	}
+}
+
 // TestCustomDashboardsLazyInitialization tests lazy initialization of CustomDashboards client
 func TestCustomDashboardsLazyInitialization(t *testing.T) {
 	ctrl := gomock.NewController(t)

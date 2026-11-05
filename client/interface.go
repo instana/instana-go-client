@@ -39,6 +39,9 @@ type InstanaAPI interface {
 	// BuiltinEventSpecifications returns the read-only builtin event specifications client
 	BuiltinEventSpecifications() rest.ReadOnlyRestResource[*api.BuiltinEventSpecification]
 
+	// BusinessPerspectives returns the business perspectives client
+	BusinessPerspectives() rest.RestResource[*api.BusinessPerspectiveConfig]
+
 	// CustomDashboards returns the custom dashboards client
 	CustomDashboards() rest.RestResource[*api.CustomDashboard]
 

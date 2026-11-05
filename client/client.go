@@ -21,6 +21,7 @@ type instanaAPI struct {
 	automationActions             rest.RestResource[*api.AutomationAction]
 	automationPolicies            rest.RestResource[*api.AutomationPolicy]
 	builtinEventSpecifications    rest.ReadOnlyRestResource[*api.BuiltinEventSpecification]
+	businessPerspectives          rest.RestResource[*api.BusinessPerspectiveConfig]
 	customDashboards              rest.RestResource[*api.CustomDashboard]
 	customEventSpecifications     rest.RestResource[*api.CustomEventSpecification]
 	groupMappings                 rest.RestResource[*api.GroupMapping]
@@ -184,6 +185,19 @@ func (c *instanaAPI) BuiltinEventSpecifications() rest.ReadOnlyRestResource[*api
 		)
 	}
 	return c.builtinEventSpecifications
+}
+
+// BusinessPerspectives returns the business perspectives client (lazy initialization)
+func (c *instanaAPI) BusinessPerspectives() rest.RestResource[*api.BusinessPerspectiveConfig] {
+	if c.businessPerspectives == nil {
+		c.businessPerspectives = NewRestResource(
+			c.restClient,
+			api.BusinessPerspectiveResourcePath,
+			rest.DefaultRestResourceModeCreatePOSTUpdatePUT,
+			rest.NewGenericUnmarshaller[*api.BusinessPerspectiveConfig](),
+		)
+	}
+	return c.businessPerspectives
 }
 
 // CustomDashboards returns the custom dashboards client (lazy initialization)

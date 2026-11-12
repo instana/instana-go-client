@@ -41,7 +41,7 @@ func TestSyntheticAlertConfigStructure(t *testing.T) {
 		Name:                   name,
 		Description:            description,
 		Severity:               severity,
-		Enabled:                enabled,
+		Enabled:                &enabled,
 		IncludeOnDemand:        includeOnDemand,
 		EvaluationType:         evaluationType,
 		AffectedLocationsCount: affectedLocationsCount,
@@ -59,7 +59,7 @@ func TestSyntheticAlertConfigStructure(t *testing.T) {
 	if config.Severity != severity {
 		t.Errorf("Expected Severity to be %d, got %d", severity, config.Severity)
 	}
-	if config.Enabled != enabled {
+	if config.Enabled == nil || *config.Enabled != enabled {
 		t.Errorf("Expected Enabled to be %v, got %v", enabled, config.Enabled)
 	}
 	if config.IncludeOnDemand != includeOnDemand {
@@ -164,7 +164,7 @@ func TestSyntheticAlertConfigJSONSerialization(t *testing.T) {
 	if config.AffectedLocationsCount != 2 {
 		t.Errorf("Expected AffectedLocationsCount 2, got %d", config.AffectedLocationsCount)
 	}
-	if config.Enabled != false {
+	if config.Enabled == nil || *config.Enabled {
 		t.Errorf("Expected Enabled false, got %v", config.Enabled)
 	}
 
@@ -187,7 +187,7 @@ func TestSyntheticAlertConfigJSONSerialization(t *testing.T) {
 	if roundtrip.AffectedLocationsCount != 2 {
 		t.Errorf("Roundtrip AffectedLocationsCount mismatch: expected 2, got %d", roundtrip.AffectedLocationsCount)
 	}
-	if roundtrip.Enabled != false {
+	if roundtrip.Enabled == nil || *roundtrip.Enabled {
 		t.Errorf("Roundtrip Enabled mismatch: expected false, got %v", roundtrip.Enabled)
 	}
 }

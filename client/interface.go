@@ -118,4 +118,8 @@ type InstanaAPI interface {
 
 	// Releases returns the release tags client for managing release markers
 	Releases() rest.RestResource[*api.ReleaseWithMetadata]
+
+	// ResourceActions returns a client for calling action sub-endpoints
+	// ({basePath}/{id}/{action}, e.g. enable/disable) of the resource at basePath
+	ResourceActions(basePath string) rest.ActionRestResource
 }

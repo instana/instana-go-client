@@ -42,6 +42,7 @@ type LogAlertConfig struct {
 	CustomerPayloadFields []types.CustomPayloadField[any]         `json:"customPayloadFields,omitempty"`
 	Rules                 []types.RuleWithThreshold[LogAlertRule] `json:"rules"`
 	GroupBy               []GroupByTag                            `json:"groupBy,omitempty"`
+	Enabled               *bool                                   `json:"enabled,omitempty"` // read-only: use rest.ActionEnable/ActionDisable to change
 }
 
 // GetIDForResourcePath implementation of the InstanaDataObject interface

@@ -524,3 +524,17 @@ func (mr *MockInstanaAPIMockRecorder) Releases() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Releases", reflect.TypeOf((*MockInstanaAPI)(nil).Releases))
 }
+
+// ResourceActions mocks base method.
+func (m *MockInstanaAPI) ResourceActions(basePath string) rest.ActionRestResource {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ResourceActions", basePath)
+	ret0, _ := ret[0].(rest.ActionRestResource)
+	return ret0
+}
+
+// ResourceActions indicates an expected call of ResourceActions.
+func (mr *MockInstanaAPIMockRecorder) ResourceActions(basePath any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ResourceActions", reflect.TypeOf((*MockInstanaAPI)(nil).ResourceActions), basePath)
+}

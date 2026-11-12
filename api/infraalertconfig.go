@@ -23,6 +23,9 @@ type InfraAlertConfig struct {
 	EvaluationType        InfraAlertEvaluationType                  `json:"evaluationType"`
 	Triggering            bool                                      `json:"triggering"`
 	RuleLogicalOperator   string                                    `json:"ruleLogicalOperator,omitempty"`
+	// Enabled is only returned by the API. It is not part of the create/update payload;
+	// use the enable/disable endpoints (rest.ActionEnable/rest.ActionDisable) to change it.
+	Enabled *bool `json:"enabled,omitempty"`
 }
 
 func (config *InfraAlertConfig) GetIDForResourcePath() string {

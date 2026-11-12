@@ -21,7 +21,7 @@ type SyntheticAlertConfig struct {
 	TimeThreshold          SyntheticAlertTimeThreshold     `json:"timeThreshold"`
 	CustomerPayloadFields  []types.CustomPayloadField[any] `json:"customPayloadFields,omitempty"`
 	GracePeriod            int64                           `json:"gracePeriod,omitempty"`
-	Enabled                bool                            `json:"enabled"`
+	Enabled                *bool                           `json:"enabled,omitempty"` // read-only: use rest.ActionEnable/ActionDisable to change
 	IncludeOnDemand        bool                            `json:"includeOnDemand"`
 	EvaluationType         string                          `json:"evaluationType,omitempty"`
 	AffectedLocationsCount int                             `json:"affectedLocationsCount,omitempty"`

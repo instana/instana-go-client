@@ -25,7 +25,7 @@ type SloAlertConfig struct {
 	Description           string                          `json:"description"`
 	Severity              int                             `json:"severity"`
 	Triggering            bool                            `json:"triggering"`
-	Enabled               bool                            `json:"enabled"`
+	Enabled               *bool                           `json:"enabled,omitempty"` // read-only: use rest.ActionEnable/ActionDisable to change
 	Rule                  SloAlertRule                    `json:"rule"`
 	Threshold             *SloAlertThreshold              `json:"threshold,omitempty"`
 	TimeThreshold         SloAlertTimeThreshold           `json:"timeThreshold"`

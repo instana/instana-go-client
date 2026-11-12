@@ -508,3 +508,8 @@ func (c *instanaAPI) Releases() rest.RestResource[*api.ReleaseWithMetadata] {
 	}
 	return c.releases
 }
+
+// ResourceActions returns a client for calling action sub-endpoints ({basePath}/{id}/{action}) of the resource at basePath
+func (c *instanaAPI) ResourceActions(basePath string) rest.ActionRestResource {
+	return rest.NewActionRestResource(c.restClient, basePath)
+}
